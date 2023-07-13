@@ -23,11 +23,11 @@ public class WorkTime
 
     // 今日の記録かどうか
     public bool IsTodayRecord => RecordedDate == DateTime.UtcNow.Date;
-    // 今日の勤務が進行中 (休憩/退勤コマンドの有効状態にも使用)
+    // 今日の勤務が進行中 (退勤コマンドの有効状態にも使用)
     public bool IsTodayOngoing => Duration.IsActive && IsTodayRecord;
     // 休憩中
     public bool IsResting => IsTodayOngoing && RestDurations.LastOrDefault()?.IsActive == true;
-    // 勤務中
+    // 勤務中 (休憩コマンドの有効状態にも使用)
     public bool IsWorking => IsTodayOngoing && !IsResting;
 
     /// <summary>
