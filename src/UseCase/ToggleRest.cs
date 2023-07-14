@@ -23,7 +23,7 @@ public class ToggleRest
         public async Task<WorkTime> Handle(Command request, CancellationToken cancellationToken)
         {
             var latest =
-                await _repository.FindByDateAsync(DateTime.UtcNow)
+                await _repository.FindByDateAsync(DateTime.Now)
                 ?? throw new DomainException("There is no available work item.");
 
             var toggled = latest.ToggleRest();

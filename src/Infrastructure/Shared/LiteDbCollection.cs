@@ -9,13 +9,13 @@ internal class LiteDbCollection<T> : IDisposable
     private readonly ILiteCollectionAsync<T> _collection;
 
     public ILiteCollectionAsync<T> Collection => _collection;
-    public static readonly string DbFileName = "attendance.db";
+    public static readonly string DbPath = Path.Combine(AppConfig.AppDataPath, "attendance.db");
 
     private bool disposedValue;
 
     public LiteDbCollection()
     {
-        _db = new LiteDatabaseAsync(DbFileName);
+        _db = new LiteDatabaseAsync(DbPath);
         _collection = _db.GetCollection<T>(new T().TableName);
     }
 

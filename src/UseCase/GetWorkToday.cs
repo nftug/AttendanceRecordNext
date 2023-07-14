@@ -22,7 +22,7 @@ public class GetWorkToday
         public async Task<WorkTime> Handle(Query request, CancellationToken cancellationToken)
         {
             var latest =
-                await _repository.FindByDateAsync(DateTime.UtcNow.Date) ?? WorkTime.CreateEmpty();
+                await _repository.FindByDateAsync(DateTime.Now.Date) ?? WorkTime.CreateEmpty();
             return latest;
         }
     }

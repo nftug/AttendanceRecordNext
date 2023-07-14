@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace AttendanceRecordNext.Views
+namespace Presentation.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

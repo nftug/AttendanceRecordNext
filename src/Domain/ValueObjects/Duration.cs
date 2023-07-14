@@ -13,13 +13,13 @@ public record Duration
 
     public Duration Edit(DurationEditCommandDto command)
     {
-        if (command.StartedOn > DateTime.UtcNow || command.FinishedOn > DateTime.UtcNow)
+        if (command.StartedOn > DateTime.Now || command.FinishedOn > DateTime.Now)
             throw new DomainException("Cannot set the future date.");
 
         if (command.StartedOn > command.FinishedOn)
             throw new DomainException("StartedOn is larger than FinishedOn.");
 
-        if (command.FinishedOn is null && StartedOn.Date != DateTime.UtcNow.Date)
+        if (command.FinishedOn is null && StartedOn.Date != DateTime.Now.Date)
             throw new DomainException("Cannot set blank time on FinishedOn.");
 
         var startedOn = command.StartedOn ?? StartedOn;
@@ -30,10 +30,10 @@ public record Duration
     }
 
     public static Duration GetStart()
-        => new() { StartedOn = DateTime.UtcNow.TruncateMs() };
+        => new() { StartedOn = DateTime.Now.TruncateMs() };
 
     public Duration GetFinished()
-        => new() { StartedOn = StartedOn, FinishedOn = DateTime.UtcNow.TruncateMs() };
+        => new() { StartedOn = StartedOn, FinishedOn = DateTime.Now.TruncateMs() };
 
     public Duration GetRestart()
         => new() { StartedOn = StartedOn };
@@ -51,7 +51,7 @@ public record Duration
             }
             else if (IsActive)
             {
-                var (startDate, now) = (StartedOn.Date, DateTime.UtcNow.TruncateMs());
+                var (startDate, now) = (StartedOn.Date, DateTime.Now.TruncateMs());
                 return
                     startDate == now.Date
                     ? now - StartedOn

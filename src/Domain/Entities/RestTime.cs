@@ -13,7 +13,7 @@ public class RestTime
     public TimeSpan TotalTime => Duration.TotalTime;
 
     // 今日の記録かどうか
-    public bool IsTodayRecord => RecordedDate == DateTime.UtcNow.Date;
+    public bool IsTodayRecord => RecordedDate == DateTime.Now.Date;
     // 休憩が進行中
     public bool IsActive => Duration.IsActive && IsTodayRecord;
 

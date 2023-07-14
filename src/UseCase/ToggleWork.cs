@@ -21,11 +21,11 @@ public class ToggleWork
 
         public async Task<WorkTime> Handle(Command request, CancellationToken cancellationToken)
         {
-            var workToday = await _repository.FindByDateAsync(DateTime.UtcNow);
+            var workToday = await _repository.FindByDateAsync(DateTime.Now);
 
             if (workToday != null)
             {
-                if (workToday.IsWorking)
+                if (workToday.IsTodayOngoing)
                     workToday.Finish();        // 退勤
                 else
                     workToday.Restart();       // 退勤後の勤務再開

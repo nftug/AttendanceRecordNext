@@ -13,27 +13,52 @@ public class WorkTime
     public List<RestTime> RestDurations { get; private set; } = new();
 
     public DateTime RecordedDate => Duration.StartedOn.Date;
-    public TimeSpan TotalTime
+
+    /// <summary>
+    /// 総休憩時間
+    /// </summary>
+    public TimeSpan TotalRestTime
     {
         get
         {
             // 停止状態の場合、停止時に記録した一時停止のレコードを除外する
             var restData = Duration.IsActive ? RestDurations : RestDurations.SkipLast(1);
-            return Duration.TotalTime - new TimeSpan(restData.Sum(x => x.TotalTime.Ticks));
+            return new TimeSpan(restData.Sum(x => x.TotalTime.Ticks));
         }
     }
+    /// <summary>
+    /// 総勤務時間
+    /// </summary>
+    public TimeSpan TotalWorkTime => Duration.TotalTime - TotalRestTime;
 
-    // 空の記録かどうか (出勤コマンドの有効状態に使用)
+    /// <summary>
+    ///  空の記録かどうか (出勤コマンドの有効状態に使用)
+    /// </summary>
     public bool IsEmpty => Id == Guid.Empty;
-    // 今日の記録かどうか
-    public bool IsTodayRecord => RecordedDate == DateTime.UtcNow.Date;
-    // 今日の勤務が進行中 (退勤コマンドの有効状態にも使用)
+
+    /// <summary>
+    /// 今日の記録かどうか
+    /// </summary>
+    public bool IsTodayRecord => RecordedDate == DateTime.Now.Date;
+
+    /// <summary>
+    /// 今日の勤務が進行中 (退勤コマンドの有効状態にも使用)
+    /// </summary>
     public bool IsTodayOngoing => Duration.IsActive && IsTodayRecord;
-    // 休憩中
+
+    /// <summary>
+    /// 休憩中
+    /// </summary>
     public bool IsResting => IsTodayOngoing && RestDurations.LastOrDefault()?.IsActive == true;
-    // 勤務中 (休憩コマンドの有効状態にも使用)
+
+    /// <summary>
+    /// 勤務中
+    /// </summary>
     public bool IsWorking => IsTodayOngoing && !IsResting;
-    // 停止中 (再開の有効状態に利用)
+
+    /// <summary>
+    /// 停止中 (再開の有効状態に利用)
+    /// </summary>
     public bool CanRestart => IsTodayRecord && RestDurations.LastOrDefault()?.IsActive == true;
 
     /// <summary>
@@ -90,9 +115,9 @@ public class WorkTime
             throw new DomainException("Cannot pause a record which is not ongoing.");
 
         if (IsResting)
-            Pause();
-        else
             FinishPause();
+        else
+            Pause();
 
         return Recreate();
     }

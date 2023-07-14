@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Extensions;
 using Domain.Interfaces;
 using Infrastructure.DataModels;
 using Infrastructure.Shared;
@@ -37,9 +38,11 @@ public class WorkTimeRepository : IWorkTimeRepository
     public async Task<WorkTime?> FindByDateAsync(DateTime date)
     {
         using var workTimes = new LiteDbCollection<WorkTimeDataModel>();
+        var first = await workTimes.Collection.Query().FirstOrDefaultAsync();
+
         var data = await workTimes.Collection.Query()
-            .Where(x => x.StartedOn.Date == date.Date)
-            .FirstOrDefaultAsync();
+             .Where(x => x.StartedOn.Date == date.Date)
+             .FirstOrDefaultAsync();
         return data?.ToEntity();
     }
 }
