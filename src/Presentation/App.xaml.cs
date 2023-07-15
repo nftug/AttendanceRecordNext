@@ -15,6 +15,32 @@ namespace Presentation;
 
 public partial class App : PrismApplication
 {
+    private Mutex _mutex = new(false, "AttendanceRecord");
+
+    protected override void Initialize()
+    {
+        if (!_mutex.WaitOne(0, false))
+        {
+            System.Windows.MessageBox.Show(
+                "アプリケーションが既に起動しています。",
+                "エラー",
+                MessageBoxButton.OK,
+                MessageBoxImage.Stop
+            );
+            _mutex.Close();
+            _mutex = null!;
+
+            Shutdown();
+        }
+
+        base.Initialize();
+    }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        _mutex.ReleaseMutex();
+    }
+
     protected override Window CreateShell() => Container.Resolve<MainWindow>();
 
     protected override void RegisterTypes(IContainerRegistry containerRegistry)

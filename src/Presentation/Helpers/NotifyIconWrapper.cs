@@ -38,9 +38,11 @@ public class NotifyIconWrapper : FrameworkElement, IDisposable
     {
         if (DesignerProperties.GetIsInDesignMode(this))
             return;
+
         _notifyIcon = new NotifyIcon
         {
-            Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location),
+            //Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location),
+            Icon = Icon.ExtractAssociatedIcon(Environment.ProcessPath!),
             Visible = true,
             ContextMenuStrip = CreateContextMenu()
         };
