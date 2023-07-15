@@ -5,16 +5,13 @@ namespace Domain.Services;
 
 public class WorkTimeService
 {
-    private IWorkTimeRepository _repository;
+    private readonly IWorkTimeRepository _repository;
 
     public WorkTimeService(IWorkTimeRepository repository)
     {
         _repository = repository;
     }
 
-    public async Task<bool> CheckEntityAllowed(WorkTime entity)
-    {
-        var latest = await _repository.FindByDateAsync(entity.RecordedDate);
-        return latest != null;
-    }
+    public async Task<bool> CheckEntityAllowedAsync(WorkTime entity)
+        => (await _repository.FindByDateAsync(entity.RecordedDate)) != null;
 }

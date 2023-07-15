@@ -21,7 +21,7 @@ public class ToggleWork
 
         public async Task<WorkTime> Handle(Command request, CancellationToken cancellationToken)
         {
-            var workToday = await _repository.FindByDateAsync(DateTime.Now);
+            var workToday = await _repository.FindByDateAsync(DateTime.Today);
 
             if (workToday != null)
             {

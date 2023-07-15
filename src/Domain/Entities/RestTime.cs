@@ -9,11 +9,11 @@ public class RestTime
     public Guid Id { get; } = Guid.NewGuid();
     public Duration Duration { get; private set; } = null!;
 
-    public DateTime RecordedDate => Duration.StartedOn.Date;
+    public DateTime RecordedDate => Duration.RecordedDate;
     public TimeSpan TotalTime => Duration.TotalTime;
 
     // 今日の記録かどうか
-    public bool IsTodayRecord => RecordedDate == DateTime.Now.Date;
+    public bool IsTodayRecord => RecordedDate == DateTime.Today;
     // 休憩が進行中
     public bool IsActive => Duration.IsActive && IsTodayRecord;
 

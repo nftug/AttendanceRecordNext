@@ -9,6 +9,8 @@ public record Duration
     public DateTime StartedOn { get; init; }
     public DateTime? FinishedOn { get; init; }
 
+    public DateTime RecordedDate => StartedOn.Date;
+
     public Duration() { }
 
     public Duration Edit(DurationEditCommandDto command)
@@ -19,7 +21,7 @@ public record Duration
         if (command.StartedOn > command.FinishedOn)
             throw new DomainException("StartedOn is larger than FinishedOn.");
 
-        if (command.FinishedOn is null && StartedOn.Date != DateTime.Now.Date)
+        if (command.FinishedOn is null && StartedOn.Date != DateTime.Today)
             throw new DomainException("Cannot set blank time on FinishedOn.");
 
         var startedOn = command.StartedOn ?? StartedOn;

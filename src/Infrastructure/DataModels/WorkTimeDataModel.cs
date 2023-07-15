@@ -26,6 +26,6 @@ public class WorkTimeDataModel : IDataModel
             Id = entity.Id,
             StartedOn = entity.Duration.StartedOn,
             FinishedOn = entity.Duration.FinishedOn,
-            RestTimes = entity._restDurations.Select(RestTimeDataModel.Create).ToList()
+            RestTimes = entity.RestDurationsAll.Select(RestTimeDataModel.Create).ToList()
         };
 }

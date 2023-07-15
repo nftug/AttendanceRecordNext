@@ -9,5 +9,5 @@ public interface IWorkTimeRepository
     Task DeleteAsync(Guid entity);
     Task<WorkTime?> FindByIdAsync(Guid id);
     Task<WorkTime?> FindByDateAsync(DateTime date);
-    // Task<List<WorkTime>> FindAllByMonthAsync(DateTime month);
+    Task<List<WorkTime>> FindAllByMonthAsync(DateTime date);
 }

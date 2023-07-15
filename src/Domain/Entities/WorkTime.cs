@@ -10,13 +10,13 @@ public class WorkTime
 {
     public Guid Id { get; private init; } = Guid.NewGuid();
     public Duration Duration { get; private set; } = null!;
-    public readonly List<RestTime> _restDurations = new();
+    public List<RestTime> RestDurationsAll { get; } = new();
 
     // 停止状態の場合、停止時に記録した一時停止のレコードを除外する
     public IReadOnlyList<RestTime> RestDurations
-        => (Duration.IsActive ? _restDurations : _restDurations.SkipLast(1)).ToList();
+        => (Duration.IsActive ? RestDurationsAll : RestDurationsAll.SkipLast(1)).ToList();
 
-    public DateTime RecordedDate => Duration.StartedOn.Date;
+    public DateTime RecordedDate => Duration.RecordedDate;
 
     /// <summary>
     /// 総休憩時間
@@ -36,7 +36,7 @@ public class WorkTime
     /// <summary>
     /// 今日の記録かどうか
     /// </summary>
-    public bool IsTodayRecord => RecordedDate == DateTime.Now.Date;
+    public bool IsTodayRecord => RecordedDate == DateTime.Today;
 
     /// <summary>
     /// 今日の勤務が進行中 (退勤コマンドの有効状態にも使用)
@@ -46,7 +46,7 @@ public class WorkTime
     /// <summary>
     /// 休憩中
     /// </summary>
-    public bool IsResting => IsTodayOngoing && _restDurations.LastOrDefault()?.IsActive == true;
+    public bool IsResting => IsTodayOngoing && RestDurationsAll.LastOrDefault()?.IsActive == true;
 
     /// <summary>
     /// 勤務中
@@ -56,7 +56,7 @@ public class WorkTime
     /// <summary>
     /// 停止中 (再開の有効状態に利用)
     /// </summary>
-    public bool CanRestart => IsTodayRecord && _restDurations.LastOrDefault()?.IsActive == true;
+    public bool CanRestart => IsTodayRecord && RestDurationsAll.LastOrDefault()?.IsActive == true;
 
     /// <summary>
     /// インフラ層と再生成専用のコンストラクタ
@@ -68,7 +68,7 @@ public class WorkTime
     {
         Id = id;
         Duration = record;
-        _restDurations = restRecords.OrderBy(x => x.Duration.StartedOn).ToList();
+        RestDurationsAll = restRecords.OrderBy(x => x.Duration.StartedOn).ToList();
     }
 
     private WorkTime() { }
@@ -78,7 +78,7 @@ public class WorkTime
     /// </summary>
     /// <returns></returns>
     public WorkTime Recreate()
-        => IsTodayRecord ? new(Id, Duration, _restDurations) : CreateEmpty();
+        => IsTodayRecord ? new(Id, Duration, RestDurationsAll) : CreateEmpty();
 
     public WorkTime EditDuration(DurationEditCommandDto command)
     {
@@ -119,8 +119,8 @@ public class WorkTime
         return Recreate();
     }
 
-    private void Pause() => _restDurations.Add(RestTime.Start());
-    private void FinishPause() => _restDurations[^1] = _restDurations[^1].Finish();
+    private void Pause() => RestDurationsAll.Add(RestTime.Start());
+    private void FinishPause() => RestDurationsAll[^1] = RestDurationsAll[^1].Finish();
 
     public WorkTime Restart()
     {
