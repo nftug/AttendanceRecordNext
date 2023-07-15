@@ -3,9 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:bh="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:views="clr-namespace:Presentation.Views"
         xmlns:viewmodels="clr-namespace:Presentation.ViewModels"
         xmlns:conv="clr-namespace:Presentation.Converters"
+        xmlns:helper="clr-namespace:Presentation.Helpers"
         xmlns:prism="http://prismlibrary.com/"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
@@ -13,7 +15,11 @@
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
-        Title="Attendance Record" Height="380" Width="320" >
+        Title="Attendance Record"
+        Height="380" Width="320"
+        MinHeight="380" MinWidth="320"
+        WindowState="{Binding WindowState.Value}"
+        Visibility="{Binding Visibility.Value, Mode=TwoWay}">
     <Window.Resources>
         <conv:ToggleWorkConverter x:Key="ToggleWorkConverter"/>
         <conv:ToggleRestConverter x:Key="ToggleRestConverter" />
@@ -36,6 +42,9 @@
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
         </i:EventTrigger>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding ClosingCommand}" PassEventArgsToCommand="True"/>
+        </i:EventTrigger>
     </i:Interaction.Triggers>
 
     <Grid Margin="5">
@@ -45,10 +54,20 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <helper:NotifyIconWrapper NotifyRequest="{Binding NotifyRequest.Value}">
+            <bh:Interaction.Triggers>
+                <bh:EventTrigger EventName="OpenSelected">
+                    <bh:InvokeCommandAction Command="{Binding NotifyIconOpenCommand}"/>
+                </bh:EventTrigger>
+                <bh:EventTrigger EventName="ExitSelected">
+                    <bh:InvokeCommandAction Command="{Binding NotifyIconExitCommand}"/>
+                </bh:EventTrigger>
+            </bh:Interaction.Triggers>
+        </helper:NotifyIconWrapper>
+
         <TextBlock Grid.Row="0"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
-                   d:Text="00:00:00"
                    Text="{Binding NowDateTime.Value, StringFormat={}{0:HH\\:mm\\:ss}}"
                    FontSize="64"/>
 
@@ -80,8 +99,7 @@
                     VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
                     Margin="4"
-                    Command="{Binding ToggleRest}"
-                     Style="{StaticResource {x:Type Button}}">
+                    Command="{Binding ToggleRest}">
                 <StackPanel Orientation="Horizontal">
                     <iconPacks:PackIconMaterial Kind="Coffee" Style="{StaticResource ButtonIconStyle}"/>
                     <TextBlock Text="{Binding IsResting.Value, Converter={StaticResource ToggleRestConverter}}"
@@ -110,13 +128,7 @@
             </Button>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="0,0,0,10">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-
+        <StackPanel Grid.Row="2" Margin="0,0,0,10">
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8">
                 <TextBlock Text="勤務時間" FontWeight="Bold" Margin="0,0,20,0"/>
                 <TextBlock Text="{Binding TotalWorkTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
@@ -131,6 +143,6 @@
                 <TextBlock Text="残業時間" FontWeight="Bold" Margin="0,0,20,0"/>
                 <TextBlock Text="-08:00:00"/>
             </StackPanel>
-        </Grid>
+        </StackPanel>
     </Grid>
 </Window>

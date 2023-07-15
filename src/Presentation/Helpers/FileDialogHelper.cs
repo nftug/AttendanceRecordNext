@@ -1,4 +1,4 @@
-using Microsoft.Win32;
+using FileDialog = Microsoft.Win32.FileDialog;
 
 namespace Presentation.Helpers;
 
@@ -8,9 +8,9 @@ public class FileDialogHelper : IFileDialogHelper
     {
         FileDialog fileDialog = dialogType switch
         {
-            FileDialogType.Open => new OpenFileDialog(),
-            FileDialogType.Save => new SaveFileDialog(),
-            _ => new OpenFileDialog()
+            FileDialogType.Open => new Microsoft.Win32.OpenFileDialog(),
+            FileDialogType.Save => new Microsoft.Win32.SaveFileDialog(),
+            _ => new Microsoft.Win32.OpenFileDialog()
         };
         fileDialog.Filter = filer;
         fileDialog.Title = title;

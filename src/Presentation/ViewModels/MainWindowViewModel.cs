@@ -1,13 +1,15 @@
 ﻿using System.Reactive.Linq;
+using System.Windows;
 using Presentation.Helpers;
 using Presentation.Models;
 using Presentation.Shared;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using DialogResult = Presentation.Helpers.DialogResult;
 
 namespace Presentation.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase
+public class MainWindowViewModel : MainWindowViewModelBase
 {
     private readonly WorkTimeModel _model;
 
