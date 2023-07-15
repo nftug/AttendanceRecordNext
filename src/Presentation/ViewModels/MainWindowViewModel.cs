@@ -26,18 +26,10 @@ public class MainWindowViewModel : ViewModelBase
     {
         _model = model;
 
-        TotalWorkTime = _model.TotalWorkTime
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposable);
-        TotalRestTime = _model.TotalRestTime
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposable);
-        IsResting = _model.IsResting
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposable);
-        IsOngoing = _model.IsOngoing
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposable);
+        TotalWorkTime = _model.TotalWorkTime.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        TotalRestTime = _model.TotalRestTime.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        IsResting = _model.IsResting.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        IsOngoing = _model.IsOngoing.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         NowDateTime = new ReactivePropertySlim<DateTime>(DateTime.Now);
 
         ToggleWork = new AsyncReactiveCommand<object?>()
@@ -66,6 +58,5 @@ public class MainWindowViewModel : ViewModelBase
             .ObserveOn(SynchronizationContext.Current!)
             .Subscribe(_ => NowDateTime.Value = DateTime.Now)
             .AddTo(Disposable);
-
     }
 }

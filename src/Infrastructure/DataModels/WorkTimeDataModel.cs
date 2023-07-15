@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Infrastructure.Shared;
+using LiteDB;
 
 namespace Infrastructure.DataModels;
 
@@ -10,7 +11,7 @@ public class WorkTimeDataModel : IDataModel
     public DateTime? FinishedOn { get; set; }
     public List<RestTimeDataModel> RestTimes { get; set; } = new();
 
-    public string TableName => "WorkTimes";
+    [BsonIgnore] public string TableName => "WorkTimes";
 
     public WorkTime ToEntity()
         => new(
@@ -25,9 +26,6 @@ public class WorkTimeDataModel : IDataModel
             Id = entity.Id,
             StartedOn = entity.Duration.StartedOn,
             FinishedOn = entity.Duration.FinishedOn,
-            RestTimes = entity.RestDurations.Select(RestTimeDataModel.Create).ToList()
+            RestTimes = entity._restDurations.Select(RestTimeDataModel.Create).ToList()
         };
-
-    public override string ToString()
-        => $"Id={Id}, StartedOn={StartedOn}, FinishedOn={FinishedOn}, RestTimesCount={RestTimes.Count}";
 }

@@ -18,7 +18,4 @@ public class RestTimeDataModel
             StartedOn = entity.Duration.StartedOn,
             FinishedOn = entity.Duration.FinishedOn
         };
-
-    public override string ToString()
-        => $"Id={Id}, StartedOn={StartedOn}, FinishedOn={FinishedOn}";
 }

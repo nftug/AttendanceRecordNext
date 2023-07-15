@@ -26,21 +26,11 @@ public class WorkTimeModel : BindableBase
         _sender = sender;
         _entity = new ReactivePropertySlim<WorkTime>(WorkTime.CreateEmpty());
 
-        TotalWorkTime = _entity.Select(x => x.TotalWorkTime)
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposable);
-        TotalRestTime = _entity.Select(x => x.TotalRestTime)
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposable);
-        IsOngoing = _entity.Select(x => x.IsTodayOngoing)
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposable);
-        IsResting = _entity.Select(x => x.IsResting)
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposable);
-        IsWorking = _entity.Select(x => x.IsWorking)
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposable);
+        TotalWorkTime = _entity.Select(x => x.TotalWorkTime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        TotalRestTime = _entity.Select(x => x.TotalRestTime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        IsOngoing = _entity.Select(x => x.IsTodayOngoing).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        IsResting = _entity.Select(x => x.IsResting).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        IsWorking = _entity.Select(x => x.IsWorking).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
 
         Timer = new ReactiveTimer(TimeSpan.FromSeconds(1)).AddTo(Disposable);
         Timer
@@ -52,10 +42,7 @@ public class WorkTimeModel : BindableBase
             });
         Timer.Start();
 
-        Task.Run(async () =>
-        {
-            _entity.Value = await _sender.Send(new GetWorkToday.Query());
-        });
+        Task.Run(async () => _entity.Value = await _sender.Send(new GetWorkToday.Query()));
     }
 
     public async Task ToggleWorkAsync()
