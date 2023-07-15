@@ -19,6 +19,13 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
+
+            <Style TargetType="iconPacks:PackIconMaterial" x:Key="ButtonIconStyle">
+                <Style.Setters>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="Margin" Value="0,0,8,0"/>
+                </Style.Setters>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </prism:PrismApplication>

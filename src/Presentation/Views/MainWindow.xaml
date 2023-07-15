@@ -17,7 +17,26 @@
     <Window.Resources>
         <conv:ToggleWorkConverter x:Key="ToggleWorkConverter"/>
         <conv:ToggleRestConverter x:Key="ToggleRestConverter" />
+
+        <Style TargetType="iconPacks:PackIconMaterial"
+               x:Key="WorkToggleIconStyle"
+               BasedOn="{StaticResource ButtonIconStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsOngoing.Value}" Value="True">
+                    <Setter Property="Kind" Value="Logout"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsOngoing.Value}" Value="False">
+                    <Setter Property="Kind" Value="Login"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
 
     <Grid Margin="5">
         <Grid.RowDefinitions>
@@ -29,6 +48,7 @@
         <TextBlock Grid.Row="0"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
+                   d:Text="00:00:00"
                    Text="{Binding NowDateTime.Value, StringFormat={}{0:HH\\:mm\\:ss}}"
                    FontSize="64"/>
 
@@ -47,27 +67,44 @@
                     VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
                     Margin="4"
-                    Content="{Binding IsOngoing.Value, Converter={StaticResource ToggleWorkConverter}}"
-                    Command="{Binding ToggleWork}"/>
+                    Style="{StaticResource AccentButtonStyle}"
+                    Command="{Binding ToggleWork}">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Style="{StaticResource WorkToggleIconStyle}"/>
+                    <TextBlock Text="{Binding IsOngoing.Value, Converter={StaticResource ToggleWorkConverter}}"/>
+                </StackPanel>
+            </Button>
             <Button Grid.Row="0"
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
                     Margin="4"
-                    Content="{Binding IsResting.Value, Converter={StaticResource ToggleRestConverter}}"
-                    Command="{Binding ToggleRest}"/>
+                    Command="{Binding ToggleRest}">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="Coffee" Style="{StaticResource ButtonIconStyle}"/>
+                    <TextBlock Text="{Binding IsResting.Value, Converter={StaticResource ToggleRestConverter}}"/>
+                </StackPanel>
+            </Button>
             <Button Grid.Row="1"
                     Grid.Column="0"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
-                    Margin="4"
-                    Content="設定"/>
+                    Margin="4">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="Cog" Style="{StaticResource ButtonIconStyle}"/>
+                    <TextBlock Text="設定"/>
+                </StackPanel>
+            </Button>
             <Button Grid.Row="1"
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
-                    Margin="4"
-                    Content="履歴"/>
+                    Margin="4">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="Calendar" Style="{StaticResource ButtonIconStyle}"/>
+                    <TextBlock Text="履歴"/>
+                </StackPanel>
+            </Button>
         </Grid>
 
         <Grid Grid.Row="2" Margin="0,0,0,10">

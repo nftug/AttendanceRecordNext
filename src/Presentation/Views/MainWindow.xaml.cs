@@ -11,5 +11,10 @@ namespace Presentation.Views
         {
             InitializeComponent();
         }
+
+        private void Button_Click()
+        {
+
+        }
     }
 }

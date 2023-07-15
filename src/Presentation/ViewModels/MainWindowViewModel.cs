@@ -15,9 +15,9 @@ public class MainWindowViewModel : ViewModelBase
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalRestTime { get; }
     public ReadOnlyReactivePropertySlim<bool> IsResting { get; }
     public ReadOnlyReactivePropertySlim<bool> IsOngoing { get; }
-
     public ReactivePropertySlim<DateTime> NowDateTime { get; }
 
+    public ReactiveCommandSlim<object?> LoadedCommand { get; }
     public AsyncReactiveCommand<object?> ToggleWork { get; }
     public AsyncReactiveCommand<object?> ToggleRest { get; }
 
@@ -31,6 +31,10 @@ public class MainWindowViewModel : ViewModelBase
         IsResting = _model.IsResting.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         IsOngoing = _model.IsOngoing.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         NowDateTime = new ReactivePropertySlim<DateTime>(DateTime.Now);
+
+        LoadedCommand = new ReactiveCommandSlim<object?>()
+            .WithSubscribe(async _ => await CatchErrorAsync(_model.LoadDataAsync))
+            .AddTo(Disposable);
 
         ToggleWork = new AsyncReactiveCommand<object?>()
             .WithSubscribe(async _ =>

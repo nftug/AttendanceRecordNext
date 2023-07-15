@@ -41,9 +41,10 @@ public class WorkTimeModel : BindableBase
                 _nextEntity = null;
             });
         Timer.Start();
-
-        Task.Run(async () => _entity.Value = await _sender.Send(new GetWorkToday.Query()));
     }
+
+    public async Task LoadDataAsync()
+        => _entity.Value = await _sender.Send(new GetWorkToday.Query());
 
     public async Task ToggleWorkAsync()
         => _nextEntity = await _sender.Send(new ToggleWork.Command());
