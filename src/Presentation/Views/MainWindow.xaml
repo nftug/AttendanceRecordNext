@@ -71,7 +71,8 @@
                     Command="{Binding ToggleWork}">
                 <StackPanel Orientation="Horizontal">
                     <iconPacks:PackIconMaterial Style="{StaticResource WorkToggleIconStyle}"/>
-                    <TextBlock Text="{Binding IsOngoing.Value, Converter={StaticResource ToggleWorkConverter}}"/>
+                    <TextBlock Text="{Binding IsOngoing.Value, Converter={StaticResource ToggleWorkConverter}}"
+                               Style="{StaticResource ButtonLabelStyle}"/>
                 </StackPanel>
             </Button>
             <Button Grid.Row="0"
@@ -79,10 +80,12 @@
                     VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
                     Margin="4"
-                    Command="{Binding ToggleRest}">
+                    Command="{Binding ToggleRest}"
+                     Style="{StaticResource {x:Type Button}}">
                 <StackPanel Orientation="Horizontal">
                     <iconPacks:PackIconMaterial Kind="Coffee" Style="{StaticResource ButtonIconStyle}"/>
-                    <TextBlock Text="{Binding IsResting.Value, Converter={StaticResource ToggleRestConverter}}"/>
+                    <TextBlock Text="{Binding IsResting.Value, Converter={StaticResource ToggleRestConverter}}"
+                               Style="{StaticResource ButtonLabelStyle}"/>
                 </StackPanel>
             </Button>
             <Button Grid.Row="1"
@@ -92,7 +95,7 @@
                     Margin="4">
                 <StackPanel Orientation="Horizontal">
                     <iconPacks:PackIconMaterial Kind="Cog" Style="{StaticResource ButtonIconStyle}"/>
-                    <TextBlock Text="設定"/>
+                    <TextBlock Text="設定" Style="{StaticResource ButtonLabelStyle}"/>
                 </StackPanel>
             </Button>
             <Button Grid.Row="1"
@@ -102,7 +105,7 @@
                     Margin="4">
                 <StackPanel Orientation="Horizontal">
                     <iconPacks:PackIconMaterial Kind="Calendar" Style="{StaticResource ButtonIconStyle}"/>
-                    <TextBlock Text="履歴"/>
+                    <TextBlock Text="履歴" Style="{StaticResource ButtonLabelStyle}"/>
                 </StackPanel>
             </Button>
         </Grid>

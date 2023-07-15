@@ -20,11 +20,19 @@
                 </Style.Triggers>
             </Style>
 
-            <Style TargetType="iconPacks:PackIconMaterial" x:Key="ButtonIconStyle">
-                <Style.Setters>
-                    <Setter Property="VerticalAlignment" Value="Center"/>
-                    <Setter Property="Margin" Value="0,0,8,0"/>
-                </Style.Setters>
+            <Style TargetType="TextBlock" x:Key="ButtonLabelStyle">
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundDisabled}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style TargetType="iconPacks:PackIconMaterial"
+                   x:Key="ButtonIconStyle"
+                   BasedOn="{StaticResource {x:Type iconPacks:PackIconMaterial}}">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="0,0,8,0"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>
