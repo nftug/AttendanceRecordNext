@@ -120,7 +120,8 @@
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
-                    Margin="4">
+                    Margin="4"
+                    Command="{Binding HistoryDialogCommand}">
                 <StackPanel Orientation="Horizontal">
                     <iconPacks:PackIconMaterial Kind="Calendar" Style="{StaticResource ButtonIconStyle}"/>
                     <TextBlock Text="履歴" Style="{StaticResource ButtonLabelStyle}"/>

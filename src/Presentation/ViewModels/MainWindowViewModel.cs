@@ -1,8 +1,9 @@
 ﻿using System.Reactive.Linq;
-using System.Windows;
 using Presentation.Helpers;
 using Presentation.Models;
 using Presentation.Shared;
+using Presentation.Views;
+using Prism.Services.Dialogs;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using DialogResult = Presentation.Helpers.DialogResult;
@@ -12,6 +13,7 @@ namespace Presentation.ViewModels;
 public class MainWindowViewModel : MainWindowViewModelBase
 {
     private readonly WorkTimeModel _model;
+    private readonly IDialogService _dialogService;
 
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalWorkTime { get; }
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalRestTime { get; }
@@ -22,11 +24,13 @@ public class MainWindowViewModel : MainWindowViewModelBase
     public ReactiveCommandSlim<object?> LoadedCommand { get; }
     public AsyncReactiveCommand<object?> ToggleWork { get; }
     public AsyncReactiveCommand<object?> ToggleRest { get; }
+    public ReactiveCommandSlim<object?> HistoryDialogCommand { get; }
 
-    public MainWindowViewModel(WorkTimeModel model, IDialogHelper dialogHelper)
+    public MainWindowViewModel(WorkTimeModel model, IDialogHelper dialogHelper, IDialogService dialogService)
         : base(dialogHelper)
     {
         _model = model;
+        _dialogService = dialogService;
 
         TotalWorkTime = _model.TotalWorkTime.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         TotalRestTime = _model.TotalRestTime.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
@@ -58,6 +62,10 @@ public class MainWindowViewModel : MainWindowViewModelBase
         ToggleRest = _model.IsOngoing
             .ToAsyncReactiveCommand()
             .WithSubscribe(async _ => await CatchErrorAsync(_model.ToggleRestAsync))
+            .AddTo(Disposable);
+
+        HistoryDialogCommand = new ReactiveCommandSlim<object?>()
+            .WithSubscribe(_ => _dialogService.Show(nameof(HistoryDialog)))
             .AddTo(Disposable);
 
         _model.Timer

@@ -38,7 +38,7 @@ public partial class App : PrismApplication
 
     protected override void OnExit(ExitEventArgs e)
     {
-        _mutex.ReleaseMutex();
+        _mutex?.ReleaseMutex();
     }
 
     protected override Window CreateShell() => Container.Resolve<MainWindow>();
@@ -50,6 +50,9 @@ public partial class App : PrismApplication
         containerRegistry.Register<IWorkTimeRepository, WorkTimeRepository>();
         containerRegistry.Register<WorkTimeService>();
         // containerRegistry.Register<WorkTimeModel>();
+
+        containerRegistry.RegisterDialogWindow<DialogWindow>();
+        containerRegistry.RegisterDialog<HistoryDialog>();
     }
 
     // Reference: https://zenn.dev/nin_neko/articles/44045180e35861
