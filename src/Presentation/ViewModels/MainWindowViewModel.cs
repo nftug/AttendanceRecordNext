@@ -1,9 +1,9 @@
 ﻿using System.Reactive.Linq;
 using Presentation.Helpers;
 using Presentation.Models;
+using Presentation.Services;
 using Presentation.Shared;
 using Presentation.Views;
-using Prism.Services.Dialogs;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using DialogResult = Presentation.Helpers.DialogResult;
@@ -13,7 +13,7 @@ namespace Presentation.ViewModels;
 public class MainWindowViewModel : MainWindowViewModelBase
 {
     private readonly WorkTimeModel _model;
-    private readonly IDialogService _dialogService;
+    private readonly ICustomDialogService _dialogService;
 
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalWorkTime { get; }
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalRestTime { get; }
@@ -24,9 +24,9 @@ public class MainWindowViewModel : MainWindowViewModelBase
     public ReactiveCommandSlim<object?> LoadedCommand { get; }
     public AsyncReactiveCommand<object?> ToggleWork { get; }
     public AsyncReactiveCommand<object?> ToggleRest { get; }
-    public ReactiveCommandSlim<object?> HistoryDialogCommand { get; }
+    public AsyncReactiveCommand<object?> HistoryDialogCommand { get; }
 
-    public MainWindowViewModel(WorkTimeModel model, IDialogHelper dialogHelper, IDialogService dialogService)
+    public MainWindowViewModel(WorkTimeModel model, IDialogHelper dialogHelper, ICustomDialogService dialogService)
         : base(dialogHelper)
     {
         _model = model;
@@ -61,11 +61,11 @@ public class MainWindowViewModel : MainWindowViewModelBase
 
         ToggleRest = _model.IsOngoing
             .ToAsyncReactiveCommand()
-            .WithSubscribe(async _ => await CatchErrorAsync(_model.ToggleRestAsync))
+            .WithSubscribe(_ => CatchErrorAsync(_model.ToggleRestAsync))
             .AddTo(Disposable);
 
-        HistoryDialogCommand = new ReactiveCommandSlim<object?>()
-            .WithSubscribe(_ => _dialogService.Show(nameof(HistoryDialog)))
+        HistoryDialogCommand = new AsyncReactiveCommand<object?>()
+            .WithSubscribe(_ => _dialogService.ShowOrphanAsync(nameof(HistoryDialog)))
             .AddTo(Disposable);
 
         _model.Timer

@@ -15,8 +15,10 @@ public class WorkTimeModel : BindableBase
     public ReactiveTimer Timer { get; }
     private WorkTime? _nextEntity;
 
+    public ReadOnlyReactivePropertySlim<WorkTime> Entity;
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalWorkTime { get; }
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalRestTime { get; }
+    public ReadOnlyReactivePropertySlim<bool> IsEmpty { get; }
     public ReadOnlyReactivePropertySlim<bool> IsOngoing { get; }
     public ReadOnlyReactivePropertySlim<bool> IsResting { get; }
     public ReadOnlyReactivePropertySlim<bool> IsWorking { get; }
@@ -26,8 +28,10 @@ public class WorkTimeModel : BindableBase
         _sender = sender;
         _entity = new ReactivePropertySlim<WorkTime>(WorkTime.CreateEmpty());
 
+        Entity = _entity.ToReadOnlyReactivePropertySlim(_entity.Value).AddTo(Disposable);
         TotalWorkTime = _entity.Select(x => x.TotalWorkTime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         TotalRestTime = _entity.Select(x => x.TotalRestTime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        IsEmpty = _entity.Select(x => x.IsEmpty).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         IsOngoing = _entity.Select(x => x.IsTodayOngoing).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         IsResting = _entity.Select(x => x.IsResting).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         IsWorking = _entity.Select(x => x.IsWorking).ToReadOnlyReactivePropertySlim().AddTo(Disposable);

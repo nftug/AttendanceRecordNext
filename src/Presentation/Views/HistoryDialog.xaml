@@ -6,9 +6,10 @@
              xmlns:local="clr-namespace:Presentation.Views"
              xmlns:viewmodels="clr-namespace:Presentation.ViewModels"
              xmlns:prism="http://prismlibrary.com/"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=viewmodels:HistoryDialogViewModel}"
-             prism:ViewModelLocator.AutoWireViewModel="True"             
+             prism:ViewModelLocator.AutoWireViewModel="True"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
@@ -17,8 +18,15 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <ListView Grid.Column="0">
-
+        <ListView Grid.Column="0" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem.Value}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="Calendar" Style="{StaticResource ButtonIconStyle}"/>
+                        <TextBlock Text="{Binding RecordedDate.Value, StringFormat={}{0:yyyy/MM/dd}}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
         </ListView>
 
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>

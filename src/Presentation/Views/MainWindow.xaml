@@ -64,7 +64,7 @@
                 </bh:EventTrigger>
             </bh:Interaction.Triggers>
         </helper:NotifyIconWrapper>
-        
+
         <TextBlock Grid.Row="0"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
