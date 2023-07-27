@@ -1,21 +1,23 @@
 ﻿using Domain.Entities;
+using Infrastructure.Shared;
+using LiteDB;
 
 namespace Infrastructure.DataModels;
 
-public class RestTimeDataModel
+public class RestTimeDataModel : IDataModel<RestTime, RestTimeDataModel>
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    [BsonId] public Guid Id { get; set; } = Guid.NewGuid();
     public DateTime StartedOn { get; set; }
     public DateTime? FinishedOn { get; set; }
 
     public RestTime ToEntity()
         => new(Id, new() { StartedOn = StartedOn, FinishedOn = FinishedOn });
 
-    public static RestTimeDataModel Create(RestTime entity)
-        => new()
-        {
-            Id = entity.Id,
-            StartedOn = entity.Duration.StartedOn,
-            FinishedOn = entity.Duration.FinishedOn
-        };
+    public RestTimeDataModel Transfer(RestTime entity)
+    {
+        Id = entity.Id;
+        StartedOn = entity.Duration.StartedOn;
+        FinishedOn = entity.Duration.FinishedOn;
+        return this;
+    }
 }

@@ -4,14 +4,12 @@ using LiteDB;
 
 namespace Infrastructure.DataModels;
 
-public class WorkTimeDataModel : IDataModel
+public class WorkTimeDataModel : IDataModel<WorkTime, WorkTimeDataModel>
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    [BsonId] public Guid Id { get; set; } = Guid.NewGuid();
     public DateTime StartedOn { get; set; }
     public DateTime? FinishedOn { get; set; }
-    public List<RestTimeDataModel> RestTimes { get; set; } = new();
-
-    [BsonIgnore] public string TableName => "WorkTimes";
+    [BsonRef("RestTime")] public List<RestTimeDataModel> RestTimes { get; set; } = null!;
 
     public WorkTime ToEntity()
         => new(
@@ -20,12 +18,12 @@ public class WorkTimeDataModel : IDataModel
                 RestTimes.Select(x => x.ToEntity()).ToList()
             );
 
-    public static WorkTimeDataModel Create(WorkTime entity)
-        => new()
-        {
-            Id = entity.Id,
-            StartedOn = entity.Duration.StartedOn,
-            FinishedOn = entity.Duration.FinishedOn,
-            RestTimes = entity.RestDurationsAll.Select(RestTimeDataModel.Create).ToList()
-        };
+    public WorkTimeDataModel Transfer(WorkTime entity)
+    {
+        Id = entity.Id;
+        StartedOn = entity.Duration.StartedOn;
+        FinishedOn = entity.Duration.FinishedOn;
+        //RestTimes = entity.RestDurationsAll.Select(x => new RestTimeDataModel().Transfer(x)).ToList();
+        return this;
+    }
 }

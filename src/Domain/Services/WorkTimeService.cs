@@ -23,7 +23,7 @@ public class WorkTimeService
         if (!entity.IsTodayOngoing)
             throw new DomainException("Cannot pause a record which is not ongoing.");
 
-        if (entity.IsResting)
+        if (!entity.IsResting)
         {
             // 新規の休憩が開始された→休憩レコードを追加
             await _restTimeService.StartAsync(entity);
@@ -31,8 +31,12 @@ public class WorkTimeService
         else
         {
             // 休憩が完了→休憩レコードに終了時刻を記録
+            System.Diagnostics.Debug.WriteLine("Finish Rest");
             await _restTimeService.FinishAsync(entity);
         }
+
+        // NOTE: To be deleted
+        await _repository.UpdateAsync(entity);
 
         return entity.Recreate();
     }

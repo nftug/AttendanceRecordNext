@@ -4,7 +4,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Entities;
 
-public class RestTime
+public class RestTime : IEntity
 {
     public Guid Id { get; } = Guid.NewGuid();
     public Duration Duration { get; private set; } = null!;

@@ -1,14 +1,16 @@
-﻿using LiteDB.Async;
+﻿using Domain.Entities;
+using LiteDB.Async;
 
 namespace Infrastructure.Shared;
 
-internal class LiteDbCollection<T> : IDisposable
-    where T : IDataModel, new()
+public class LiteDbCollection<TEntity, TDataModel> : IDisposable
+    where TDataModel : IDataModel<TEntity, TDataModel>, new()
+    where TEntity : class, IEntity
 {
     private readonly ILiteDatabaseAsync _db;
-    private readonly ILiteCollectionAsync<T> _collection;
+    private readonly ILiteCollectionAsync<TDataModel> _collection;
 
-    public ILiteCollectionAsync<T> Collection => _collection;
+    public ILiteCollectionAsync<TDataModel> Collection => _collection;
     public static readonly string DbPath = Path.Combine(AppConfig.AppDataPath, "attendance.db");
 
     private bool disposedValue;
@@ -16,7 +18,8 @@ internal class LiteDbCollection<T> : IDisposable
     public LiteDbCollection()
     {
         _db = new LiteDatabaseAsync(DbPath);
-        _collection = _db.GetCollection<T>(new T().TableName);
+        string tableName = typeof(TEntity).Name;
+        _collection = _db.GetCollection<TDataModel>(tableName);
     }
 
     protected virtual void Dispose(bool disposing)

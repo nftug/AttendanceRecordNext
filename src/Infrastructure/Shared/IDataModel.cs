@@ -1,6 +1,11 @@
-﻿namespace Infrastructure.Shared;
+﻿using Domain.Entities;
 
-internal interface IDataModel
+namespace Infrastructure.Shared;
+
+public interface IDataModel<TEntity, TSelf>
+    where TEntity : class, IEntity
+    where TSelf : IDataModel<TEntity, TSelf>
 {
-    public string TableName { get; }
+    TEntity ToEntity();
+    TSelf Transfer(TEntity entity);
 }

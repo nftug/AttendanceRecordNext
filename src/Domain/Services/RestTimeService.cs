@@ -5,9 +5,9 @@ namespace Domain.Services;
 
 public class RestTimeService
 {
-    private readonly IRestTimeRepository _repository;
+    private readonly IRepository<RestTime> _repository;
 
-    public RestTimeService(IRestTimeRepository repository)
+    public RestTimeService(IRepository<RestTime> repository)
     {
         _repository = repository;
     }

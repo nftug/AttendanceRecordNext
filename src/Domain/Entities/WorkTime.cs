@@ -6,7 +6,7 @@ namespace Domain.Entities;
 
 // 日付を跨いだらModelからは破棄すること
 // (通常は日付が変わった次点でRecreate()で再取得していればOK。日付が変わっていたら自動的に破棄されている。)
-public class WorkTime
+public class WorkTime : IEntity
 {
     public Guid Id { get; private init; } = Guid.NewGuid();
     public Duration Duration { get; private set; } = null!;

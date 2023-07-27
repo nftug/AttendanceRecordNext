@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces;
+﻿using Domain.Entities;
+using Domain.Interfaces;
 using Domain.Services;
 using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
@@ -55,6 +56,7 @@ public partial class App : PrismApplication
         containerRegistry.Register<IDialogHelper, DialogHelper>();
         containerRegistry.Register<IFileDialogHelper, FileDialogHelper>();
         containerRegistry.Register<IWorkTimeRepository, WorkTimeRepository>();
+        containerRegistry.Register<IRepository<RestTime>, RestTimeRepository>();
         containerRegistry.Register<WorkTimeService>();
         containerRegistry.Register<RestTimeService>();
         containerRegistry.RegisterSingleton<WorkTimeModel>();
