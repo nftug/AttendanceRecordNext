@@ -20,10 +20,6 @@ public class GetWorkToday
         }
 
         public async Task<WorkTime> Handle(Query request, CancellationToken cancellationToken)
-        {
-            var latest =
-                await _repository.FindByDateAsync(DateTime.Today) ?? WorkTime.CreateEmpty();
-            return latest;
-        }
+            => await _repository.FindByDateAsync(DateTime.Today) ?? WorkTime.CreateEmpty();
     }
 }

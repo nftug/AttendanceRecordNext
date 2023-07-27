@@ -1,5 +1,5 @@
 ﻿using Domain.Entities;
-using Domain.Interfaces;
+using Domain.Services;
 using MediatR;
 
 namespace UseCase;
@@ -12,33 +12,14 @@ public class ToggleWork
 
     public class Handler : IRequestHandler<Command, WorkTime>
     {
-        private readonly IWorkTimeRepository _repository;
+        private readonly WorkTimeService _workTimeService;
 
-        public Handler(IWorkTimeRepository repository)
+        public Handler(WorkTimeService workTimeService)
         {
-            _repository = repository;
+            _workTimeService = workTimeService;
         }
 
-        public async Task<WorkTime> Handle(Command request, CancellationToken cancellationToken)
-        {
-            var workToday = await _repository.FindByDateAsync(DateTime.Today);
-
-            if (workToday != null)
-            {
-                if (workToday.IsTodayOngoing)
-                    workToday.Finish();        // 退勤
-                else
-                    workToday.Restart();       // 退勤後の勤務再開
-
-                await _repository.UpdateAsync(workToday);
-            }
-            else
-            {
-                workToday = WorkTime.Start();  // 勤務開始
-                await _repository.CreateAsync(workToday);
-            }
-
-            return workToday.Recreate();
-        }
+        public Task<WorkTime> Handle(Command request, CancellationToken cancellationToken)
+            => _workTimeService.ToggleWorkAsync();
     }
 }

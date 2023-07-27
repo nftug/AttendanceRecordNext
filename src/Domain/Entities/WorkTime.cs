@@ -86,52 +86,33 @@ public class WorkTime
         return Recreate();
     }
 
+    // ドメインサービスが永続化のために使う最新の休憩レコード
+    internal RestTime RestLatest => RestDurationsAll[^1];
+
     public static WorkTime CreateEmpty()
         => new() { Id = Guid.Empty, Duration = new() };
 
-    public static WorkTime Start()
+    internal static WorkTime Start()
         => new() { Duration = Duration.GetStart() };
 
-    public WorkTime Finish()
+    internal WorkTime Finish()
     {
         if (!IsTodayOngoing)
             throw new DomainException("Cannot finish a record which is not ongoing.");
-
-        // 休憩中の場合、休憩状態を終了する
-        if (IsResting) FinishPause();
-        // 次回再開時に正しい計測時間で再開できるよう、一時停止状態を新規作成する
-        Pause();
 
         Duration = Duration.GetFinished();
         return Recreate();
     }
 
-    public WorkTime ToggleRest()
-    {
-        if (!IsTodayOngoing)
-            throw new DomainException("Cannot pause a record which is not ongoing.");
+    internal void AddNewRest(RestTime restTime) => RestDurationsAll.Add(restTime);
+    // internal void SetFinishedRest(RestTime restTime) => RestDurationsAll[^1] = restTime;
 
-        if (IsResting)
-            FinishPause();
-        else
-            Pause();
-
-        return Recreate();
-    }
-
-    private void Pause() => RestDurationsAll.Add(RestTime.Start());
-    private void FinishPause() => RestDurationsAll[^1] = RestDurationsAll[^1].Finish();
-
-    public WorkTime Restart()
+    internal WorkTime Restart()
     {
         if (!IsTodayRecord)
             throw new DomainException("Cannot restart a record which is not today's.");
-        if (!CanRestart)
-            throw new DomainException("Not a stopped record.");
 
         Duration = Duration.GetRestart();
-        FinishPause();
-
         return Recreate();
     }
 }
