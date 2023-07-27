@@ -3,7 +3,7 @@ using Domain.Entities;
 namespace Domain.Interfaces;
 
 public interface IRepository<TEntity>
-    where TEntity : IEntity
+    where TEntity : IEntity<TEntity>
 {
     Task CreateAsync(TEntity entity);
     Task UpdateAsync(TEntity entity);

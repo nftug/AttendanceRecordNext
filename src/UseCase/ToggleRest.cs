@@ -1,7 +1,7 @@
 ﻿using Domain.Entities;
+using Domain.Events;
 using Domain.Exceptions;
 using Domain.Interfaces;
-using Domain.Services;
 using MediatR;
 
 namespace UseCase;
@@ -14,13 +14,19 @@ public class ToggleRest
 
     public class Handler : IRequestHandler<Command, WorkTime>
     {
-        private readonly WorkTimeService _workTimeService;
         private readonly IWorkTimeRepository _repository;
+        private readonly DomainEventPublisher _eventPublisher = new();
 
-        public Handler(WorkTimeService workTimeService, IWorkTimeRepository repository)
+        public Handler(
+            IWorkTimeRepository repository,
+            EntityEventSubscriber<RestTime> restTimeSubscriber,
+            EntityEventSubscriber<WorkTime> workTimeSubscriber
+        )
         {
-            _workTimeService = workTimeService;
             _repository = repository;
+            _eventPublisher
+                .Subscribe(restTimeSubscriber)
+                .Subscribe(workTimeSubscriber);
         }
 
         public async Task<WorkTime> Handle(Command request, CancellationToken cancellationToken)
@@ -29,7 +35,10 @@ public class ToggleRest
                 await _repository.FindByDateAsync(DateTime.Today)
                 ?? throw new DomainException("There is no available work item.");
 
-            return await _workTimeService.ToggleRestAsync(latest);
+            latest = latest.ToggleRest(_eventPublisher);
+            await _eventPublisher.DispatchAsync();
+
+            return latest;
         }
     }
 }

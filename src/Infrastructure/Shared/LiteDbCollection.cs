@@ -5,7 +5,7 @@ namespace Infrastructure.Shared;
 
 public class LiteDbCollection<TEntity, TDataModel> : IDisposable
     where TDataModel : IDataModel<TEntity, TDataModel>, new()
-    where TEntity : class, IEntity
+    where TEntity : class, IEntity<TEntity>
 {
     private readonly ILiteDatabaseAsync _db;
     private readonly ILiteCollectionAsync<TDataModel> _collection;

@@ -6,7 +6,7 @@ namespace Infrastructure.Shared;
 
 public abstract class RepositoryBase<TEntity, TDataModel> : IRepository<TEntity>
     where TDataModel : IDataModel<TEntity, TDataModel>, new()
-    where TEntity : class, IEntity
+    where TEntity : class, IEntity<TEntity>
 {
     protected static LiteDbCollection<TEntity, TDataModel> Context => new();
 

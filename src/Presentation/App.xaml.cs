@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Events;
 using Domain.Interfaces;
 using Domain.Services;
 using DryIoc;
@@ -56,9 +57,11 @@ public partial class App : PrismApplication
         containerRegistry.Register<IDialogHelper, DialogHelper>();
         containerRegistry.Register<IFileDialogHelper, FileDialogHelper>();
         containerRegistry.Register<IWorkTimeRepository, WorkTimeRepository>();
+        containerRegistry.Register<IRepository<WorkTime>, WorkTimeRepository>();
         containerRegistry.Register<IRepository<RestTime>, RestTimeRepository>();
         containerRegistry.Register<WorkTimeService>();
-        containerRegistry.Register<RestTimeService>();
+        containerRegistry.Register<EntityEventSubscriber<RestTime>>();
+        containerRegistry.Register<EntityEventSubscriber<WorkTime>>();
         containerRegistry.RegisterSingleton<WorkTimeModel>();
 
         containerRegistry.RegisterDialogWindow<Views.DialogWindow>();

@@ -1,4 +1,5 @@
 ﻿using Domain.Commands;
+using Domain.Events;
 using Domain.Exceptions;
 using Domain.ValueObjects;
 
@@ -6,7 +7,7 @@ namespace Domain.Entities;
 
 // 日付を跨いだらModelからは破棄すること
 // (通常は日付が変わった次点でRecreate()で再取得していればOK。日付が変わっていたら自動的に破棄されている。)
-public class WorkTime : IEntity
+public class WorkTime : IEntity<WorkTime>
 {
     public Guid Id { get; private init; } = Guid.NewGuid();
     public Duration Duration { get; private set; } = null!;
@@ -86,33 +87,71 @@ public class WorkTime : IEntity
         return Recreate();
     }
 
-    // ドメインサービスが永続化のために使う最新の休憩レコード
-    internal RestTime RestLatest => RestDurationsAll[^1];
-
     public static WorkTime CreateEmpty()
         => new() { Id = Guid.Empty, Duration = new() };
 
     internal static WorkTime Start()
         => new() { Duration = Duration.GetStart() };
 
-    internal WorkTime Finish()
+    public WorkTime ToggleRest(DomainEventPublisher eventPublisher)
+    {
+        if (!IsTodayOngoing)
+            throw new DomainException("Cannot pause a record which is not ongoing.");
+
+        if (!IsResting)
+        {
+            // 新規の休憩が開始された→休憩レコードを追加
+            StartRest(eventPublisher);
+            eventPublisher.Publish(EntityEvent<WorkTime>.Updated(this));
+        }
+        else
+        {
+            // 休憩が完了→休憩レコードに終了時刻を記録
+            FinishRest(eventPublisher);
+        }
+
+        return Recreate();
+    }
+
+    internal WorkTime Finish(DomainEventPublisher eventPublisher)
     {
         if (!IsTodayOngoing)
             throw new DomainException("Cannot finish a record which is not ongoing.");
+
+        // 休憩中の場合、休憩状態を終了する
+        if (IsResting)
+            FinishRest(eventPublisher);
+
+        // 次回再開時に正しい計測時間で再開できるよう、一時停止状態を新規作成する
+        StartRest(eventPublisher);
 
         Duration = Duration.GetFinished();
         return Recreate();
     }
 
-    internal void AddNewRest(RestTime restTime) => RestDurationsAll.Add(restTime);
-    // internal void SetFinishedRest(RestTime restTime) => RestDurationsAll[^1] = restTime;
-
-    internal WorkTime Restart()
+    internal WorkTime Restart(DomainEventPublisher eventPublisher)
     {
         if (!IsTodayRecord)
             throw new DomainException("Cannot restart a record which is not today's.");
+        if (!CanRestart)
+            throw new DomainException("Not a stopped record.");
+
+        FinishRest(eventPublisher);
 
         Duration = Duration.GetRestart();
         return Recreate();
+    }
+
+    private void StartRest(DomainEventPublisher eventPublisher)
+    {
+        var newRest = RestTime.Start();
+        RestDurationsAll.Add(newRest);
+        eventPublisher.Publish(EntityEvent<RestTime>.Added(newRest));
+    }
+
+    private void FinishRest(DomainEventPublisher eventPublisher)
+    {
+        var finished = RestDurationsAll[^1].Finish();
+        eventPublisher.Publish(EntityEvent<RestTime>.Updated(finished));
     }
 }

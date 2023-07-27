@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Events;
 using Domain.Services;
 using MediatR;
 
@@ -13,13 +14,25 @@ public class ToggleWork
     public class Handler : IRequestHandler<Command, WorkTime>
     {
         private readonly WorkTimeService _workTimeService;
+        private readonly DomainEventPublisher _eventPublisher = new();
 
-        public Handler(WorkTimeService workTimeService)
+        public Handler(
+            WorkTimeService workTimeService,
+            EntityEventSubscriber<RestTime> restTimeSubscriber,
+            EntityEventSubscriber<WorkTime> workTimeSubscriber
+        )
         {
             _workTimeService = workTimeService;
+            _eventPublisher
+                .Subscribe(restTimeSubscriber)
+                .Subscribe(workTimeSubscriber);
         }
 
-        public Task<WorkTime> Handle(Command request, CancellationToken cancellationToken)
-            => _workTimeService.ToggleWorkAsync();
+        public async Task<WorkTime> Handle(Command request, CancellationToken cancellationToken)
+        {
+            var result = await _workTimeService.ToggleWorkAsync(_eventPublisher);
+            await _eventPublisher.DispatchAsync();
+            return result;
+        }
     }
 }

@@ -3,7 +3,7 @@
 namespace Infrastructure.Shared;
 
 public interface IDataModel<TEntity, TSelf>
-    where TEntity : class, IEntity
+    where TEntity : class, IEntity<TEntity>
     where TSelf : IDataModel<TEntity, TSelf>
 {
     Guid Id { get; set; }
