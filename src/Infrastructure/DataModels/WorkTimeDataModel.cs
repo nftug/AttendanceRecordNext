@@ -15,7 +15,7 @@ public class WorkTimeDataModel : IDataModel<WorkTime, WorkTimeDataModel>
         => new(
                 Id,
                 new() { StartedOn = StartedOn, FinishedOn = FinishedOn },
-                RestTimes.Select(x => x.ToEntity()).ToList()
+                RestTimes?.Select(x => x.ToEntity()).ToList() ?? new()
             );
 
     public WorkTimeDataModel Transfer(WorkTime entity)
@@ -23,7 +23,8 @@ public class WorkTimeDataModel : IDataModel<WorkTime, WorkTimeDataModel>
         Id = entity.Id;
         StartedOn = entity.Duration.StartedOn;
         FinishedOn = entity.Duration.FinishedOn;
-        //RestTimes = entity.RestDurationsAll.Select(x => new RestTimeDataModel().Transfer(x)).ToList();
+        // BsonRefを指定しているため、IDのみ保存される
+        RestTimes = entity.RestDurationsAll.Select(x => new RestTimeDataModel { Id = x.Id }).ToList();
         return this;
     }
 }

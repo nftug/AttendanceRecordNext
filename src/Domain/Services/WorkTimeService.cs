@@ -31,12 +31,8 @@ public class WorkTimeService
         else
         {
             // 休憩が完了→休憩レコードに終了時刻を記録
-            System.Diagnostics.Debug.WriteLine("Finish Rest");
             await _restTimeService.FinishAsync(entity);
         }
-
-        // NOTE: To be deleted
-        await _repository.UpdateAsync(entity);
 
         return entity.Recreate();
     }
@@ -79,6 +75,7 @@ public class WorkTimeService
         await _restTimeService.StartAsync(entity);
 
         entity.Finish();
+        await _repository.UpdateAsync(entity);
     }
 
     private async Task RestartAsync(WorkTime entity)
@@ -89,6 +86,8 @@ public class WorkTimeService
             throw new DomainException("Not a stopped record.");
 
         await _restTimeService.FinishAsync(entity);
+
         entity.Restart();
+        await _repository.UpdateAsync(entity);
     }
 }

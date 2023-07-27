@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Domain.Interfaces;
+using LiteDB.Async;
 
 namespace Infrastructure.Shared;
 
@@ -8,6 +9,9 @@ public abstract class RepositoryBase<TEntity, TDataModel> : IRepository<TEntity>
     where TEntity : class, IEntity
 {
     protected static LiteDbCollection<TEntity, TDataModel> Context => new();
+
+    protected virtual ILiteQueryableAsync<TDataModel> GetCollectionForQuery(LiteDbCollection<TEntity, TDataModel> db)
+        => db.Collection.Query();
 
     public virtual async Task CreateAsync(TEntity entity)
     {
@@ -32,7 +36,7 @@ public abstract class RepositoryBase<TEntity, TDataModel> : IRepository<TEntity>
     public virtual async Task<TEntity?> FindByIdAsync(Guid id)
     {
         using var db = Context;
-        var data = await db.Collection.FindByIdAsync(id);
+        var data = await GetCollectionForQuery(db).Where(x => x.Id == id).FirstOrDefaultAsync();
         return data?.ToEntity();
     }
 }

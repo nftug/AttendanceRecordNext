@@ -11,6 +11,7 @@ public class LiteDbCollection<TEntity, TDataModel> : IDisposable
     private readonly ILiteCollectionAsync<TDataModel> _collection;
 
     public ILiteCollectionAsync<TDataModel> Collection => _collection;
+
     public static readonly string DbPath = Path.Combine(AppConfig.AppDataPath, "attendance.db");
 
     private bool disposedValue;
