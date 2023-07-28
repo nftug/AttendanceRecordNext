@@ -14,7 +14,7 @@ public class ToggleWork
     public class Handler : IRequestHandler<Command, WorkTime>
     {
         private readonly WorkTimeService _workTimeService;
-        private readonly DomainEventPublisher _eventPublisher = new();
+        private readonly EventPublisher _eventPublisher = new();
 
         public Handler(
             WorkTimeService workTimeService,
@@ -31,7 +31,7 @@ public class ToggleWork
         public async Task<WorkTime> Handle(Command request, CancellationToken cancellationToken)
         {
             var result = await _workTimeService.ToggleWorkAsync(_eventPublisher);
-            await _eventPublisher.DispatchAsync();
+            await _eventPublisher.CommitAsync();
             return result;
         }
     }

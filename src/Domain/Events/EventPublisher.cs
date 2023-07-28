@@ -1,11 +1,11 @@
 namespace Domain.Events;
 
-public class DomainEventPublisher
+public class EventPublisher
 {
     private readonly List<IEvent> _events = new();
     private readonly List<IEventSubscriber> _subscribers = new();
 
-    public DomainEventPublisher Subscribe(IEventSubscriber subscriber)
+    public EventPublisher Subscribe(IEventSubscriber subscriber)
     {
         if (_subscribers.Any(x => x == subscriber))
             return this;
@@ -14,7 +14,7 @@ public class DomainEventPublisher
         return this;
     }
 
-    public DomainEventPublisher Unsubscribe(IEventSubscriber subscriber)
+    public EventPublisher Unsubscribe(IEventSubscriber subscriber)
     {
         if (!_subscribers.Any(x => x == subscriber))
             return this;
@@ -23,13 +23,13 @@ public class DomainEventPublisher
         return this;
     }
 
-    public DomainEventPublisher Publish(IEvent @event)
+    public EventPublisher Publish(IEvent @event)
     {
         _events.Add(@event);
         return this;
     }
 
-    public async Task DispatchAsync()
+    public async Task CommitAsync()
     {
         foreach (var @event in _events)
         {

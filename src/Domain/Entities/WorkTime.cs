@@ -93,7 +93,7 @@ public class WorkTime : IEntity<WorkTime>
     internal static WorkTime Start()
         => new() { Duration = Duration.GetStart() };
 
-    public WorkTime ToggleRest(DomainEventPublisher eventPublisher)
+    public WorkTime ToggleRest(EventPublisher eventPublisher)
     {
         if (!IsTodayOngoing)
             throw new DomainException("Cannot pause a record which is not ongoing.");
@@ -113,7 +113,7 @@ public class WorkTime : IEntity<WorkTime>
         return Recreate();
     }
 
-    internal WorkTime Finish(DomainEventPublisher eventPublisher)
+    internal WorkTime Finish(EventPublisher eventPublisher)
     {
         if (!IsTodayOngoing)
             throw new DomainException("Cannot finish a record which is not ongoing.");
@@ -129,7 +129,7 @@ public class WorkTime : IEntity<WorkTime>
         return Recreate();
     }
 
-    internal WorkTime Restart(DomainEventPublisher eventPublisher)
+    internal WorkTime Restart(EventPublisher eventPublisher)
     {
         if (!IsTodayRecord)
             throw new DomainException("Cannot restart a record which is not today's.");
@@ -142,14 +142,14 @@ public class WorkTime : IEntity<WorkTime>
         return Recreate();
     }
 
-    private void StartRest(DomainEventPublisher eventPublisher)
+    private void StartRest(EventPublisher eventPublisher)
     {
         var newRest = RestTime.Start();
         RestDurationsAll.Add(newRest);
         eventPublisher.Publish(EntityEvent<RestTime>.Added(newRest));
     }
 
-    private void FinishRest(DomainEventPublisher eventPublisher)
+    private void FinishRest(EventPublisher eventPublisher)
     {
         var finished = RestDurationsAll[^1].Finish();
         eventPublisher.Publish(EntityEvent<RestTime>.Updated(finished));

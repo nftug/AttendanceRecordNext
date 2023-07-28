@@ -15,7 +15,7 @@ public class ToggleRest
     public class Handler : IRequestHandler<Command, WorkTime>
     {
         private readonly IWorkTimeRepository _repository;
-        private readonly DomainEventPublisher _eventPublisher = new();
+        private readonly EventPublisher _eventPublisher = new();
 
         public Handler(
             IWorkTimeRepository repository,
@@ -36,7 +36,7 @@ public class ToggleRest
                 ?? throw new DomainException("There is no available work item.");
 
             latest = latest.ToggleRest(_eventPublisher);
-            await _eventPublisher.DispatchAsync();
+            await _eventPublisher.CommitAsync();
 
             return latest;
         }

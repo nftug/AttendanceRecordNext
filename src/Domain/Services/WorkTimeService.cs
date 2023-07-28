@@ -16,7 +16,7 @@ public class WorkTimeService
     public async Task<bool> CheckEntityAllowedAsync(WorkTime entity)
         => (await _repository.FindByDateAsync(entity.RecordedDate)) != null;
 
-    public async Task<WorkTime> ToggleWorkAsync(DomainEventPublisher eventPublisher)
+    public async Task<WorkTime> ToggleWorkAsync(EventPublisher eventPublisher)
     {
         var workToday = await _repository.FindByDateAsync(DateTime.Today);
         if (workToday != null)

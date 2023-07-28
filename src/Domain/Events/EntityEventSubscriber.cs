@@ -28,6 +28,15 @@ public class EntityEventSubscriber<T> : IEventSubscriber
             case EntityEventType.Deleted:
                 await _repository.DeleteAsync(@event.Entity.Id);
                 break;
+            case EntityEventType.AddedRange:
+                // await _repository.CreateRangeAsync(@event.Entities);
+                break;
+            case EntityEventType.UpdatedRange:
+                // await _repository.UpdateRangeAsync(@event.Entities);
+                break;
+            case EntityEventType.DeletedRange:
+                // await _repository.DeleteRangeAsync(@event.Entities.Select(x => x.Id));
+                break;
         }
     }
 }
