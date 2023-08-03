@@ -9,7 +9,7 @@ public class WorkTimeDataModel : IDataModel<WorkTime, WorkTimeDataModel>
     [BsonId] public Guid Id { get; set; } = Guid.NewGuid();
     public DateTime StartedOn { get; set; }
     public DateTime? FinishedOn { get; set; }
-    [BsonRef("RestTime")] public List<RestTimeDataModel> RestTimes { get; set; } = null!;
+    [BsonRef(nameof(RestTime))] public List<RestTimeDataModel> RestTimes { get; set; } = null!;
 
     public WorkTime ToEntity()
         => new(
