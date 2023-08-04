@@ -11,7 +11,9 @@ public class WorkTime : IEntity<WorkTime>
 {
     public Guid Id { get; private init; } = Guid.NewGuid();
     public Duration Duration { get; private set; } = null!;
-    public List<RestTime> RestDurationsAll { get; } = new();
+
+    private readonly List<RestTime> _restDurationsAll = new();
+    public IReadOnlyList<RestTime> RestDurationsAll => _restDurationsAll;
 
     // 停止状態の場合、停止時に記録した一時停止のレコードを除外する
     public IReadOnlyList<RestTime> RestDurations
@@ -69,7 +71,7 @@ public class WorkTime : IEntity<WorkTime>
     {
         Id = id;
         Duration = record;
-        RestDurationsAll = restRecords.OrderBy(x => x.Duration.StartedOn).ToList();
+        _restDurationsAll = restRecords.OrderBy(x => x.Duration.StartedOn).ToList();
     }
 
     private WorkTime() { }
@@ -84,7 +86,7 @@ public class WorkTime : IEntity<WorkTime>
     public WorkTime EditDuration(DurationEditCommandDto command)
     {
         Duration = Duration.Edit(command);
-        return Recreate();
+        return this;
     }
 
     public static WorkTime CreateEmpty()
@@ -110,7 +112,7 @@ public class WorkTime : IEntity<WorkTime>
             FinishRest(eventPublisher);
         }
 
-        return Recreate();
+        return this;
     }
 
     internal WorkTime Finish(EventPublisher eventPublisher)
@@ -126,7 +128,7 @@ public class WorkTime : IEntity<WorkTime>
         StartRest(eventPublisher);
 
         Duration = Duration.GetFinished();
-        return Recreate();
+        return this;
     }
 
     internal WorkTime Restart(EventPublisher eventPublisher)
@@ -139,19 +141,19 @@ public class WorkTime : IEntity<WorkTime>
         FinishRest(eventPublisher);
 
         Duration = Duration.GetRestart();
-        return Recreate();
+        return this;
     }
 
     private void StartRest(EventPublisher eventPublisher)
     {
         var newRest = RestTime.Start();
-        RestDurationsAll.Add(newRest);
+        _restDurationsAll.Add(newRest);
         eventPublisher.Publish(EntityEvent<RestTime>.Added(newRest));
     }
 
     private void FinishRest(EventPublisher eventPublisher)
     {
-        var finished = RestDurationsAll[^1].Finish();
+        var finished = _restDurationsAll[^1].Finish();
         eventPublisher.Publish(EntityEvent<RestTime>.Updated(finished));
     }
 }

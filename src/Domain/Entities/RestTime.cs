@@ -35,7 +35,7 @@ public class RestTime : IEntity<RestTime>
     public RestTime EditDuration(DurationEditCommandDto command)
     {
         Duration = Duration.Edit(command);
-        return Recreate();
+        return this;
     }
 
     public static RestTime Start()
@@ -47,6 +47,6 @@ public class RestTime : IEntity<RestTime>
             throw new DomainException("Cannot finish the inactive rest time record.");
 
         Duration = Duration.GetFinished();
-        return Recreate();
+        return this;
     }
 }

@@ -38,7 +38,7 @@ public class ToggleRest
             latest = latest.ToggleRest(_eventPublisher);
             await _eventPublisher.CommitAsync();
 
-            return latest;
+            return latest.Recreate();
         }
     }
 }

@@ -32,7 +32,7 @@ public class ToggleWork
         {
             var result = await _workTimeService.ToggleWorkAsync(_eventPublisher);
             await _eventPublisher.CommitAsync();
-            return result;
+            return result.Recreate();
         }
     }
 }
