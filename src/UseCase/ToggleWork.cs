@@ -16,16 +16,9 @@ public class ToggleWork
         private readonly WorkTimeService _workTimeService;
         private readonly EventPublisher _eventPublisher = new();
 
-        public Handler(
-            WorkTimeService workTimeService,
-            EntityEventSubscriber<RestTime> restTimeSubscriber,
-            EntityEventSubscriber<WorkTime> workTimeSubscriber
-        )
+        public Handler(WorkTimeService workTimeService)
         {
             _workTimeService = workTimeService;
-            _eventPublisher
-                .Subscribe(restTimeSubscriber)
-                .Subscribe(workTimeSubscriber);
         }
 
         public async Task<WorkTime> Handle(Command request, CancellationToken cancellationToken)

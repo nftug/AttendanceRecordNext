@@ -14,12 +14,26 @@ public class EventPublisher
         return this;
     }
 
+    public EventPublisher Subscribe(params IEventSubscriber[] subscribers)
+    {
+        foreach (var subscriber in subscribers)
+            Subscribe(subscriber);
+        return this;
+    }
+
     public EventPublisher Unsubscribe(IEventSubscriber subscriber)
     {
         if (!_subscribers.Any(x => x == subscriber))
             return this;
 
         _subscribers.Remove(subscriber);
+        return this;
+    }
+
+    public EventPublisher Unsubscribe(params IEventSubscriber[] subscribers)
+    {
+        foreach (var subscriber in subscribers)
+            Unsubscribe(subscriber);
         return this;
     }
 

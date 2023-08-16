@@ -69,7 +69,7 @@ public class MainWindowViewModel : MainWindowViewModelBase
             .AddTo(Disposable);
 
         _model.Timer
-            .ObserveOn(SynchronizationContext.Current!)
+            .ObserveOnUIDispatcher()
             .Subscribe(_ => NowDateTime.Value = DateTime.Now)
             .AddTo(Disposable);
     }

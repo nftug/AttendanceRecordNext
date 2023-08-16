@@ -38,7 +38,7 @@ public class WorkTimeModel : BindableBase
 
         Timer = new ReactiveTimer(TimeSpan.FromSeconds(1)).AddTo(Disposable);
         Timer
-            .ObserveOn(SynchronizationContext.Current!)
+            .ObserveOnUIDispatcher()
             .Subscribe(_ =>
             {
                 _entity.Value = _nextEntity ?? _entity.Value.Recreate();

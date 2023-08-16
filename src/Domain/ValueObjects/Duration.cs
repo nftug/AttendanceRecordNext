@@ -24,9 +24,11 @@ public record Duration
         if (command.FinishedOn is null && StartedOn.Date != DateTime.Today)
             throw new DomainException("Cannot set blank time on FinishedOn.");
 
+        if (command.StartedOn is DateTime st && st.Date != RecordedDate)
+            throw new DomainException("Cannot set this date.");
+
         var startedOn = command.StartedOn ?? StartedOn;
-        var finishedOn =
-            command.FinishedOn != default(DateTime) ? command.FinishedOn : FinishedOn;
+        var finishedOn = command.FinishedOn ?? FinishedOn;
 
         return new() { StartedOn = startedOn, FinishedOn = finishedOn };
     }

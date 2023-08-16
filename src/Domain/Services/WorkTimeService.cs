@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.Events;
+using Domain.Exceptions;
 using Domain.Interfaces;
 
 namespace Domain.Services;
@@ -7,10 +8,18 @@ namespace Domain.Services;
 public class WorkTimeService
 {
     private readonly IWorkTimeRepository _repository;
+    private readonly EntityEventSubscriber<WorkTime> _workTimeSubscriber;
+    private readonly EntityEventSubscriber<RestTime> _restTimeSubscriber;
 
-    public WorkTimeService(IWorkTimeRepository repository)
+    public WorkTimeService(
+        IWorkTimeRepository repository,
+        EntityEventSubscriber<WorkTime> workTimeSubscriber,
+        EntityEventSubscriber<RestTime> restTimeSubscriber
+    )
     {
         _repository = repository;
+        _workTimeSubscriber = workTimeSubscriber;
+        _restTimeSubscriber = restTimeSubscriber;
     }
 
     public async Task<bool> CheckEntityAllowedAsync(WorkTime entity)
@@ -18,6 +27,8 @@ public class WorkTimeService
 
     public async Task<WorkTime> ToggleWorkAsync(EventPublisher eventPublisher)
     {
+        eventPublisher.Subscribe(_workTimeSubscriber, _restTimeSubscriber);
+
         var workToday = await _repository.FindByDateAsync(DateTime.Today);
         if (workToday != null)
         {
@@ -34,6 +45,16 @@ public class WorkTimeService
             eventPublisher.Publish(EntityEvent<WorkTime>.Added(workToday));
         }
 
-        return workToday.Recreate();
+        return workToday;
+    }
+
+    public async Task<WorkTime> ToggleRestAsync(EventPublisher eventPublisher)
+    {
+        eventPublisher.Subscribe(_workTimeSubscriber, _restTimeSubscriber);
+
+        var latest =
+            await _repository.FindByDateAsync(DateTime.Today)
+            ?? throw new DomainException("There is no available work item.");
+        return latest.ToggleRest(eventPublisher);
     }
 }
