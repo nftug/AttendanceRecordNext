@@ -8,7 +8,14 @@ public abstract class RepositoryBase<TEntity, TDataModel> : IRepository<TEntity>
     where TDataModel : IDataModel<TEntity, TDataModel>, new()
     where TEntity : class, IEntity<TEntity>
 {
-    protected static LiteDbCollection<TEntity, TDataModel> Context => new();
+    protected readonly IAppConfig _appConfig;
+
+    protected RepositoryBase(IAppConfig appConfig)
+    {
+        _appConfig = appConfig;
+    }
+
+    protected LiteDbCollection<TEntity, TDataModel> Context => new(_appConfig);
 
     protected Task<T> UseCollectionQuery<T>(Func<ILiteQueryableAsync<TDataModel>, Task<T>> callback)
     {

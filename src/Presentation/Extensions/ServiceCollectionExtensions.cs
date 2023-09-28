@@ -17,10 +17,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAttendanceRecordUseCase(this IServiceCollection services)
     {
         // データ保存用のパスが存在しないとサービス注入時に例外が発生するので、事前に作っておく
-        AppConfig.InitAppDataPath();
-
         return services
             .AddMediatR(opt => opt.RegisterServicesFromAssembly(typeof(UseCase.GetWorkToday).Assembly))
+            .AddSingleton<IAppConfig, AppConfig>()
             .AddTransient<IWorkTimeRepository, WorkTimeRepository>()
             .AddTransient<IRepository<WorkTime>, WorkTimeRepository>()
             .AddSingleton<WorkTimeService>()

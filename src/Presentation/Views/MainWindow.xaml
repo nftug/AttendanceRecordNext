@@ -13,7 +13,7 @@
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
-        Title="Attendance Record"
+        Title="{Binding Title.Value}"
         Height="380" Width="320"
         MinHeight="380" MinWidth="320"
         WindowState="{Binding WindowState.Value}"
@@ -33,7 +33,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <helper:NotifyIconWrapper NotifyRequest="{Binding NotifyRequest.Value}">
+        <helper:NotifyIconWrapper NotifyRequest="{Binding NotifyRequest.Value}" Text="{Binding Title.Value}">
             <bh:Interaction.Triggers>
                 <bh:EventTrigger EventName="OpenSelected">
                     <bh:InvokeCommandAction Command="{Binding NotifyIconOpenCommand}"/>

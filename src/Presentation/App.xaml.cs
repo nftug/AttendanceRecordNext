@@ -8,13 +8,14 @@ using Presentation.Views;
 using Prism.DryIoc;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
+using System.Reflection;
 using System.Windows;
 
 namespace Presentation;
 
 public partial class App : PrismApplication
 {
-    private Mutex _mutex = new(false, "AttendanceRecord");
+    private Mutex _mutex = new(false, Assembly.GetEntryAssembly()!.GetName().Name);
 
     protected override void Initialize()
     {
@@ -22,7 +23,7 @@ public partial class App : PrismApplication
         {
             System.Windows.MessageBox.Show(
                 "アプリケーションが既に起動しています。",
-                "エラー",
+                Assembly.GetEntryAssembly()!.GetCustomAttribute<AssemblyTitleAttribute>()!.Title,
                 MessageBoxButton.OK,
                 MessageBoxImage.Stop
             );

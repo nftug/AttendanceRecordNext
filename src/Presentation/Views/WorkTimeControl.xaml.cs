@@ -1,7 +1,4 @@
-﻿using System.Security.AccessControl;
-using System.Windows.Controls;
-
-namespace Presentation.Views
+﻿namespace Presentation.Views
 {
     /// <summary>
     /// Interaction logic for WorkTimeControl

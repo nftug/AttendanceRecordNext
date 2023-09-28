@@ -7,6 +7,9 @@
 		<Nullable>enable</Nullable>
 		<UseWindowsForms>true</UseWindowsForms>
 		<SatelliteResourceLanguages>ja</SatelliteResourceLanguages>
+		<AssemblyName>AttendanceRecord</AssemblyName>
+		<AssemblyTitle>Attendance Record</AssemblyTitle>
+		<AssemblyVersion>0.1.0</AssemblyVersion>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="5.1.0" />

@@ -3,14 +3,14 @@ using Domain.Interfaces;
 using Infrastructure.DataModels;
 using Infrastructure.Shared;
 using LiteDB;
-using LiteDB.Async;
 
 namespace Infrastructure.Repositories;
 
 public class WorkTimeRepository : RepositoryBase<WorkTime, WorkTimeDataModel>, IWorkTimeRepository
 {
-    protected override ILiteQueryableAsync<WorkTimeDataModel> GetCollectionForQuery(LiteDbCollection<WorkTime, WorkTimeDataModel> db)
-        => db.Collection.Query();
+    public WorkTimeRepository(IAppConfig appConfig) : base(appConfig)
+    {
+    }
 
     public Task<WorkTime?> FindByDateAsync(DateTime date)
         => UseCollectionQuery(async query =>
