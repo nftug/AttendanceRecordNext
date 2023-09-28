@@ -19,18 +19,11 @@ public abstract class RepositoryBase<TEntity, TDataModel> : IRepository<TEntity>
     protected virtual ILiteQueryableAsync<TDataModel> GetCollectionForQuery(LiteDbCollection<TEntity, TDataModel> db)
         => db.Collection.Query();
 
-    public virtual async Task CreateAsync(TEntity entity)
+    public virtual async Task SaveAsync(TEntity entity)
     {
         using var db = Context;
         var data = new TDataModel().Transfer(entity);
-        await db.Collection.InsertAsync(data);
-    }
-
-    public virtual async Task UpdateAsync(TEntity entity)
-    {
-        using var db = Context;
-        var data = new TDataModel().Transfer(entity);
-        await db.Collection.UpdateAsync(data);
+        await db.Collection.UpsertAsync(data);
     }
 
     public virtual async Task DeleteAsync(Guid id)

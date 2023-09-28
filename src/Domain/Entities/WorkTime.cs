@@ -104,7 +104,6 @@ public class WorkTime : IEntity<WorkTime>
         {
             // 新規の休憩が開始された→休憩レコードを追加
             StartRest(eventPublisher);
-            eventPublisher.Publish(EntityEvent<WorkTime>.Updated(this));
         }
         else
         {
@@ -148,12 +147,16 @@ public class WorkTime : IEntity<WorkTime>
     {
         var newRest = RestTime.Start();
         _restDurationsAll.Add(newRest);
-        eventPublisher.Publish(EntityEvent<RestTime>.Added(newRest));
+
+        eventPublisher.Publish(EntityEvent<RestTime>.Saved(newRest));
+        eventPublisher.Publish(EntityEvent<WorkTime>.Saved(this));
     }
 
     private void FinishRest(EventPublisher eventPublisher)
     {
         var finished = _restDurationsAll[^1].Finish();
-        eventPublisher.Publish(EntityEvent<RestTime>.Updated(finished));
+
+        eventPublisher.Publish(EntityEvent<RestTime>.Saved(finished));
+        eventPublisher.Publish(EntityEvent<WorkTime>.Saved(this));
     }
 }

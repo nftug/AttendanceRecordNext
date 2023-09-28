@@ -19,11 +19,8 @@ public class EntityEventSubscriber<T> : IEventSubscriber
 
         switch (@event.Type)
         {
-            case EntityEventType.Added:
-                await _repository.CreateAsync(@event.Entity);
-                break;
-            case EntityEventType.Updated:
-                await _repository.UpdateAsync(@event.Entity);
+            case EntityEventType.Saved:
+                await _repository.SaveAsync(@event.Entity);
                 break;
             case EntityEventType.Deleted:
                 await _repository.DeleteAsync(@event.Entity.Id);

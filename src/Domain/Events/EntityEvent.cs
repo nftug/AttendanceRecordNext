@@ -5,11 +5,8 @@ namespace Domain.Events;
 public record EntityEvent<TEntity>(TEntity Entity, EntityEventType Type) : IEvent
      where TEntity : IEntity<TEntity>
 {
-    public static EntityEvent<TEntity> Added(TEntity entity)
-        => new(entity.Recreate(), EntityEventType.Added);
-
-    public static EntityEvent<TEntity> Updated(TEntity entity)
-        => new(entity.Recreate(), EntityEventType.Updated);
+    public static EntityEvent<TEntity> Saved(TEntity entity)
+        => new(entity.Recreate(), EntityEventType.Saved);
 
     public static EntityEvent<TEntity> Deleted(TEntity entity)
         => new(entity.Recreate(), EntityEventType.Deleted);
@@ -17,7 +14,6 @@ public record EntityEvent<TEntity>(TEntity Entity, EntityEventType Type) : IEven
 
 public enum EntityEventType
 {
-    Added,
-    Updated,
+    Saved,
     Deleted,
 }

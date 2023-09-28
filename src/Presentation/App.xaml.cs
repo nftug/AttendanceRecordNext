@@ -58,7 +58,7 @@ public partial class App : PrismApplication
         containerRegistry.Register<IFileDialogHelper, FileDialogHelper>();
         containerRegistry.Register<IWorkTimeRepository, WorkTimeRepository>();
         containerRegistry.Register<IRepository<WorkTime>, WorkTimeRepository>();
-        containerRegistry.Register<IRepository<RestTime>, RestTimeRepository>();
+        // containerRegistry.Register<IRepository<RestTime>, RestTimeRepository>();
         containerRegistry.Register<WorkTimeService>();
         containerRegistry.Register<EntityEventSubscriber<RestTime>>();
         containerRegistry.Register<EntityEventSubscriber<WorkTime>>();

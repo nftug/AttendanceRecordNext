@@ -9,17 +9,17 @@ public class WorkTimeService
 {
     private readonly IWorkTimeRepository _repository;
     private readonly EntityEventSubscriber<WorkTime> _workTimeSubscriber;
-    private readonly EntityEventSubscriber<RestTime> _restTimeSubscriber;
+    // private readonly EntityEventSubscriber<RestTime> _restTimeSubscriber;
 
     public WorkTimeService(
         IWorkTimeRepository repository,
-        EntityEventSubscriber<WorkTime> workTimeSubscriber,
-        EntityEventSubscriber<RestTime> restTimeSubscriber
+        EntityEventSubscriber<WorkTime> workTimeSubscriber
+    // EntityEventSubscriber<RestTime> restTimeSubscriber
     )
     {
         _repository = repository;
         _workTimeSubscriber = workTimeSubscriber;
-        _restTimeSubscriber = restTimeSubscriber;
+        // _restTimeSubscriber = restTimeSubscriber;
     }
 
     public async Task<bool> CheckEntityAllowedAsync(WorkTime entity)
@@ -27,7 +27,8 @@ public class WorkTimeService
 
     public async Task<WorkTime> ToggleWorkAsync(EventPublisher eventPublisher)
     {
-        eventPublisher.Subscribe(_workTimeSubscriber, _restTimeSubscriber);
+        // eventPublisher.Subscribe(_workTimeSubscriber, _restTimeSubscriber);
+        eventPublisher.Subscribe(_workTimeSubscriber);
 
         var workToday = await _repository.FindByDateAsync(DateTime.Today);
         if (workToday != null)
@@ -36,21 +37,21 @@ public class WorkTimeService
                 workToday.Finish(eventPublisher);    // 退勤
             else
                 workToday.Restart(eventPublisher);   // 退勤後の勤務再開
-
-            eventPublisher.Publish(EntityEvent<WorkTime>.Updated(workToday));
         }
         else
         {
             workToday = WorkTime.Start();        // 勤務開始
-            eventPublisher.Publish(EntityEvent<WorkTime>.Added(workToday));
         }
+
+        eventPublisher.Publish(EntityEvent<WorkTime>.Saved(workToday));
 
         return workToday;
     }
 
     public async Task<WorkTime> ToggleRestAsync(EventPublisher eventPublisher)
     {
-        eventPublisher.Subscribe(_workTimeSubscriber, _restTimeSubscriber);
+        // eventPublisher.Subscribe(_workTimeSubscriber, _restTimeSubscriber);
+        eventPublisher.Subscribe(_workTimeSubscriber);
 
         var latest =
             await _repository.FindByDateAsync(DateTime.Today)
