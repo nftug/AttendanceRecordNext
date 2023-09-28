@@ -8,7 +8,7 @@ using Application = System.Windows.Application;
 namespace Presentation.Shared;
 
 // Reference: https://github.com/fujieda/SystemTrayApp.WPF
-public class MainWindowViewModelBase : ViewModelBase
+public abstract class MainWindowViewModelBase : ViewModelBase
 {
     public MainWindowViewModelBase(IDialogHelper dialogHelper) : base(dialogHelper)
     {
@@ -16,6 +16,7 @@ public class MainWindowViewModelBase : ViewModelBase
         WindowState = new ReactivePropertySlim<WindowState>().AddTo(Disposable);
         Visibility = new ReactivePropertySlim<Visibility>(System.Windows.Visibility.Visible).AddTo(Disposable);
 
+        LoadedCommand = new ReactiveCommandSlim<object?>().AddTo(Disposable);
         ClosingCommand = new ReactiveCommandSlim<CancelEventArgs?>()
             .WithSubscribe(Closing)
             .AddTo(Disposable);
@@ -36,6 +37,7 @@ public class MainWindowViewModelBase : ViewModelBase
     public ReactivePropertySlim<Visibility> Visibility { get; }
 
     public ReactiveCommandSlim<CancelEventArgs?> ClosingCommand { get; }
+    public ReactiveCommandSlim<object?> LoadedCommand { get; }
     public ReactiveCommandSlim<object?> NotifyIconOpenCommand { get; }
     public ReactiveCommandSlim<object?> NotifyIconExitCommand { get; }
 

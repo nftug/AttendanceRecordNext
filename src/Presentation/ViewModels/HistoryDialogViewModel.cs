@@ -13,7 +13,7 @@ public class HistoryDialogViewModel : ViewModelBase, IDialogAware
 {
     private readonly HistoryListModel _model;
 
-    public ReactiveCollection<HistoryItemViewModel> Items { get; }
+    public ReadOnlyReactiveCollection<HistoryItemViewModel> Items { get; }
     public ReactivePropertySlim<HistoryItemViewModel?> SelectedItem { get; }
     public ReactivePropertySlim<DateTime> CurrentMonth { get; }
 
@@ -23,19 +23,9 @@ public class HistoryDialogViewModel : ViewModelBase, IDialogAware
         : base(dialogHelper)
     {
         _model = model;
-        Items = new ReactiveCollection<HistoryItemViewModel>().AddTo(Disposable);
 
-        _model.Items.ToCollectionChanged()
-            .Where(x => x.Action == NotifyCollectionChangedAction.Add && x.Value != null)
-            .Subscribe(x => Items.AddOnScheduler(new(dialogHelper, x.Value!)))
-            .AddTo(Disposable);
-        _model.Items.ToCollectionChanged()
-            .Where(x => x.Action == NotifyCollectionChangedAction.Remove && x.Value != null)
-            .Subscribe(x => Items.RemoveOnScheduler(Items.First(i => i.RecordedDate == x.Value!.RecordedDate)))
-            .AddTo(Disposable);
-        _model.Items.ToCollectionChanged()
-            .Where(x => x.Action == NotifyCollectionChangedAction.Reset)
-            .Subscribe(x => Items.ClearOnScheduler())
+        Items = _model.Items
+            .ToReadOnlyReactiveCollection(x => new HistoryItemViewModel(_dialogHelper, x))
             .AddTo(Disposable);
 
         SelectedItem = new ReactivePropertySlim<HistoryItemViewModel?>().AddTo(Disposable);

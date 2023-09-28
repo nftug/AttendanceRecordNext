@@ -60,8 +60,9 @@ public partial class App : PrismApplication
         containerRegistry.Register<IRepository<WorkTime>, WorkTimeRepository>();
         // containerRegistry.Register<IRepository<RestTime>, RestTimeRepository>();
         containerRegistry.Register<WorkTimeService>();
-        containerRegistry.Register<EntityEventSubscriber<RestTime>>();
+        // containerRegistry.Register<EntityEventSubscriber<RestTime>>();
         containerRegistry.Register<EntityEventSubscriber<WorkTime>>();
+
         containerRegistry.RegisterSingleton<WorkTimeModel>();
 
         containerRegistry.RegisterDialogWindow<Views.DialogWindow>();
