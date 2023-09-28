@@ -1,4 +1,4 @@
-﻿namespace Domain.Extensions;
+﻿namespace System;
 
 public static class DateTimeExtensions
 {

@@ -1,11 +1,5 @@
-﻿using Domain.Entities;
-using Domain.Events;
-using Domain.Interfaces;
-using Domain.Services;
-using DryIoc;
+﻿using DryIoc;
 using DryIoc.Microsoft.DependencyInjection;
-using Infrastructure.Repositories;
-using Infrastructure.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Presentation.Helpers;
 using Presentation.Models;
@@ -53,15 +47,8 @@ public partial class App : PrismApplication
         containerRegistry.RegisterSingleton<CustomDialogService>();
         containerRegistry.Register<IDialogService, CustomDialogService>();
         containerRegistry.Register<ICustomDialogService, CustomDialogService>();
-
         containerRegistry.Register<IDialogHelper, DialogHelper>();
         containerRegistry.Register<IFileDialogHelper, FileDialogHelper>();
-        containerRegistry.Register<IWorkTimeRepository, WorkTimeRepository>();
-        containerRegistry.Register<IRepository<WorkTime>, WorkTimeRepository>();
-        // containerRegistry.Register<IRepository<RestTime>, RestTimeRepository>();
-        containerRegistry.Register<WorkTimeService>();
-        // containerRegistry.Register<EntityEventSubscriber<RestTime>>();
-        containerRegistry.Register<EntityEventSubscriber<WorkTime>>();
 
         containerRegistry.RegisterSingleton<WorkTimeModel>();
 
@@ -72,11 +59,8 @@ public partial class App : PrismApplication
     // Reference: https://zenn.dev/nin_neko/articles/44045180e35861
     protected override IContainerExtension CreateContainerExtension()
     {
-        // データ保存用のパスが存在しないとサービス注入時に例外が発生するので、事前に作っておく
-        AppConfig.InitAppDataPath();
-
         var services = new ServiceCollection();
-        services.AddMediatR(opt => opt.RegisterServicesFromAssembly(typeof(UseCase.GetWorkToday).Assembly));
+        services.AddAttendanceRecordUseCase();
 
         var container = ConvertToDryIocContainer(services);
         return new DryIocContainerExtension(container);

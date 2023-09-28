@@ -6,11 +6,9 @@
         xmlns:bh="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:views="clr-namespace:Presentation.Views"
         xmlns:viewmodels="clr-namespace:Presentation.ViewModels"
-        xmlns:conv="clr-namespace:Presentation.Converters"
         xmlns:helper="clr-namespace:Presentation.Helpers"
         xmlns:prism="http://prismlibrary.com/"
         xmlns:ui="http://schemas.modernwpf.com/2019"
-        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
@@ -46,6 +44,6 @@
             </bh:Interaction.Triggers>
         </helper:NotifyIconWrapper>
 
-        <views:WorkTimeControl />
+        <views:WorkTimeControl/>
     </Grid>
 </Window>

@@ -1,6 +1,5 @@
 ﻿using Domain.Commands;
 using Domain.Exceptions;
-using Domain.Extensions;
 
 namespace Domain.ValueObjects;
 
