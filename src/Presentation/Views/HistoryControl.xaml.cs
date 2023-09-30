@@ -5,9 +5,9 @@ namespace Presentation.Views
     /// <summary>
     /// HistoryDialog.xaml の相互作用ロジック
     /// </summary>
-    public partial class HistoryDialog : UserControl
+    public partial class HistoryControl : UserControl
     {
-        public HistoryDialog()
+        public HistoryControl()
         {
             InitializeComponent();
         }

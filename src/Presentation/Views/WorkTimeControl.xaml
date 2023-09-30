@@ -46,7 +46,6 @@
         <Grid Grid.Row="1" Margin="0,10,0,10">
             <Grid.RowDefinitions>
                 <RowDefinition/>
-                <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -57,7 +56,7 @@
                     Grid.Column="0"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
-                    Margin="4"
+                    Margin="0,4,4,4"
                     Style="{StaticResource AccentButtonStyle}"
                     Command="{Binding ToggleWork}">
                 <StackPanel Orientation="Horizontal">
@@ -70,7 +69,7 @@
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
-                    Margin="4"
+                    Margin="4,4,0,4"
                     Command="{Binding ToggleRest}">
                 <StackPanel Orientation="Horizontal">
                     <iconPacks:PackIconMaterial Kind="Coffee" Style="{StaticResource ButtonIconStyle}"/>
@@ -78,44 +77,27 @@
                                Style="{StaticResource ButtonLabelStyle}"/>
                 </StackPanel>
             </Button>
-            <Button Grid.Row="1"
-                    Grid.Column="0"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Stretch"
-                    Margin="4">
-                <StackPanel Orientation="Horizontal">
-                    <iconPacks:PackIconMaterial Kind="Cog" Style="{StaticResource ButtonIconStyle}"/>
-                    <TextBlock Text="設定" Style="{StaticResource ButtonLabelStyle}"/>
-                </StackPanel>
-            </Button>
-            <Button Grid.Row="1"
-                    Grid.Column="1"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Stretch"
-                    Margin="4"
-                    Command="{Binding HistoryDialogCommand}">
-                <StackPanel Orientation="Horizontal">
-                    <iconPacks:PackIconMaterial Kind="Calendar" Style="{StaticResource ButtonIconStyle}"/>
-                    <TextBlock Text="履歴" Style="{StaticResource ButtonLabelStyle}"/>
-                </StackPanel>
-            </Button>
         </Grid>
 
-        <StackPanel Grid.Row="2" Margin="0,0,0,10">
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8">
-                <TextBlock Text="勤務時間" FontWeight="Bold" Margin="0,0,20,0"/>
-                <TextBlock Text="{Binding TotalWorkTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
-            </StackPanel>
+        <Border Grid.Row="2"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" BorderThickness="1"
+                Padding="8" Margin="0,10,0,0">
+            <StackPanel Margin="10">
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8">
+                    <TextBlock Text="勤務時間" FontWeight="Bold" Margin="0,0,20,0"/>
+                    <TextBlock Text="{Binding TotalWorkTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
+                </StackPanel>
 
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="8">
-                <TextBlock Text="休憩時間" FontWeight="Bold" Margin="0,0,20,0"/>
-                <TextBlock Text="{Binding TotalRestTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
-            </StackPanel>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="8">
+                    <TextBlock Text="休憩時間" FontWeight="Bold" Margin="0,0,20,0"/>
+                    <TextBlock Text="{Binding TotalRestTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
+                </StackPanel>
 
-            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="8">
-                <TextBlock Text="残業時間" FontWeight="Bold" Margin="0,0,20,0"/>
-                <TextBlock Text="-08:00:00"/>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="8">
+                    <TextBlock Text="残業時間" FontWeight="Bold" Margin="0,0,20,0"/>
+                    <TextBlock Text="-08:00:00"/>
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </Border>
     </Grid>
 </UserControl>

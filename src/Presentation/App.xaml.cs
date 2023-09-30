@@ -3,11 +3,9 @@ using DryIoc.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Presentation.Helpers;
 using Presentation.Models;
-using Presentation.Services;
 using Presentation.Views;
 using Prism.DryIoc;
 using Prism.Ioc;
-using Prism.Services.Dialogs;
 using System.Reflection;
 using System.Windows;
 
@@ -45,16 +43,10 @@ public partial class App : PrismApplication
 
     protected override void RegisterTypes(IContainerRegistry containerRegistry)
     {
-        containerRegistry.RegisterSingleton<CustomDialogService>();
-        containerRegistry.Register<IDialogService, CustomDialogService>();
-        containerRegistry.Register<ICustomDialogService, CustomDialogService>();
         containerRegistry.Register<IDialogHelper, DialogHelper>();
         containerRegistry.Register<IFileDialogHelper, FileDialogHelper>();
 
         containerRegistry.RegisterSingleton<WorkTimeModel>();
-
-        containerRegistry.RegisterDialogWindow<Views.DialogWindow>();
-        containerRegistry.RegisterDialog<HistoryDialog>();
     }
 
     // Reference: https://zenn.dev/nin_neko/articles/44045180e35861

@@ -3,13 +3,12 @@ using System.Reactive.Linq;
 using Presentation.Helpers;
 using Presentation.Models;
 using Presentation.Shared;
-using Prism.Services.Dialogs;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 
 namespace Presentation.ViewModels;
 
-public class HistoryDialogViewModel : ViewModelBase, IDialogAware
+public class HistoryControlViewModel : ViewModelBase
 {
     private readonly HistoryListModel _model;
 
@@ -19,7 +18,7 @@ public class HistoryDialogViewModel : ViewModelBase, IDialogAware
 
     public AsyncReactiveCommand<object?> LoadItemsCommand { get; }
 
-    public HistoryDialogViewModel(IDialogHelper dialogHelper, HistoryListModel model)
+    public HistoryControlViewModel(IDialogHelper dialogHelper, HistoryListModel model)
         : base(dialogHelper)
     {
         _model = model;
@@ -42,18 +41,5 @@ public class HistoryDialogViewModel : ViewModelBase, IDialogAware
         LoadItemsCommand = new AsyncReactiveCommand<object?>()
             .WithSubscribe(async _ => await _model.LoadMonthlyAsync(CurrentMonth.Value))
             .AddTo(Disposable);
-    }
-
-    public string Title => "履歴";
-
-    public event Action<IDialogResult>? RequestClose;
-
-    public bool CanCloseDialog() => true;
-
-    public void OnDialogClosed() { }
-
-    public void OnDialogOpened(IDialogParameters parameters)
-    {
-        LoadItemsCommand.Execute(null);
     }
 }

@@ -1,14 +1,14 @@
 ﻿<Page x:Class="Presentation.Views.HomePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:prism="http://prismlibrary.com"
       xmlns:views="clr-namespace:Presentation.Views"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      d:DesignHeight="450"
-      d:DesignWeight="800"
-      mc:Ignorable="d">
-    <Grid>
+      d:DesignHeight="450" d:DesignWidth="800"
+      mc:Ignorable="d"
+      Title="ホーム">
+    <Grid Margin="5">
         <views:WorkTimeControl/>
     </Grid>
 </Page>

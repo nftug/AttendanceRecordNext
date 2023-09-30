@@ -3,11 +3,14 @@ using System.Windows;
 
 namespace Presentation.Views
 {
-    public enum NavigationIcon
+    public enum NavigationItem
     {
+        [StringValue("ホーム")]
         Home,
-        // History,
-        // Setting,
+        [StringValue("履歴")]
+        History,
+        [StringValue("設定")]
+        Setting,
         None
     }
 
@@ -16,10 +19,11 @@ namespace Presentation.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static IReadOnlyDictionary<NavigationIcon, Type> _pages = new Dictionary<NavigationIcon, Type>()
+        private static IReadOnlyDictionary<NavigationItem, Type> _pages = new Dictionary<NavigationItem, Type>()
         {
-            { NavigationIcon.Home, typeof(HomePage) },
-            { NavigationIcon.None, typeof(HomePage) }
+            { NavigationItem.Home, typeof(HomePage) },
+            { NavigationItem.History, typeof(HistoryPage) },
+            { NavigationItem.None, typeof(BlankPage) }
         };
 
         public MainWindow()
@@ -32,23 +36,26 @@ namespace Presentation.Views
             try
             {
                 var selectedItem = (NavigationViewItem)args.SelectedItem;
-                
+
                 // Tag取得
-                string? iconName = selectedItem.Tag?.ToString();
+                string? itemName = selectedItem.Tag?.ToString();
 
-                // ヘッダー設定
-                sender.Header = iconName;
+                Type? pageType = null;
 
-                if (Enum.TryParse(iconName, out NavigationIcon icon))
+                if (Enum.TryParse(itemName, out NavigationItem item))
                 {
-                    // 対応するページを表示
-                    ContentFrame.Navigate(_pages[icon]);
+                    // ヘッダーの設定
+                    sender.Header = item.GetStringValue();
+                    // 遷移先のページを取得
+                    _pages.TryGetValue(item, out pageType);
                 }
                 else
                 {
-                    // 空ページ表示
-                    ContentFrame.Navigate(_pages[NavigationIcon.None]);
+                    sender.Header = string.Empty;
                 }
+
+                // ページ遷移
+                ContentFrame.Navigate(pageType ?? _pages[NavigationItem.None]);
             }
             catch (Exception e)
             {

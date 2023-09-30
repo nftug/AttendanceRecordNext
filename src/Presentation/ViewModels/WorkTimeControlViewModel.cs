@@ -1,6 +1,5 @@
 ﻿using Presentation.Helpers;
 using Presentation.Models;
-using Presentation.Services;
 using Presentation.Shared;
 using Presentation.Views;
 using Reactive.Bindings;
@@ -11,7 +10,6 @@ namespace Presentation.ViewModels;
 public class WorkTimeControlViewModel : ViewModelBase
 {
     private readonly WorkTimeModel _model;
-    private readonly ICustomDialogService _dialogService;
 
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalWorkTime { get; }
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalRestTime { get; }
@@ -21,13 +19,11 @@ public class WorkTimeControlViewModel : ViewModelBase
 
     public AsyncReactiveCommand<object?> ToggleWork { get; }
     public AsyncReactiveCommand<object?> ToggleRest { get; }
-    public AsyncReactiveCommand<object?> HistoryDialogCommand { get; }
 
-    public WorkTimeControlViewModel(WorkTimeModel model, IDialogHelper dialogHelper, ICustomDialogService dialogService)
+    public WorkTimeControlViewModel(WorkTimeModel model, IDialogHelper dialogHelper)
         : base(dialogHelper)
     {
         _model = model;
-        _dialogService = dialogService;
 
         TotalWorkTime = _model.TotalWorkTime.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         TotalRestTime = _model.TotalRestTime.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
@@ -55,10 +51,6 @@ public class WorkTimeControlViewModel : ViewModelBase
         ToggleRest = _model.IsOngoing
             .ToAsyncReactiveCommand()
             .WithSubscribe(_ => CatchErrorAsync(_model.ToggleRestAsync))
-            .AddTo(Disposable);
-
-        HistoryDialogCommand = new AsyncReactiveCommand<object?>()
-            .WithSubscribe(_ => _dialogService.ShowOrphanAsync(nameof(HistoryDialog)))
             .AddTo(Disposable);
 
         _model.Timer
