@@ -4,10 +4,39 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:views="clr-namespace:Presentation.Views"
+      xmlns:viewmodels="clr-namespace:Presentation.ViewModels"
+      xmlns:prism="http://prismlibrary.com/"
+      xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       mc:Ignorable="d"
+      d:DataContext="{d:DesignInstance Type=viewmodels:HistoryPageViewModel}"
+      prism:ViewModelLocator.AutoWireViewModel="True"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="HistoryPage">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadItemsCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Grid Margin="5">
-        <views:HistoryControl/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.3*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <ListView Grid.Column="0" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem.Value}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="Calendar" Style="{StaticResource ButtonIconStyle}"/>
+                        <TextBlock Text="{Binding RecordedDate.Value, StringFormat={}{0:yyyy/MM/dd}}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
     </Grid>
 </Page>

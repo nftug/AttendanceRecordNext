@@ -7,7 +7,7 @@ using Reactive.Bindings.Extensions;
 
 namespace Presentation.ViewModels;
 
-public class WorkTimeControlViewModel : ViewModelBase
+public class HomePageViewModel : ViewModelBase
 {
     private readonly WorkTimeModel _model;
 
@@ -20,7 +20,7 @@ public class WorkTimeControlViewModel : ViewModelBase
     public AsyncReactiveCommand<object?> ToggleWork { get; }
     public AsyncReactiveCommand<object?> ToggleRest { get; }
 
-    public WorkTimeControlViewModel(WorkTimeModel model, IDialogHelper dialogHelper)
+    public HomePageViewModel(WorkTimeModel model, IDialogHelper dialogHelper)
         : base(dialogHelper)
     {
         _model = model;

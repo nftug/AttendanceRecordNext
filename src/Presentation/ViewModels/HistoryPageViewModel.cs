@@ -8,7 +8,7 @@ using Reactive.Bindings.Extensions;
 
 namespace Presentation.ViewModels;
 
-public class HistoryControlViewModel : ViewModelBase
+public class HistoryPageViewModel : ViewModelBase
 {
     private readonly HistoryListModel _model;
 
@@ -18,7 +18,7 @@ public class HistoryControlViewModel : ViewModelBase
 
     public AsyncReactiveCommand<object?> LoadItemsCommand { get; }
 
-    public HistoryControlViewModel(IDialogHelper dialogHelper, HistoryListModel model)
+    public HistoryPageViewModel(IDialogHelper dialogHelper, HistoryListModel model)
         : base(dialogHelper)
     {
         _model = model;
