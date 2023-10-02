@@ -11,6 +11,7 @@
       mc:Ignorable="d"
       d:DataContext="{d:DesignInstance Type=viewmodels:HomePageViewModel}"
       prism:ViewModelLocator.AutoWireViewModel="True"
+      d:DesignHeight="450" d:DesignWidth="800"
       Title="HomePage">
     <Page.Resources>
         <conv:ToggleWorkConverter x:Key="ToggleWorkConverter"/>
@@ -41,7 +42,7 @@
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
                Text="{Binding NowDateTime.Value, StringFormat={}{0:HH\\:mm\\:ss}}"
-               FontSize="64"/>
+               FontSize="72"/>
 
         <Grid Grid.Row="1" Margin="0,10,0,10">
             <Grid.RowDefinitions>
@@ -65,6 +66,7 @@
                            Style="{StaticResource ButtonLabelStyle}"/>
                 </StackPanel>
             </Button>
+
             <Button Grid.Row="0"
                 Grid.Column="1"
                 VerticalAlignment="Center"
@@ -82,7 +84,7 @@
         <Border Grid.Row="2"
             BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" BorderThickness="1"
             Padding="8" Margin="0,10,0,0">
-            <StackPanel Margin="10">
+            <StackPanel Margin="10" TextBlock.FontSize="18">
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8">
                     <TextBlock Text="勤務時間" FontWeight="Bold" Margin="0,0,20,0"/>
                     <TextBlock Text="{Binding TotalWorkTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>

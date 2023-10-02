@@ -26,6 +26,7 @@
                         <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundDisabled}"/>
                     </Trigger>
                 </Style.Triggers>
+                <Setter Property="FontSize" Value="18"/>
             </Style>
 
             <Style TargetType="iconPacks:PackIconMaterial"
@@ -33,6 +34,7 @@
                    BasedOn="{StaticResource {x:Type iconPacks:PackIconMaterial}}">
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Margin" Value="0,0,8,0"/>
+                <Setter Property="FontSize" Value="18"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

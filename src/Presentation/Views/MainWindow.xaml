@@ -41,10 +41,10 @@
                                    Icon="Home"
                                    IsSelected="True"
                                    Tag="{x:Static views:NavigationItem.Home}"/>
-            <ui:NavigationViewItemSeparator/>
             <ui:NavigationViewItem Content="履歴"
                                    Icon="Calendar"
                                    Tag="{x:Static views:NavigationItem.History}"/>
+            <ui:NavigationViewItemSeparator/>
             <ui:NavigationViewItem Content="設定"
                                    Icon="Setting"
                                    Tag="{x:Static views:NavigationItem.Setting}"/>
