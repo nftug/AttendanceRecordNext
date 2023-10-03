@@ -1,4 +1,5 @@
 ﻿using ModernWpf.Controls;
+using Presentation.Models;
 using Presentation.ViewModels;
 using System.Windows;
 
@@ -27,20 +28,13 @@ namespace Presentation.Views
             { NavigationItem.None, typeof(BlankPage) }
         };
 
-        public MainWindow(MainWindowViewModel viewModel)
+        private readonly NavigationModel _navigationModel;
+
+        public MainWindow(NavigationModel navigationModel)
         {
             InitializeComponent();
 
-            DataContextChanged += (o, e) =>
-            {
-                var vm = DataContext as MainWindowViewModel;
-                if (vm != null)
-                {
-                    vm.NavigateCommand.Subscribe(x => ContentFrame.Navigate(x));
-                }
-            };
-
-            DataContext = viewModel;
+            _navigationModel = navigationModel;
         }
 
         private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -57,13 +51,13 @@ namespace Presentation.Views
                 if (Enum.TryParse(itemName, out NavigationItem item))
                 {
                     // ヘッダーの設定
-                    sender.Header = item.GetStringValue();
+                    _navigationModel.HeaderTitle.Value = item.GetStringValue();
                     // 遷移先のページを取得
                     _pages.TryGetValue(item, out pageType);
                 }
                 else
                 {
-                    sender.Header = string.Empty;
+                    _navigationModel.HeaderTitle.Value = string.Empty;
                 }
 
                 // ページ遷移

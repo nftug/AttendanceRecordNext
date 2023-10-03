@@ -28,19 +28,13 @@
     </i:Interaction.Triggers>
 
     <ui:NavigationView x:Name="NavigationView"
-                       Header=""
+                       Header="{Binding HeaderTitle.Value}"
                        IsBackButtonVisible="Collapsed"
                        IsSettingsVisible="False"
                        IsTitleBarAutoPaddingEnabled="False"
                        PaneDisplayMode="Auto"
                        PaneTitle=""
                        SelectionChanged="NavigationView_SelectionChanged">
-        <i:Interaction.Triggers>
-            <i:EventTrigger EventName="SelectionChanged">
-                <i:InvokeCommandAction Command="{Binding NavigationChangedCommand}" PassEventArgsToCommand="True"/>
-            </i:EventTrigger>
-        </i:Interaction.Triggers>
-
         <ui:NavigationView.MenuItems>
             <ui:NavigationViewItem Content="ホーム"
                                    Icon="Home"

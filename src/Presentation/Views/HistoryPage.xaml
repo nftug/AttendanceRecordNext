@@ -37,7 +37,7 @@
             <ui:AppBarButton Icon="Delete" Label="削除"/>
 
             <ui:CommandBar.Content>
-                <TextBlock Text="{Binding CurrentMonth.Value, StringFormat={}{0:yyyy年 MM月}}"
+                <TextBlock Text="{Binding SelectedItem.Value.RecordedDate.Value, StringFormat={}{0:yyyy/MM/dd (ddd)}}"
                            Style="{StaticResource BodyTextBlockStyle}"
                            Margin="12,10"/>
             </ui:CommandBar.Content>

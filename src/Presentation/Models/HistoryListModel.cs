@@ -13,16 +13,18 @@ public class HistoryListModel : BindableBase
 {
     private readonly ISender _sender;
     private readonly WorkTimeModel _workTimeModel;
+    private readonly NavigationModel _navigationModel;
 
     private readonly ReactiveCollection<HistoryItemModel> _items;
     public ReadOnlyReactiveCollection<HistoryItemModel> Items { get; }
     public ReactivePropertySlim<HistoryItemModel?> SelectedItem { get; }
     public ReactivePropertySlim<DateTime> CurrentMonth { get; }
 
-    public HistoryListModel(ISender sender, WorkTimeModel workTimeModel)
+    public HistoryListModel(ISender sender, WorkTimeModel workTimeModel, NavigationModel navigationModel)
     {
         _sender = sender;
         _workTimeModel = workTimeModel;
+        _navigationModel = navigationModel;
 
         _items = new ReactiveCollection<HistoryItemModel>().AddTo(Disposable);
         Items = _items.ToReadOnlyReactiveCollection().AddTo(Disposable);
@@ -31,6 +33,12 @@ public class HistoryListModel : BindableBase
 
         DateTime currentMonth = new(DateTime.Today.Year, DateTime.Today.Month, 1);
         CurrentMonth = new ReactivePropertySlim<DateTime>(currentMonth).AddTo(Disposable);
+        CurrentMonth.Subscribe(d =>
+        {
+            string formattedMonth = $"{d:yyyy年MM月}";
+            _navigationModel.HeaderTitle.Value = $"履歴 - {formattedMonth}";
+        })
+        .AddTo(Disposable);
 
         // 記録の新規追加時にリストも更新する
         _workTimeModel.IsEmpty.Inverse()
