@@ -65,19 +65,23 @@
 
             <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch"/>
 
-            <ScrollViewer Grid.Column="2" Padding="10">
-                <StackPanel Visibility="{Binding SelectedItem.Value, Converter={StaticResource VisibilityConverter}}">
+            <ScrollViewer Grid.Column="2" Padding="10"
+                          DataContext="{Binding SelectedItem.Value}"
+                          Visibility="{Binding DataContext.SelectedItem.Value,
+                                       RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}},
+                                       Converter={StaticResource VisibilityConverter}}">
+                <StackPanel>
                     <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
                             BorderThickness="1" Padding="4" Margin="4">
                         <StackPanel Margin="5">
                             <StackPanel Orientation="Horizontal" Margin="4">
                                 <TextBlock Text="勤務時間" FontWeight="Bold" Margin="0,0,20,0"/>
-                                <TextBlock Text="{Binding SelectedItem.Value.TotalWorkTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
+                                <TextBlock Text="{Binding TotalWorkTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Margin="4">
                                 <TextBlock Text="休憩時間" FontWeight="Bold" Margin="0,0,20,0"/>
-                                <TextBlock Text="{Binding SelectedItem.Value.TotalRestTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
+                                <TextBlock Text="{Binding TotalRestTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Margin="4">
@@ -95,11 +99,11 @@
 
                     <StackPanel Orientation="Horizontal" Margin="5">
                         <TextBlock Text="出勤時刻" Margin="5,5,15,0"/>
-                        <ctl:TimePickerWithMenu SelectedDateTime="{Binding SelectedItem.Value.StartedOn.Value}"/>
+                        <ctl:TimePickerWithMenu SelectedDateTime="{Binding StartedOn.Value}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5">
                         <TextBlock Text="退勤時刻" Margin="5,5,15,0"/>
-                        <ctl:TimePickerWithMenu SelectedDateTime="{Binding SelectedItem.Value.FinishedOn.Value}"/>
+                        <ctl:TimePickerWithMenu SelectedDateTime="{Binding FinishedOn.Value}"/>
                     </StackPanel>
 
                     <!-- 休憩時間 -->
@@ -109,9 +113,9 @@
                               Style="{StaticResource SubtitleTextBlockStyle}"/>
 
                     <ListView Margin="5"
-                              ItemsSource="{Binding SelectedItem.Value.RestTimes}"
+                              ItemsSource="{Binding RestTimes}"
                               SelectionMode="Single"
-                              SelectedItem="{Binding SelectedItem.Value.SelectedRestItem.Value}">
+                              SelectedItem="{Binding SelectedRestItem.Value}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Width="300" Header="開始時刻">
@@ -119,7 +123,6 @@
                                         <DataTemplate>
                                             <ctl:TimePickerWithMenu Margin="10" HorizontalAlignment="Center"
                                                                     SelectedDateTime="{Binding Duration.StartedOn}"/>
-
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>

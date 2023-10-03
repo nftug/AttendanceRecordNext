@@ -21,8 +21,6 @@ public class HistoryPageViewModel : ViewModelBase
     public AsyncReactiveCommand<object?> LoadItemsCommand { get; }
 
     public AsyncReactiveCommand<object?> SaveCurrentItemCommand { get; }
-    public ReactiveCommandSlim<object?> RemoveSelectedRestItemCommand { get; }
-    public ReactiveCommandSlim<object?> AddRestItemCommand { get; }
 
     public HistoryPageViewModel(IDialogHelper dialogHelper, HistoryListModel model)
         : base(dialogHelper)
@@ -58,19 +56,16 @@ public class HistoryPageViewModel : ViewModelBase
         SaveCurrentItemCommand = SelectedItem
             .Select(v => v != null)
             .ToAsyncReactiveCommand()
-            .WithSubscribe(async _ => await SelectedItem.Value!.SaveItemCommand.ExecuteAsync(null))
-            .AddTo(Disposable);
-
-        RemoveSelectedRestItemCommand = SelectedItem
-            .Select(v => v != null)
-            .ToReactiveCommandSlim()
-            .WithSubscribe(_ => SelectedItem.Value!.RemoveSelectedRestItemCommand.Execute(null))
-            .AddTo(Disposable);
-
-        AddRestItemCommand = SelectedItem
-            .Select(v => v != null)
-            .ToReactiveCommandSlim()
-            .WithSubscribe(_ => SelectedItem.Value!.AddRestItemCommand.Execute(null))
+            .WithSubscribe(async _ =>
+            {
+                var ans = _dialogHelper.ShowDialog(
+                    "修正した記録を保存しますか？",
+                    "確認",
+                    DialogButton.YesNo, DialogImage.Question
+                );
+                if (ans != Helpers.DialogResult.Yes) return;
+                await SelectedItem.Value!.SaveItemCommand.ExecuteAsync(null);
+            })
             .AddTo(Disposable);
     }
 }
