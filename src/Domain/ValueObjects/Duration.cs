@@ -20,16 +20,13 @@ public record Duration
         if (command.StartedOn > command.FinishedOn)
             throw new DomainException("StartedOn is larger than FinishedOn.");
 
-        if (command.FinishedOn is null && StartedOn.Date != DateTime.Today)
-            throw new DomainException("Cannot set blank time on FinishedOn.");
+        // if (command.FinishedOn is null && StartedOn.Date != DateTime.Today)
+        //    throw new DomainException("Cannot set blank time on FinishedOn.");
 
         if (command.StartedOn is DateTime st && st.Date != RecordedDate)
             throw new DomainException("Cannot set this date.");
 
-        var startedOn = command.StartedOn ?? StartedOn;
-        var finishedOn = command.FinishedOn ?? FinishedOn;
-
-        return new() { StartedOn = startedOn, FinishedOn = finishedOn };
+        return new() { StartedOn = command.StartedOn, FinishedOn = command.FinishedOn };
     }
 
     public static Duration GetStart()

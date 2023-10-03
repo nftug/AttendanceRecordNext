@@ -6,7 +6,7 @@ using Domain.ValueObjects;
 namespace Domain.Entities;
 
 // 日付を跨いだらModelからは破棄すること
-// (通常は日付が変わった次点でRecreate()で再取得していればOK。日付が変わっていたら自動的に破棄されている。)
+// (通常は日付が変わった次点でRecreateForClient()で再取得していればOK。日付が変わっていたら自動的に破棄されている。)
 public class WorkTime : IEntity<WorkTime>
 {
     public Guid Id { get; private init; } = Guid.NewGuid();
@@ -17,7 +17,10 @@ public class WorkTime : IEntity<WorkTime>
 
     // 停止状態の場合、停止時に記録した一時停止のレコードを除外する
     public IReadOnlyList<RestTime> RestDurations
-        => (Duration.IsActive ? RestDurationsAll : RestDurationsAll.SkipLast(1)).ToList();
+        => (Duration.IsActive
+            ? RestDurationsAll
+            : RestDurationsAll.Where(x => x.Duration.FinishedOn != null)
+            ).ToList();
 
     public DateTime RecordedDate => Duration.RecordedDate;
 
@@ -76,16 +79,37 @@ public class WorkTime : IEntity<WorkTime>
 
     private WorkTime() { }
 
+    public WorkTime Recreate() => new(Id, Duration, RestDurationsAll);
+
     /// <summary>
     /// 通常はインスタンスのコピーを返す。記録日と呼び出し時の日付が異なる場合は、現在の状態を破棄して空の記録を返す。
     /// </summary>
     /// <returns></returns>
-    public WorkTime Recreate()
-        => IsTodayRecord ? new(Id, Duration, RestDurationsAll) : CreateEmpty();
+    public WorkTime RecreateForClient() => IsTodayRecord ? Recreate() : CreateEmpty();
 
-    public WorkTime EditDuration(DurationEditCommandDto command)
+    public WorkTimeEditCommandDto ToCommand() =>
+        new()
+        {
+            Duration = Duration.ToCommand(),
+            RestTimes = RestDurations.Select(x => x.ToCommand()).ToList()
+        };
+
+    public WorkTime Edit(WorkTimeEditCommandDto command)
     {
-        Duration = Duration.Edit(command);
+        Duration = Duration.Edit(command.Duration);
+        _restDurationsAll.Clear();
+
+        foreach (var restCommand in command.RestTimes.OrderBy(x => x.Duration.StartedOn))
+        {
+            var duration = new Duration()
+            {
+                StartedOn = restCommand.Duration.StartedOn
+            }
+            .Edit(restCommand.Duration);
+            var restTime = new RestTime(restCommand.ItemId, duration);
+            _restDurationsAll.Add(restTime);
+        }
+
         return this;
     }
 

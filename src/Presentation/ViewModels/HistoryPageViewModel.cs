@@ -3,6 +3,7 @@ using Presentation.Models;
 using Presentation.Shared;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System.Reactive.Linq;
 
 namespace Presentation.ViewModels;
 
@@ -16,7 +17,12 @@ public class HistoryPageViewModel : ViewModelBase
 
     public AsyncReactiveCommand<object?> PreviousMonthCommand { get; }
     public AsyncReactiveCommand<object?> NextMonthCommand { get; }
+    public AsyncReactiveCommand<object?> NowMonthCommand { get; }
     public AsyncReactiveCommand<object?> LoadItemsCommand { get; }
+
+    public AsyncReactiveCommand<object?> SaveCurrentItemCommand { get; }
+    public ReactiveCommandSlim<object?> RemoveSelectedRestItemCommand { get; }
+    public ReactiveCommandSlim<object?> AddRestItemCommand { get; }
 
     public HistoryPageViewModel(IDialogHelper dialogHelper, HistoryListModel model)
         : base(dialogHelper)
@@ -41,17 +47,30 @@ public class HistoryPageViewModel : ViewModelBase
             .AddTo(Disposable);
 
         PreviousMonthCommand = new AsyncReactiveCommand<object?>()
-            .WithSubscribe(async _ =>
-            {
-                CurrentMonth.Value = CurrentMonth.Value.AddMonths(-1);
-                await LoadItemsCommand.ExecuteAsync(null);
-            });
+            .WithSubscribe(async _ => await _model.LoadPreviousMonthAsync());
 
         NextMonthCommand = new AsyncReactiveCommand<object?>()
-            .WithSubscribe(async _ =>
-            {
-                CurrentMonth.Value = CurrentMonth.Value.AddMonths(1);
-                await LoadItemsCommand.ExecuteAsync(null);
-            });
+            .WithSubscribe(async _ => await _model.LoadNextMonthAsync());
+
+        NowMonthCommand = new AsyncReactiveCommand<object?>()
+            .WithSubscribe(async _ => await _model.LoadNowMonthAsync());
+
+        SaveCurrentItemCommand = SelectedItem
+            .Select(v => v != null)
+            .ToAsyncReactiveCommand()
+            .WithSubscribe(async _ => await SelectedItem.Value!.SaveItemCommand.ExecuteAsync(null))
+            .AddTo(Disposable);
+
+        RemoveSelectedRestItemCommand = SelectedItem
+            .Select(v => v != null)
+            .ToReactiveCommandSlim()
+            .WithSubscribe(_ => SelectedItem.Value!.RemoveSelectedRestItemCommand.Execute(null))
+            .AddTo(Disposable);
+
+        AddRestItemCommand = SelectedItem
+            .Select(v => v != null)
+            .ToReactiveCommandSlim()
+            .WithSubscribe(_ => SelectedItem.Value!.AddRestItemCommand.Execute(null))
+            .AddTo(Disposable);
     }
 }

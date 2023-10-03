@@ -96,8 +96,13 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="8">
-                    <TextBlock Text="残業時間" FontWeight="Bold" Margin="0,0,20,0"/>
+                    <TextBlock Text="本日の残業時間" FontWeight="Bold" Margin="0,0,20,0"/>
                     <TextBlock Text="-08:00:00"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="8">
+                    <TextBlock Text="今月の残業時間" FontWeight="Bold" Margin="0,0,20,0"/>
+                    <TextBlock Text="00:00:00"/>
                 </StackPanel>
             </StackPanel>
         </Border>

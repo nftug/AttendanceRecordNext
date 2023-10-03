@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Domain.Interfaces;
+using Infrastructure.DataModels;
 using LiteDB.Async;
 
 namespace Infrastructure.Shared;

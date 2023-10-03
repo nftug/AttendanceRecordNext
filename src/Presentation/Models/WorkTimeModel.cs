@@ -41,7 +41,7 @@ public class WorkTimeModel : BindableBase
             .ObserveOnUIDispatcher()
             .Subscribe(_ =>
             {
-                _entity.Value = _nextEntity ?? _entity.Value.Recreate();
+                _entity.Value = _nextEntity ?? _entity.Value.RecreateForClient();
                 _nextEntity = null;
             });
         Timer.Start();

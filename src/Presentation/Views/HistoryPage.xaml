@@ -29,11 +29,11 @@
 
     <DockPanel>
         <ui:CommandBar DockPanel.Dock="Top" DefaultLabelPosition="Right">
-            <ui:AppBarButton Icon="Home" Label="今月"/>
             <ui:AppBarButton Icon="Previous" Label="前月" Command="{Binding PreviousMonthCommand}"/>
             <ui:AppBarButton Icon="Next" Label="翌月" Command="{Binding NextMonthCommand}"/>
+            <ui:AppBarButton Icon="Home" Label="今月" Command="{Binding NowMonthCommand}"/>
             <ui:AppBarSeparator/>
-            <ui:AppBarButton Icon="Save" Label="保存"/>
+            <ui:AppBarButton Icon="Save" Label="保存" Command="{Binding SaveCurrentItemCommand}"/>
             <ui:AppBarButton Icon="Delete" Label="削除"/>
 
             <ui:CommandBar.Content>
@@ -89,8 +89,8 @@
 
                     <!-- 勤務時間 -->
 
-                    <TextBlock Text="勤務時間"
-                               Margin="10,20,5,10"
+                    <TextBlock Text="勤務"
+                               Margin="10,25,5,10"
                                Style="{StaticResource SubtitleTextBlockStyle}"/>
 
                     <StackPanel Orientation="Horizontal" Margin="5">
@@ -104,20 +104,21 @@
 
                     <!-- 休憩時間 -->
 
-                    <TextBlock Text="休憩時間"
-                              Margin="10,20,5,10"
+                    <TextBlock Text="休憩"
+                              Margin="10,25,5,10"
                               Style="{StaticResource SubtitleTextBlockStyle}"/>
 
                     <ListView Margin="5"
-                              ItemsSource="{Binding SelectedItem.Value.RestTimeDurations}"
-                              SelectionMode="Single">
+                              ItemsSource="{Binding SelectedItem.Value.RestTimes}"
+                              SelectionMode="Single"
+                              SelectedItem="{Binding SelectedItem.Value.SelectedRestItem.Value}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Width="300" Header="開始時刻">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <ctl:TimePickerWithMenu Margin="10" HorizontalAlignment="Center"
-                                                                    SelectedDateTime="{Binding StartedOn}"/>
+                                                                    SelectedDateTime="{Binding Duration.StartedOn}"/>
 
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
@@ -126,7 +127,7 @@
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <ctl:TimePickerWithMenu Margin="10" HorizontalAlignment="Center"
-                                                                    SelectedDateTime="{Binding FinishedOn}"/>
+                                                                    SelectedDateTime="{Binding Duration.FinishedOn}"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
@@ -135,7 +136,12 @@
 
                         <ListView.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="記録を削除">
+                                <MenuItem Header="記録を追加" Command="{Binding AddRestItemCommand}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon Glyph="&#xE948;" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="選択中の記録を削除" Command="{Binding RemoveSelectedRestItemCommand}">
                                     <MenuItem.Icon>
                                         <ui:FontIcon Glyph="&#xE74D;" />
                                     </MenuItem.Icon>

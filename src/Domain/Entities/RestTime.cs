@@ -32,6 +32,13 @@ public class RestTime : IEntity<RestTime>
 
     public RestTime Recreate() => new(Id, Duration);
 
+    public RestTimeEditCommandDto ToCommand() =>
+        new()
+        {
+            ItemId = Id,
+            Duration = Duration.ToCommand()
+        };
+
     public RestTime EditDuration(DurationEditCommandDto command)
     {
         Duration = Duration.Edit(command);

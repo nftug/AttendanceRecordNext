@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Domain.Commands;
+using Domain.Entities;
 using Domain.Events;
 using Domain.Exceptions;
 using Domain.Interfaces;
@@ -57,5 +58,18 @@ public class WorkTimeService
             await _repository.FindByDateAsync(DateTime.Today)
             ?? throw new DomainException("There is no available work item.");
         return latest.ToggleRest(eventPublisher);
+    }
+
+    public async Task<WorkTime> EditAsync(WorkTimeEditCommandDto command, EventPublisher eventPublisher)
+    {
+        eventPublisher.Subscribe(_workTimeSubscriber);
+
+        var item =
+            await _repository.FindByIdAsync(command.ItemId)
+            ?? throw new DomainException("Not found work time item");
+        item.Edit(command);
+
+        eventPublisher.Publish(EntityEvent<WorkTime>.Saved(item));
+        return item;
     }
 }

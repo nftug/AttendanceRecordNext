@@ -14,6 +14,7 @@ public class HistoryListModel : BindableBase
     private readonly ISender _sender;
     private readonly WorkTimeModel _workTimeModel;
     private readonly NavigationModel _navigationModel;
+    private readonly DateTime _nowMonth;
 
     private readonly ReactiveCollection<HistoryItemModel> _items;
     public ReadOnlyReactiveCollection<HistoryItemModel> Items { get; }
@@ -31,8 +32,9 @@ public class HistoryListModel : BindableBase
 
         SelectedItem = new ReactivePropertySlim<HistoryItemModel?>().AddTo(Disposable);
 
-        DateTime currentMonth = new(DateTime.Today.Year, DateTime.Today.Month, 1);
-        CurrentMonth = new ReactivePropertySlim<DateTime>(currentMonth).AddTo(Disposable);
+        _nowMonth = new(DateTime.Today.Year, DateTime.Today.Month, 1);
+
+        CurrentMonth = new ReactivePropertySlim<DateTime>(_nowMonth).AddTo(Disposable);
         CurrentMonth.Subscribe(d =>
         {
             string formattedMonth = $"{d:yyyy年MM月}";
@@ -60,6 +62,24 @@ public class HistoryListModel : BindableBase
     {
         var items = await _sender.Send(new GetMonthlyAll.Query { Date = CurrentMonth.Value });
         SetItems(items);
+    }
+
+    public async Task LoadPreviousMonthAsync()
+    {
+        CurrentMonth.Value = CurrentMonth.Value.AddMonths(-1);
+        await LoadMonthlyAsync();
+    }
+
+    public async Task LoadNextMonthAsync()
+    {
+        CurrentMonth.Value = CurrentMonth.Value.AddMonths(1);
+        await LoadMonthlyAsync();
+    }
+
+    public async Task LoadNowMonthAsync()
+    {
+        CurrentMonth.Value = _nowMonth;
+        await LoadMonthlyAsync();
     }
 
     private void SetItems(IEnumerable<WorkTime> items)

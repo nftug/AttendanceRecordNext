@@ -13,10 +13,6 @@ public abstract class ViewModelBase : BindableBase
 
     protected async Task<bool> CatchErrorAsync(Func<Task> func, string? message = null)
     {
-#if DEBUG
-        await func();
-        return true;
-#else
         try
         {
             await func();
@@ -32,6 +28,5 @@ public abstract class ViewModelBase : BindableBase
            );
             return false;
         }
-#endif
     }
 }
