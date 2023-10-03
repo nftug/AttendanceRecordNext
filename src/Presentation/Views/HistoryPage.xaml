@@ -8,35 +8,143 @@
       xmlns:prism="http://prismlibrary.com/"
       xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+      xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:conv="clr-namespace:Presentation.Converters"
+      xmlns:ctl="clr-namespace:Presentation.Controls"
+      xmlns:cmd="clr-namespace:Domain.Commands;assembly=Domain"
       mc:Ignorable="d"
       d:DataContext="{d:DesignInstance Type=viewmodels:HistoryPageViewModel}"
       prism:ViewModelLocator.AutoWireViewModel="True"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="HistoryPage">
+    <Page.Resources>
+        <conv:VisibilityConverter x:Key="VisibilityConverter" />
+    </Page.Resources>
+
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadItemsCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <Grid Margin="5">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.3*"/>
-            <ColumnDefinition Width="5"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+    <DockPanel>
+        <ui:CommandBar DockPanel.Dock="Top" DefaultLabelPosition="Right">
+            <ui:AppBarButton Icon="Home" Label="今月"/>
+            <ui:AppBarButton Icon="Previous" Label="前月" Command="{Binding PreviousMonthCommand}"/>
+            <ui:AppBarButton Icon="Next" Label="翌月" Command="{Binding NextMonthCommand}"/>
+            <ui:AppBarSeparator/>
+            <ui:AppBarButton Icon="Save" Label="保存"/>
+            <ui:AppBarButton Icon="Delete" Label="削除"/>
 
-        <ListView Grid.Column="0" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem.Value}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <iconPacks:PackIconMaterial Kind="Calendar" Style="{StaticResource ButtonIconStyle}"/>
-                        <TextBlock Text="{Binding RecordedDate.Value, StringFormat={}{0:yyyy/MM/dd}}"/>
+            <ui:CommandBar.Content>
+                <TextBlock Text="{Binding CurrentMonth.Value, StringFormat={}{0:yyyy年 MM月}}"
+                           Style="{StaticResource BodyTextBlockStyle}"
+                           Margin="12,10"/>
+            </ui:CommandBar.Content>
+        </ui:CommandBar>
+
+        <Grid Margin="0,5,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.3*"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <ListView Grid.Column="0"
+                      ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem.Value}"
+                      SelectionMode="Single">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="Calendar" Style="{StaticResource ButtonIconStyle}"/>
+                            <TextBlock Text="{Binding RecordedDate.Value, StringFormat={}{0:yyyy/MM/dd}}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch"/>
+
+            <ScrollViewer Grid.Column="2" Padding="10">
+                <StackPanel Visibility="{Binding SelectedItem.Value, Converter={StaticResource VisibilityConverter}}">
+                    <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                            BorderThickness="1" Padding="4" Margin="4">
+                        <StackPanel Margin="5">
+                            <StackPanel Orientation="Horizontal" Margin="4">
+                                <TextBlock Text="勤務時間" FontWeight="Bold" Margin="0,0,20,0"/>
+                                <TextBlock Text="{Binding SelectedItem.Value.TotalWorkTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="4">
+                                <TextBlock Text="休憩時間" FontWeight="Bold" Margin="0,0,20,0"/>
+                                <TextBlock Text="{Binding SelectedItem.Value.TotalRestTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="4">
+                                <TextBlock Text="残業時間" FontWeight="Bold" Margin="0,0,20,0"/>
+                                <TextBlock Text="-08:00:00"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 勤務時間 -->
+
+                    <TextBlock Text="勤務時間"
+                               Margin="10,20,5,10"
+                               Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <TextBlock Text="出勤時刻" Margin="5,5,15,0"/>
+                        <ctl:TimePickerWithMenu SelectedDateTime="{Binding SelectedItem.Value.StartedOn.Value}"/>
                     </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <TextBlock Text="退勤時刻" Margin="5,5,15,0"/>
+                        <ctl:TimePickerWithMenu SelectedDateTime="{Binding SelectedItem.Value.FinishedOn.Value}"/>
+                    </StackPanel>
 
-        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
-    </Grid>
+                    <!-- 休憩時間 -->
+
+                    <TextBlock Text="休憩時間"
+                              Margin="10,20,5,10"
+                              Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                    <ListView Margin="5"
+                              ItemsSource="{Binding SelectedItem.Value.RestTimeDurations}"
+                              SelectionMode="Single">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Width="300" Header="開始時刻">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ctl:TimePickerWithMenu Margin="10" HorizontalAlignment="Center"
+                                                                    SelectedDateTime="{Binding StartedOn}"/>
+
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="300" Header="終了時刻">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ctl:TimePickerWithMenu Margin="10" HorizontalAlignment="Center"
+                                                                    SelectedDateTime="{Binding FinishedOn}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="記録を削除">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon Glyph="&#xE74D;" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                    </ListView>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
 </Page>

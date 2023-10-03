@@ -1,4 +1,5 @@
 ﻿using ModernWpf.Controls;
+using Presentation.ViewModels;
 using System.Windows;
 
 namespace Presentation.Views
@@ -26,9 +27,20 @@ namespace Presentation.Views
             { NavigationItem.None, typeof(BlankPage) }
         };
 
-        public MainWindow()
+        public MainWindow(MainWindowViewModel viewModel)
         {
             InitializeComponent();
+
+            DataContextChanged += (o, e) =>
+            {
+                var vm = DataContext as MainWindowViewModel;
+                if (vm != null)
+                {
+                    vm.NavigateCommand.Subscribe(x => ContentFrame.Navigate(x));
+                }
+            };
+
+            DataContext = viewModel;
         }
 
         private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)

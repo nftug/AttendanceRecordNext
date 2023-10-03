@@ -17,10 +17,10 @@ public abstract class RepositoryBase<TEntity, TDataModel> : IRepository<TEntity>
 
     protected LiteDbCollection<TEntity, TDataModel> Context => new(_appConfig);
 
-    protected Task<T> UseCollectionQuery<T>(Func<ILiteQueryableAsync<TDataModel>, Task<T>> callback)
+    protected async Task<T> UseCollectionQuery<T>(Func<ILiteQueryableAsync<TDataModel>, Task<T>> callback)
     {
         using var context = Context;
-        return callback(GetCollectionForQuery(context));
+        return await callback(GetCollectionForQuery(context));
     }
 
     protected virtual ILiteQueryableAsync<TDataModel> GetCollectionForQuery(LiteDbCollection<TEntity, TDataModel> db)
@@ -39,8 +39,8 @@ public abstract class RepositoryBase<TEntity, TDataModel> : IRepository<TEntity>
         await db.Collection.DeleteAsync(id);
     }
 
-    public virtual Task<TEntity?> FindByIdAsync(Guid id)
-        => UseCollectionQuery(async query =>
+    public virtual async Task<TEntity?> FindByIdAsync(Guid id)
+        => await UseCollectionQuery(async query =>
         {
             var data = await query.Where(x => x.Id == id).FirstOrDefaultAsync();
             return data?.ToEntity();

@@ -46,6 +46,7 @@ public partial class App : PrismApplication
         containerRegistry.Register<IDialogHelper, DialogHelper>();
         containerRegistry.Register<IFileDialogHelper, FileDialogHelper>();
 
+        containerRegistry.RegisterSingleton<NavigationModel>();
         containerRegistry.RegisterSingleton<WorkTimeModel>();
     }
 

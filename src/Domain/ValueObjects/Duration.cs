@@ -66,4 +66,10 @@ public record Duration
             }
         }
     }
+
+    public DurationEditCommandDto ToCommand() => new()
+    {
+        StartedOn = StartedOn,
+        FinishedOn = FinishedOn
+    };
 }

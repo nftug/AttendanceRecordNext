@@ -20,7 +20,7 @@ public class GetMonthlyAll
             _repository = repository;
         }
 
-        public Task<List<WorkTime>> Handle(Query request, CancellationToken cancellationToken)
-            => _repository.FindAllByMonthAsync(request.Date);
+        public async Task<List<WorkTime>> Handle(Query request, CancellationToken cancellationToken)
+            => await _repository.FindAllByMonthAsync(request.Date);
     }
 }

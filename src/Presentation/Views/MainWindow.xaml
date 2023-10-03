@@ -15,7 +15,6 @@
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         Title="{Binding Title.Value}"
         Height="600" Width="1000"
-        MinHeight="400" MinWidth="660"
         WindowState="{Binding WindowState.Value}"
         Visibility="{Binding Visibility.Value, Mode=TwoWay}"
         ResizeMode="CanResizeWithGrip">
@@ -36,6 +35,12 @@
                        PaneDisplayMode="Auto"
                        PaneTitle=""
                        SelectionChanged="NavigationView_SelectionChanged">
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="SelectionChanged">
+                <i:InvokeCommandAction Command="{Binding NavigationChangedCommand}" PassEventArgsToCommand="True"/>
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
+
         <ui:NavigationView.MenuItems>
             <ui:NavigationViewItem Content="ホーム"
                                    Icon="Home"
@@ -44,32 +49,32 @@
             <ui:NavigationViewItem Content="履歴"
                                    Icon="Calendar"
                                    Tag="{x:Static views:NavigationItem.History}"/>
-            <ui:NavigationViewItemSeparator/>
+        </ui:NavigationView.MenuItems>
+
+        <ui:NavigationView.FooterMenuItems>
             <ui:NavigationViewItem Content="設定"
                                    Icon="Setting"
                                    Tag="{x:Static views:NavigationItem.Setting}"/>
-        </ui:NavigationView.MenuItems>
+        </ui:NavigationView.FooterMenuItems>
 
-        <ScrollViewer Margin="0,0,0,12">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+        <Grid Margin="0,0,0,12">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-                <helper:NotifyIconWrapper NotifyRequest="{Binding NotifyRequest.Value}" Text="{Binding Title.Value}">
-                    <bh:Interaction.Triggers>
-                        <bh:EventTrigger EventName="OpenSelected">
-                            <bh:InvokeCommandAction Command="{Binding NotifyIconOpenCommand}"/>
-                        </bh:EventTrigger>
-                        <bh:EventTrigger EventName="ExitSelected">
-                            <bh:InvokeCommandAction Command="{Binding NotifyIconExitCommand}"/>
-                        </bh:EventTrigger>
-                    </bh:Interaction.Triggers>
-                </helper:NotifyIconWrapper>
+            <helper:NotifyIconWrapper NotifyRequest="{Binding NotifyRequest.Value}" Text="{Binding Title.Value}">
+                <bh:Interaction.Triggers>
+                    <bh:EventTrigger EventName="OpenSelected">
+                        <bh:InvokeCommandAction Command="{Binding NotifyIconOpenCommand}"/>
+                    </bh:EventTrigger>
+                    <bh:EventTrigger EventName="ExitSelected">
+                        <bh:InvokeCommandAction Command="{Binding NotifyIconExitCommand}"/>
+                    </bh:EventTrigger>
+                </bh:Interaction.Triggers>
+            </helper:NotifyIconWrapper>
 
-                <ui:Frame x:Name="ContentFrame" Padding="12,0,12,12" NavigationUIVisibility="Hidden"/>
-            </Grid>
-        </ScrollViewer>
+            <ui:Frame x:Name="ContentFrame" Padding="8,0,8,0" NavigationUIVisibility="Hidden"/>
+        </Grid>
     </ui:NavigationView>
 </Window>
