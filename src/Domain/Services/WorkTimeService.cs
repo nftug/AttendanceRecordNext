@@ -60,16 +60,32 @@ public class WorkTimeService
         return latest.ToggleRest(eventPublisher);
     }
 
-    public async Task<WorkTime> EditAsync(WorkTimeEditCommandDto command, EventPublisher eventPublisher)
+    public async Task<WorkTime> SaveAsync(WorkTimeEditCommandDto command, EventPublisher eventPublisher)
     {
         eventPublisher.Subscribe(_workTimeSubscriber);
 
-        var item =
-            await _repository.FindByIdAsync(command.ItemId)
-            ?? throw new DomainException("Not found work time item");
+        var item = await _repository.FindByIdAsync(command.ItemId);
+        if (item is null)
+        {
+            // 新規作成の場合、日付が被っている記録がないかを確認する
+            if (await _repository.FindByDateAsync(command.Duration.StartedOn) != null)
+                throw new DomainException("Already exist of a record of the same day.");
+
+            item = WorkTime.CreateEmpty();
+        }
+
         item.Edit(command);
 
         eventPublisher.Publish(EntityEvent<WorkTime>.Saved(item));
         return item;
+    }
+
+    public async Task DeleteAsync(Guid itemId, EventPublisher eventPublisher)
+    {
+        eventPublisher.Subscribe(_workTimeSubscriber);
+        var item = await _repository.FindByIdAsync(itemId)
+            ?? throw new DomainException("Not found work time item");
+
+        eventPublisher.Publish(EntityEvent<WorkTime>.Deleted(item));
     }
 }

@@ -23,14 +23,17 @@ public record Duration
         // if (command.FinishedOn is null && StartedOn.Date != DateTime.Today)
         //    throw new DomainException("Cannot set blank time on FinishedOn.");
 
-        if (command.StartedOn is DateTime st && st.Date != RecordedDate)
-            throw new DomainException("Cannot set this date.");
+        // if (command.StartedOn is DateTime st && st.Date != RecordedDate)
+        //   throw new DomainException("Cannot set this date.");
 
         return new() { StartedOn = command.StartedOn, FinishedOn = command.FinishedOn };
     }
 
     public static Duration GetStart()
         => new() { StartedOn = DateTime.Now.TruncateMs() };
+
+    public static Duration GetStartWithDate(DateTime date)
+        => new() { StartedOn = date.Date };
 
     public Duration GetFinished()
         => new() { StartedOn = StartedOn, FinishedOn = DateTime.Now.TruncateMs() };

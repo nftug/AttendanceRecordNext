@@ -35,7 +35,7 @@ public class HomePageViewModel : ViewModelBase
             {
                 if (_model.IsOngoing.Value)
                 {
-                    var ans = _dialogHelper.ShowDialog(
+                    var ans = await _dialogHelper.ShowDialogAsync(
                         "本日の勤務を終了しますか？",
                         "確認",
                         DialogButton.YesNo, DialogImage.Question

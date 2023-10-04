@@ -9,8 +9,8 @@ namespace Domain.Entities;
 // (通常は日付が変わった次点でRecreateForClient()で再取得していればOK。日付が変わっていたら自動的に破棄されている。)
 public class WorkTime : IEntity<WorkTime>
 {
-    public Guid Id { get; private init; } = Guid.NewGuid();
-    public Duration Duration { get; private set; } = null!;
+    public Guid Id { get; private init; }
+    public Duration Duration { get; private set; } = new();
 
     private readonly List<RestTime> _restDurationsAll = new();
     public IReadOnlyList<RestTime> RestDurationsAll => _restDurationsAll;
@@ -101,11 +101,8 @@ public class WorkTime : IEntity<WorkTime>
 
         foreach (var restCommand in command.RestTimes.OrderBy(x => x.Duration.StartedOn))
         {
-            var duration = new Duration()
-            {
-                StartedOn = restCommand.Duration.StartedOn
-            }
-            .Edit(restCommand.Duration);
+            var duration = new Duration() { StartedOn = restCommand.Duration.StartedOn };
+            duration = duration.Edit(restCommand.Duration);
             var restTime = new RestTime(restCommand.ItemId, duration);
             _restDurationsAll.Add(restTime);
         }
@@ -113,11 +110,13 @@ public class WorkTime : IEntity<WorkTime>
         return this;
     }
 
-    public static WorkTime CreateEmpty()
-        => new() { Id = Guid.Empty, Duration = new() };
+    public static WorkTime CreateEmpty() => new();
+
+    public static WorkTime CreateWithDate(DateTime date) =>
+        new() { Duration = Duration.GetStartWithDate(date) };
 
     internal static WorkTime Start()
-        => new() { Duration = Duration.GetStart() };
+        => new() { Id = Guid.NewGuid(), Duration = Duration.GetStart() };
 
     public WorkTime ToggleRest(EventPublisher eventPublisher)
     {

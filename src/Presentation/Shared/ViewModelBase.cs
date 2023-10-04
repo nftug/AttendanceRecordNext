@@ -21,7 +21,7 @@ public abstract class ViewModelBase : BindableBase
         catch (Exception e)
         {
             message ??= "An error has occurred during process.";
-            _dialogHelper.ShowDialog(
+            await _dialogHelper.ShowDialogAsync(
                $"{message}\nError message: {e.Message}",
                "Error",
                image: DialogImage.Error

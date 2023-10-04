@@ -26,8 +26,9 @@
             <ui:AppBarButton Icon="Next" Label="翌月" Command="{Binding NextMonthCommand}"/>
             <ui:AppBarButton Icon="Home" Label="今月" Command="{Binding NowMonthCommand}"/>
             <ui:AppBarSeparator/>
+            <ui:AppBarButton Icon="Add" Label="追加" Command="{Binding NewItemCommand}"/>
             <ui:AppBarButton Icon="Save" Label="保存" Command="{Binding SaveCurrentItemCommand}"/>
-            <ui:AppBarButton Icon="Delete" Label="削除"/>
+            <ui:AppBarButton Icon="Delete" Label="削除" Command="{Binding DeleteCurrentItemCommand}"/>
 
             <ui:CommandBar.Content>
                 <TextBlock Text="{Binding SelectedItem.Value.RecordedDate.Value, StringFormat={}{0:yyyy/MM/dd (ddd)}}"

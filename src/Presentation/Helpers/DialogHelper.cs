@@ -1,12 +1,44 @@
-﻿using System.Windows;
+﻿using ModernWpf.Controls;
 
 namespace Presentation.Helpers;
 
 public class DialogHelper : IDialogHelper
 {
-    public DialogResult ShowDialog(string message, string caption, DialogButton button, DialogImage image)
+    public async Task<DialogResult> ShowDialogAsync(string message, string caption, DialogButton button, DialogImage image)
     {
-        var result = ModernWpf.MessageBox.Show(message, caption, (MessageBoxButton)button, (MessageBoxImage)image);
-        return result != null ? (DialogResult)result : DialogResult.None;
+        var dialog = new ContentDialog()
+        {
+            Title = caption,
+            Content = message,
+            PrimaryButtonText = button switch
+            {
+                DialogButton.OK or DialogButton.OKCancel => "OK",
+                DialogButton.YesNo or DialogButton.YesNoCancel => "はい",
+                _ => string.Empty
+            },
+            SecondaryButtonText = button switch
+            {
+                DialogButton.YesNo or DialogButton.YesNoCancel => "いいえ",
+                _ => string.Empty
+            },
+            CloseButtonText = button switch
+            {
+                DialogButton.OKCancel or DialogButton.YesNoCancel => "キャンセル",
+                _ => string.Empty
+            }
+        };
+
+        var result = await dialog.ShowAsync();
+
+        return result switch
+        {
+            ContentDialogResult.Primary => button switch
+            {
+                DialogButton.YesNo or DialogButton.YesNoCancel => DialogResult.Yes,
+                _ => DialogResult.OK
+            },
+            ContentDialogResult.Secondary => DialogResult.No,
+            _ => DialogResult.Cancel
+        };
     }
 }

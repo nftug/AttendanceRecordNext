@@ -45,7 +45,7 @@ public class HistoryListModel : BindableBase
         // 記録の新規追加時にリストも更新する
         _workTimeModel.IsEmpty.Inverse()
             .Select(_ => _workTimeModel.Entity.Value)
-            .Subscribe(x => _items.AddOnScheduler(new(_sender, _workTimeModel, x)))
+            .Subscribe(x => _items.AddOnScheduler(new(_sender, _workTimeModel, this, x)))
             .AddTo(Disposable);
 
         // SelectedItemを指す記録がリストから消去された時、SelectedItemをクリアする
@@ -82,9 +82,21 @@ public class HistoryListModel : BindableBase
         await LoadMonthlyAsync();
     }
 
+    public void AddNewItem(DateTime date)
+    {
+        // TODO: 日付を指定するようにする
+        var newItem = WorkTime.CreateWithDate(date);
+        var newItemModel = new HistoryItemModel(_sender, _workTimeModel, this, newItem);
+
+        _items.AddOnScheduler(newItemModel);
+
+        // TODO: UI上でも選択させる
+        SelectedItem.Value = newItemModel;
+    }
+
     private void SetItems(IEnumerable<WorkTime> items)
     {
-        var models = items.Select(x => new HistoryItemModel(_sender, _workTimeModel, x));
+        var models = items.Select(x => new HistoryItemModel(_sender, _workTimeModel, this, x));
         _items.ClearOnScheduler();
         _items.AddRangeOnScheduler(models);
     }

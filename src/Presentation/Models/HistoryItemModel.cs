@@ -14,6 +14,8 @@ public class HistoryItemModel : BindableBase
 {
     private readonly ISender _sender;
     private readonly WorkTimeModel _workTimeModel;
+    private readonly HistoryListModel _parentListModel;
+
     private readonly ReactivePropertySlim<WorkTime> _entity;
     public ReadOnlyReactivePropertySlim<WorkTime> Entity { get; }
 
@@ -24,10 +26,12 @@ public class HistoryItemModel : BindableBase
     public ReactiveCollection<RestTimeEditCommandDto> RestTimes { get; }
     public ReactivePropertySlim<RestTimeEditCommandDto?> SelectedRestItem { get; }
 
-    public HistoryItemModel(ISender sender, WorkTimeModel workTimeModel, WorkTime item)
+    public HistoryItemModel(ISender sender, WorkTimeModel workTimeModel, HistoryListModel parentListModel, WorkTime item)
     {
         _sender = sender;
         _workTimeModel = workTimeModel;
+        _parentListModel = parentListModel;
+
         _entity = new ReactivePropertySlim<WorkTime>(item).AddTo(Disposable);
         Entity = _entity.ToReadOnlyReactivePropertySlim(_entity.Value).AddTo(Disposable);
 
@@ -37,11 +41,18 @@ public class HistoryItemModel : BindableBase
         TotalRestTime = _entity.Select(x => x.TotalRestTime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
 
         RestTimes = new ReactiveCollection<RestTimeEditCommandDto>().AddTo(Disposable);
-        SetRestTimes(item);
-
         SelectedRestItem = new ReactivePropertySlim<RestTimeEditCommandDto?>().AddTo(Disposable);
+        Duration = new ReactivePropertySlim<DurationEditCommandDto>().AddTo(Disposable);
 
-        Duration = new ReactivePropertySlim<DurationEditCommandDto>(item.Duration.ToCommand()).AddTo(Disposable);
+        // リストから自身が選択されたら、エンティティをもとにフォームの内容をセットする
+        _parentListModel.SelectedItem
+            .Where(x => x == this)
+            .Subscribe(_ =>
+            {
+                SetRestTimes(_entity.Value);
+                Duration.Value = _entity.Value.Duration.ToCommand();
+            })
+            .AddTo(Disposable);
 
         // 現在の記録をタイマーで更新する
         _workTimeModel.Timer
@@ -51,6 +62,7 @@ public class HistoryItemModel : BindableBase
             .Subscribe(v => _entity.Value = v)
             .AddTo(Disposable);
 
+        // RestTimeリストの選択解除に関する設定
         RestTimes.ToCollectionChanged()
             .Where(x =>
                 (x.Action == NotifyCollectionChangedAction.Remove
@@ -75,12 +87,26 @@ public class HistoryItemModel : BindableBase
         };
 
         // 対象のアイテムの画面表示を更新
-        _entity.Value = await _sender.Send(new EditWorkTime.Command(command));
+        _entity.Value = await _sender.Send(new SaveWorkTime.Command(command));
+
         // ソートした状態で休憩時間リストを更新
         SetRestTimes(_entity.Value);
 
-        // 現在の日時の記録が変更された時に更新する
+        // データの再読み込み
         await _workTimeModel.LoadDataAsync();
+
+        // await _parentListModel.LoadMonthlyAsync();   // 現在の編集画面も閉じてしまうので、リストは再読込しない
+    }
+
+    public async Task DeleteItemAsync()
+    {
+        // アイテムの削除
+        if (_entity.Value.Id != default)
+            await _sender.Send(new DeleteWorkTime.Command(_entity.Value.Id));
+
+        // データの再読み込み
+        await _workTimeModel.LoadDataAsync();
+        await _parentListModel.LoadMonthlyAsync();
     }
 
     public void RemoveSelectedRestItem()

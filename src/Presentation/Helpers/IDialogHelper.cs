@@ -30,7 +30,7 @@ public enum DialogResult
 
 public interface IDialogHelper
 {
-    DialogResult ShowDialog
+    Task<DialogResult> ShowDialogAsync
     (
         string message,
         string caption = "Information",

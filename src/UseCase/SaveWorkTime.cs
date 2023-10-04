@@ -6,7 +6,7 @@ using MediatR;
 
 namespace UseCase;
 
-public class EditWorkTime
+public class SaveWorkTime
 {
     public class Command : IRequest<WorkTime>
     {
@@ -30,7 +30,7 @@ public class EditWorkTime
 
         public async Task<WorkTime> Handle(Command request, CancellationToken cancellationToken)
         {
-            var result = await _workTimeService.EditAsync(request.Request, _eventPublisher);
+            var result = await _workTimeService.SaveAsync(request.Request, _eventPublisher);
             await _eventPublisher.CommitAsync();
             return result;
         }

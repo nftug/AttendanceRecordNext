@@ -21,6 +21,7 @@ public class HistoryItemViewModel : ViewModelBase
     public ReactivePropertySlim<RestTimeEditCommandDto?> SelectedRestItem { get; }
 
     public AsyncReactiveCommand<object?> SaveItemCommand { get; }
+    public AsyncReactiveCommand<object?> DeleteItemCommand { get; }
     public ReactiveCommandSlim<object?> RemoveSelectedRestItemCommand { get; }
     public ReactiveCommandSlim<object?> AddRestItemCommand { get; }
 
@@ -37,7 +38,31 @@ public class HistoryItemViewModel : ViewModelBase
         SelectedRestItem = Model.SelectedRestItem.ToReactivePropertySlimAsSynchronized(x => x.Value).AddTo(Disposable);
 
         SaveItemCommand = new AsyncReactiveCommand<object?>()
-            .WithSubscribe(async _ => await CatchErrorAsync(Model.SaveItemAsync))
+            .WithSubscribe(async _ =>
+            {
+                var ans = await _dialogHelper.ShowDialogAsync(
+                    $"{RecordedDate.Value:yyyy/MM/dd}の記録を保存しますか？",
+                    "記録の保存",
+                    DialogButton.YesNo, DialogImage.Question
+                );
+                if (ans != Helpers.DialogResult.Yes) return;
+
+                await CatchErrorAsync(Model.SaveItemAsync);
+            })
+            .AddTo(Disposable);
+
+        DeleteItemCommand = new AsyncReactiveCommand<object?>()
+            .WithSubscribe(async _ =>
+            {
+                var ans = await _dialogHelper.ShowDialogAsync(
+                    $"{RecordedDate.Value:yyyy/MM/dd}の記録をすべて削除しますか？",
+                    "記録の削除",
+                    DialogButton.YesNo, DialogImage.Question
+                );
+                if (ans != Helpers.DialogResult.Yes) return;
+
+                await CatchErrorAsync(Model.DeleteItemAsync);
+            })
             .AddTo(Disposable);
 
         RemoveSelectedRestItemCommand = SelectedRestItem
