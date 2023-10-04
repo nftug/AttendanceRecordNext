@@ -9,18 +9,11 @@
       xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:ui="http://schemas.modernwpf.com/2019"
-      xmlns:conv="clr-namespace:Presentation.Converters"
-      xmlns:ctl="clr-namespace:Presentation.Controls"
-      xmlns:cmd="clr-namespace:Domain.Commands;assembly=Domain"
       mc:Ignorable="d"
       d:DataContext="{d:DesignInstance Type=viewmodels:HistoryPageViewModel}"
       prism:ViewModelLocator.AutoWireViewModel="True"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="HistoryPage">
-    <Page.Resources>
-        <conv:VisibilityConverter x:Key="VisibilityConverter" />
-    </Page.Resources>
-
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadItemsCommand}" />
@@ -65,95 +58,7 @@
 
             <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch"/>
 
-            <ScrollViewer Grid.Column="2" Padding="10"
-                          DataContext="{Binding SelectedItem.Value}"
-                          Visibility="{Binding DataContext.SelectedItem.Value,
-                                       RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}},
-                                       Converter={StaticResource VisibilityConverter}}">
-                <StackPanel>
-                    <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                            BorderThickness="1" Padding="4" Margin="4">
-                        <StackPanel Margin="5">
-                            <StackPanel Orientation="Horizontal" Margin="4">
-                                <TextBlock Text="勤務時間" FontWeight="Bold" Margin="0,0,20,0"/>
-                                <TextBlock Text="{Binding TotalWorkTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="4">
-                                <TextBlock Text="休憩時間" FontWeight="Bold" Margin="0,0,20,0"/>
-                                <TextBlock Text="{Binding TotalRestTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="4">
-                                <TextBlock Text="残業時間" FontWeight="Bold" Margin="0,0,20,0"/>
-                                <TextBlock Text="-08:00:00"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- 勤務時間 -->
-
-                    <TextBlock Text="勤務"
-                               Margin="10,25,5,10"
-                               Style="{StaticResource SubtitleTextBlockStyle}"/>
-
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <TextBlock Text="出勤時刻" Margin="5,5,15,0"/>
-                        <ctl:TimePickerWithMenu SelectedDateTime="{Binding StartedOn.Value}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <TextBlock Text="退勤時刻" Margin="5,5,15,0"/>
-                        <ctl:TimePickerWithMenu SelectedDateTime="{Binding FinishedOn.Value}"/>
-                    </StackPanel>
-
-                    <!-- 休憩時間 -->
-
-                    <TextBlock Text="休憩"
-                              Margin="10,25,5,10"
-                              Style="{StaticResource SubtitleTextBlockStyle}"/>
-
-                    <ListView Margin="5"
-                              ItemsSource="{Binding RestTimes}"
-                              SelectionMode="Single"
-                              SelectedItem="{Binding SelectedRestItem.Value}">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Width="300" Header="開始時刻">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <ctl:TimePickerWithMenu Margin="10" HorizontalAlignment="Center"
-                                                                    SelectedDateTime="{Binding Duration.StartedOn}"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Width="300" Header="終了時刻">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <ctl:TimePickerWithMenu Margin="10" HorizontalAlignment="Center"
-                                                                    SelectedDateTime="{Binding Duration.FinishedOn}"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                            </GridView>
-                        </ListView.View>
-
-                        <ListView.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="記録を追加" Command="{Binding AddRestItemCommand}">
-                                    <MenuItem.Icon>
-                                        <ui:FontIcon Glyph="&#xE948;" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="選択中の記録を削除" Command="{Binding RemoveSelectedRestItemCommand}">
-                                    <MenuItem.Icon>
-                                        <ui:FontIcon Glyph="&#xE74D;" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                            </ContextMenu>
-                        </ListView.ContextMenu>
-                    </ListView>
-                </StackPanel>
-            </ScrollViewer>
+            <views:HistoryItemView Grid.Column="2" Padding="10" DataContext="{Binding SelectedItem.Value}"/>
         </Grid>
     </DockPanel>
 </Page>

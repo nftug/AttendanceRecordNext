@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:Presentation.Controls"
              xmlns:ui="http://schemas.modernwpf.com/2019"
              mc:Ignorable="d"
-             x:Name="root">
-    <ui:SimpleTimePicker SelectedDateTime="{Binding SelectedDateTime, ElementName=root, Mode=TwoWay}">
+             x:Name="Root">
+    <ui:SimpleTimePicker SelectedDateTime="{Binding SelectedDateTime, ElementName=Root, Mode=TwoWay}">
         <ui:SimpleTimePicker.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="時刻をクリア" Click="MenuItem_Click">
