@@ -82,15 +82,28 @@ public class HistoryListModel : BindableBase
         await LoadMonthlyAsync();
     }
 
-    public void AddNewItem(DateTime date)
+    public async Task AddNewItemAsync(DateTime date)
     {
-        // TODO: 日付を指定するようにする
+        if (date.Year != CurrentMonth.Value.Year || date.Month != CurrentMonth.Value.Month)
+        {
+            // 作成する対象月のリストを取得する
+            CurrentMonth.Value = new(date.Year, date.Month, 1);
+            await LoadMonthlyAsync();
+        }
+
+        var targetItemModel = Items.FirstOrDefault(x => x.RecordedDate.Value == date);
+        if (targetItemModel != null)
+        {
+            // 既にこの日付の項目が存在する場合は選択して終了
+            SelectedItem.Value = targetItemModel;
+            return;
+        }
+
         var newItem = WorkTime.CreateWithDate(date);
         var newItemModel = new HistoryItemModel(_sender, _workTimeModel, this, newItem);
-
         _items.AddOnScheduler(newItemModel);
 
-        // TODO: UI上でも選択させる
+        // TODO: UI上でも選択を反映させたい
         SelectedItem.Value = newItemModel;
     }
 

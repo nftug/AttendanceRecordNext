@@ -3,6 +3,7 @@ using DryIoc.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Presentation.Helpers;
 using Presentation.Models;
+using Presentation.ViewModels;
 using Presentation.Views;
 using Prism.DryIoc;
 using Prism.Ioc;
@@ -45,6 +46,7 @@ public partial class App : PrismApplication
     {
         containerRegistry.Register<IDialogHelper, DialogHelper>();
         containerRegistry.Register<IFileDialogHelper, FileDialogHelper>();
+        containerRegistry.Register<IContentDialogHelper<DatePickerDialogViewModel>, DatePickerDialogHelper>();
 
         containerRegistry.RegisterSingleton<NavigationModel>();
         containerRegistry.RegisterSingleton<WorkTimeModel>();

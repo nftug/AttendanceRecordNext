@@ -4,7 +4,8 @@
              xmlns:local="clr-namespace:Presentation"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:ui="http://schemas.modernwpf.com/2019"
-             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks">
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xml:lang="ja-JP">
     <Application.Resources>
          <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

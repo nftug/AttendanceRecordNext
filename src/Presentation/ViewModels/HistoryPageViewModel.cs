@@ -1,7 +1,6 @@
 using Presentation.Helpers;
 using Presentation.Models;
 using Presentation.Shared;
-using Presentation.Views;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Reactive.Linq;
@@ -11,6 +10,7 @@ namespace Presentation.ViewModels;
 public class HistoryPageViewModel : ViewModelBase
 {
     private readonly HistoryListModel _model;
+    private readonly IContentDialogHelper<DatePickerDialogViewModel> _datePickerDialog;
 
     public ReadOnlyReactiveCollection<HistoryItemViewModel> Items { get; }
     public ReactivePropertySlim<HistoryItemViewModel?> SelectedItem { get; }
@@ -25,10 +25,15 @@ public class HistoryPageViewModel : ViewModelBase
     public AsyncReactiveCommand<object?> DeleteCurrentItemCommand { get; }
     public AsyncReactiveCommand<object?> NewItemCommand { get; }
 
-    public HistoryPageViewModel(IDialogHelper dialogHelper, HistoryListModel model)
+    public HistoryPageViewModel(
+        IDialogHelper dialogHelper,
+        HistoryListModel model,
+        IContentDialogHelper<DatePickerDialogViewModel> datePickerDialog
+    )
         : base(dialogHelper)
     {
         _model = model;
+        _datePickerDialog = datePickerDialog;
 
         Items = _model.Items
             .ToReadOnlyReactiveCollection(x => new HistoryItemViewModel(_dialogHelper, x))
@@ -68,14 +73,15 @@ public class HistoryPageViewModel : ViewModelBase
             .WithSubscribe(async _ => await SelectedItem.Value!.DeleteItemCommand.ExecuteAsync(null))
             .AddTo(Disposable);
 
-        // TODO: 日付の設定を修正
         NewItemCommand = new AsyncReactiveCommand<object?>()
             .WithSubscribe(async _ =>
             {
-                DatePickerDialog dialog = new();
-                var result = await dialog.ShowAsync();
+                DateTime defaultDate = CurrentMonth.Value;
+                var viewModel = new DatePickerDialogViewModel(_dialogHelper, defaultDate);
+                var result = await _datePickerDialog.ShowAsync(viewModel);
+                if (result != Helpers.DialogResult.OK) return;
 
-                _model.AddNewItem(DateTime.Now.AddDays(-1));
+                await _model.AddNewItemAsync(viewModel.SelectedDate.Value);
             })
             .AddTo(Disposable);
     }

@@ -11,6 +11,8 @@ namespace Presentation.Models;
 public class WorkTimeModel : BindableBase
 {
     private readonly ISender _sender;
+    private readonly NavigationModel _navigationModel;
+
     private readonly ReactivePropertySlim<WorkTime> _entity;
     public ReactiveTimer Timer { get; }
     private WorkTime? _nextEntity;
@@ -23,9 +25,11 @@ public class WorkTimeModel : BindableBase
     public ReadOnlyReactivePropertySlim<bool> IsResting { get; }
     public ReadOnlyReactivePropertySlim<bool> IsWorking { get; }
 
-    public WorkTimeModel(ISender sender)
+    public WorkTimeModel(ISender sender, NavigationModel navigationModel)
     {
         _sender = sender;
+        _navigationModel = navigationModel;
+
         _entity = new ReactivePropertySlim<WorkTime>(WorkTime.CreateEmpty());
 
         Entity = _entity.ToReadOnlyReactivePropertySlim(_entity.Value).AddTo(Disposable);
@@ -35,6 +39,16 @@ public class WorkTimeModel : BindableBase
         IsOngoing = _entity.Select(x => x.IsTodayOngoing).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         IsResting = _entity.Select(x => x.IsResting).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         IsWorking = _entity.Select(x => x.IsWorking).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+
+        Observable.CombineLatest(IsWorking, IsResting, (working, resting) => (working, resting))
+            .Subscribe(x =>
+            {
+                string? stateName =
+                    x.working ? "勤務中" : x.resting ? "休憩中" : null;
+                _navigationModel.WindowTitle.Value =
+                    stateName != null ? $"{_navigationModel.AppName} - [{stateName}]" : _navigationModel.AppName;
+            })
+            .AddTo(Disposable);
 
         Timer = new ReactiveTimer(TimeSpan.FromSeconds(1)).AddTo(Disposable);
         Timer

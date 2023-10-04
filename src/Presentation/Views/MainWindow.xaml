@@ -13,11 +13,12 @@
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
-        Title="{Binding Title.Value}"
+        Title="{Binding WindowTitle.Value}"
         Height="600" Width="1000"
         WindowState="{Binding WindowState.Value}"
         Visibility="{Binding Visibility.Value, Mode=TwoWay}"
-        ResizeMode="CanResizeWithGrip">
+        ResizeMode="CanResizeWithGrip"
+        xml:lang="ja-JP">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
@@ -57,7 +58,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <helper:NotifyIconWrapper NotifyRequest="{Binding NotifyRequest.Value}" Text="{Binding Title.Value}">
+            <helper:NotifyIconWrapper NotifyRequest="{Binding NotifyRequest.Value}" Text="{Binding WindowTitle.Value}">
                 <bh:Interaction.Triggers>
                     <bh:EventTrigger EventName="OpenSelected">
                         <bh:InvokeCommandAction Command="{Binding NotifyIconOpenCommand}"/>

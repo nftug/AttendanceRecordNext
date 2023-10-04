@@ -2,17 +2,21 @@
     x:Class="Presentation.Views.DatePickerDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:ui="http://schemas.modernwpf.com/2019"
-    Title="Save your work?"
-    PrimaryButtonText="Save"
-    CloseButtonText="Cancel"
-    IsSecondaryButtonEnabled="False"
-    DefaultButton="Primary">
+    xmlns:viewmodels="clr-namespace:Presentation.ViewModels"
+    Title="{Binding Title.Value}"
+    PrimaryButtonText="{Binding PrimaryButtonText, RelativeSource={RelativeSource Self}}"
+    CloseButtonText="{Binding CloseButtonText, RelativeSource={RelativeSource Self}}"
+    DefaultButton="Primary"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance Type=viewmodels:DatePickerDialogViewModel}"
+    x:Name="Root">
 
-    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-        <!-- Content body -->
-        <TextBlock Text="Lorem ipsum dolor sit amet, adipisicing elit." TextWrapping="Wrap" />
-        <CheckBox Content="Upload your content to the cloud."/>
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Stretch">
+        <TextBlock Text="{Binding Message.Value}" Margin="0,0,0,20" Style="{StaticResource BodyTextBlockStyle}"/>
+        <DatePicker SelectedDate="{Binding SelectedDate.Value}" HorizontalAlignment="Stretch" />
     </StackPanel>
 
 </ui:ContentDialog>

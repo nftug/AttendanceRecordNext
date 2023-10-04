@@ -1,7 +1,7 @@
 ﻿<UserControl x:Class="Presentation.Views.HistoryItemView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewmodels="clr-namespace:Presentation.ViewModels"
              xmlns:ui="http://schemas.modernwpf.com/2019"
@@ -19,19 +19,23 @@
                                Converter={StaticResource VisibilityConverter}}">
         <StackPanel>
             <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
-                    BorderThickness="1" Padding="4" Margin="4">
+                    BorderThickness="1" Padding="8" Margin="4">
                 <StackPanel Margin="5">
-                    <StackPanel Orientation="Horizontal" Margin="4">
+                    <TextBlock Text="{Binding RecordedDate.Value, StringFormat={}{0:yyyy/MM/dd (ddd)}}"
+                       Margin="5,5,5,10"
+                       Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
                         <TextBlock Text="勤務時間" FontWeight="Bold" Margin="0,0,20,0"/>
                         <TextBlock Text="{Binding TotalWorkTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
                     </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" Margin="4">
+                    <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
                         <TextBlock Text="休憩時間" FontWeight="Bold" Margin="0,0,20,0"/>
                         <TextBlock Text="{Binding TotalRestTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
                     </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" Margin="4">
+                    <StackPanel Orientation="Horizontal" Margin="5,5,0,5">
                         <TextBlock Text="残業時間" FontWeight="Bold" Margin="0,0,20,0"/>
                         <TextBlock Text="-08:00:00"/>
                     </StackPanel>
