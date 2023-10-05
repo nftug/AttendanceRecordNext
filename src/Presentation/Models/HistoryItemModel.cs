@@ -122,6 +122,11 @@ public class HistoryItemModel : BindableBase
         RestTimes.AddOnScheduler(new() { ItemId = Guid.NewGuid() });
     }
 
+    public void SelectThisItemInList()
+    {
+        _parentListModel.SelectedItem.Value = this;
+    }
+
     private void SetRestTimes()
     {
         RestTimes.ClearOnScheduler();

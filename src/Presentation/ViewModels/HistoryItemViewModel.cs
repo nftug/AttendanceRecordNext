@@ -21,6 +21,7 @@ public class HistoryItemViewModel : ViewModelBase
     public ReadOnlyReactiveCollection<RestTimeEditCommandDto> RestTimes { get; }
     public ReactivePropertySlim<RestTimeEditCommandDto?> SelectedRestItem { get; }
 
+    public ReactiveCommandSlim<object?> SelectThisCommand { get; }
     public AsyncReactiveCommand<object?> SaveItemCommand { get; }
     public AsyncReactiveCommand<object?> DeleteItemCommand { get; }
     public ReactiveCommandSlim<object?> RemoveSelectedRestItemCommand { get; }
@@ -75,6 +76,10 @@ public class HistoryItemViewModel : ViewModelBase
 
         AddRestItemCommand = new ReactiveCommandSlim<object?>()
             .WithSubscribe(_ => Model.AddRestItem())
+            .AddTo(Disposable);
+
+        SelectThisCommand = new ReactiveCommandSlim<object?>()
+            .WithSubscribe(_ => Model.SelectThisItemInList())
             .AddTo(Disposable);
     }
 }

@@ -57,18 +57,20 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <ListView Grid.Column="0"
-                      ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem.Value}"
-                      SelectionMode="Single">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <ui:FontIcon Glyph="&#xE8BF;" Margin="0,0,7,0" FontSize="14"/>
-                            <TextBlock Text="{Binding RecordedDate.Value, StringFormat={}{0:yyyy/MM/dd}}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+            <ScrollViewer Grid.Column="0" Margin="5">
+                <ItemsControl Margin="5" ItemsSource="{Binding Items}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ui:SimpleStackPanel Orientation="Horizontal" Margin="5">
+                                <ui:FontIcon Glyph="&#xE8BF;" Margin="0,0,7,0" FontSize="14"/>
+                                <ui:HyperlinkButton Content="{Binding RecordedDate.Value, StringFormat={}{0:yyyy/MM/dd}}"
+                                                    Command="{Binding SelectThisCommand}"
+                                                    Foreground="{DynamicResource ButtonForeground}"/>
+                            </ui:SimpleStackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
 
             <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch"/>
 

@@ -114,7 +114,6 @@ public class HistoryListModel : BindableBase
         var newItemModel = new HistoryItemModel(_sender, _workTimeModel, this, newItem);
         _items.AddOnScheduler(newItemModel);
 
-        // TODO: UI上でも選択を反映させたい
         SelectedItem.Value = newItemModel;
     }
 }
