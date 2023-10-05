@@ -37,7 +37,7 @@ public class HomePageViewModel : ViewModelBase
                 {
                     var ans = await _dialogHelper.ShowDialogAsync(
                         "本日の勤務を終了しますか？",
-                        "確認",
+                        "退勤",
                         DialogButton.YesNo, DialogImage.Question
                     );
                     if (ans != Helpers.DialogResult.Yes) return;
@@ -49,7 +49,20 @@ public class HomePageViewModel : ViewModelBase
 
         ToggleRest = _model.IsOngoing
             .ToAsyncReactiveCommand()
-            .WithSubscribe(_ => CatchErrorAsync(_model.ToggleRestAsync))
+            .WithSubscribe(async _ =>
+            {
+                if (_model.IsWorking.Value)
+                {
+                    var ans = await _dialogHelper.ShowDialogAsync(
+                        "休憩を開始しますか？",
+                        "休憩の開始",
+                        DialogButton.YesNo, DialogImage.Question
+                    );
+                    if (ans != Helpers.DialogResult.Yes) return;
+                }
+
+                await CatchErrorAsync(_model.ToggleRestAsync);
+            })
             .AddTo(Disposable);
 
         _model.Timer

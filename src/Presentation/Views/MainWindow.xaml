@@ -14,11 +14,12 @@
         ui:WindowHelper.UseModernWindowStyle="True"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         Title="{Binding WindowTitle.Value}"
-        Height="600" Width="1000"
+        Height="700" Width="1000"
         WindowState="{Binding WindowState.Value}"
         Visibility="{Binding Visibility.Value, Mode=TwoWay}"
         ResizeMode="CanResizeWithGrip"
         xml:lang="ja-JP">
+
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
@@ -72,4 +73,5 @@
             <ui:Frame x:Name="ContentFrame" Padding="8,0,8,0" NavigationUIVisibility="Hidden"/>
         </Grid>
     </ui:NavigationView>
+
 </Window>

@@ -1,12 +1,12 @@
 ﻿using System.Windows.Controls;
 
-namespace Presentation.Views
+namespace Presentation.Views;
+
+public partial class HomePage : Page
 {
-    public partial class HomePage : Page
+    public HomePage()
     {
-        public HomePage()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
+

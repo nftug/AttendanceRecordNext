@@ -6,8 +6,9 @@
              xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xml:lang="ja-JP">
+
     <Application.Resources>
-         <ResourceDictionary>
+        <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemeResources />
                 <ui:XamlControlsResources />
@@ -39,4 +40,5 @@
             </Style>
         </ResourceDictionary>
     </Application.Resources>
+
 </prism:PrismApplication>

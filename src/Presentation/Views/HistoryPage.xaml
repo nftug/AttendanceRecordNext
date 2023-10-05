@@ -14,6 +14,7 @@
       prism:ViewModelLocator.AutoWireViewModel="True"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="HistoryPage">
+
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadItemsCommand}" />
@@ -62,4 +63,5 @@
             <views:HistoryItemView Grid.Column="2" Padding="10" DataContext="{Binding SelectedItem.Value}"/>
         </Grid>
     </DockPanel>
+
 </Page>
