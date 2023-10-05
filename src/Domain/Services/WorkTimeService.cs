@@ -2,7 +2,6 @@
 using Domain.Entities;
 using Domain.Events;
 using Domain.Exceptions;
-using Domain.Interfaces;
 
 namespace Domain.Services;
 
@@ -38,7 +37,7 @@ public class WorkTimeService
         }
         else
         {
-            workToday = WorkTime.Start();        // 勤務開始
+            workToday = _workTimeFactory.Start();        // 勤務開始
         }
 
         eventPublisher.Publish(EntityEvent<WorkTime>.Saved(workToday));
@@ -68,7 +67,7 @@ public class WorkTimeService
             if (await _workTimeFactory.FindByDateAsync(command.Duration.StartedOn) != null)
                 throw new DomainException("Already exist of a record of the same day.");
 
-            item = WorkTime.CreateEmpty();
+            item = _workTimeFactory.Create();
         }
 
         item.Edit(command);

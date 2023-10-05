@@ -32,7 +32,7 @@ public class WorkTimeModel : BindableBase
     {
         _sender = sender;
 
-        _entity = new ReactivePropertySlim<IWorkTimeResponse>(WorkTime.CreateEmpty());
+        _entity = new ReactivePropertySlim<IWorkTimeResponse>(WorkTime.CreateEmpty()).AddTo(Disposable);
         Entity = _entity.ToReadOnlyReactivePropertySlim(_entity.Value).AddTo(Disposable);
 
         TotalWorkTime = _entity.Select(x => x.TotalWorkTime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
@@ -63,11 +63,14 @@ public class WorkTimeModel : BindableBase
     public async Task LoadDataAsync()
     {
         _entity.Value = await _sender.Send(new GetWorkToday.Query());
-        MonthlyTally.Value = await _sender.Send(new GetMonthlyAll.Query(_entity.Value.RecordedDate));
+        MonthlyTally.Value = await _sender.Send(new GetMonthlyAll.Query(DateTime.Now));
     }
 
-    public async Task ToggleWorkAsync() =>
+    public async Task ToggleWorkAsync()
+    {
         _nextEntity = await _sender.Send(new ToggleWork.Command());
+        MonthlyTally.Value = await _sender.Send(new GetMonthlyAll.Query(DateTime.Now));
+    }
 
     public async Task ToggleRestAsync()
     {

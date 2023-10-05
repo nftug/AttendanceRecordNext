@@ -6,26 +6,26 @@ namespace Domain.Services;
 
 public class WorkTimeFactory
 {
-    private readonly IAppConfigRepository _appConfigRepository;
+    private readonly IAppConfigRepository _configRepository;
     private readonly IWorkTimeRepository _workTimeRepository;
 
-    public WorkTimeFactory(IAppConfigRepository appConfigRepository, IWorkTimeRepository workTimeRepository)
+    public WorkTimeFactory(IAppConfigRepository configRepository, IWorkTimeRepository workTimeRepository)
     {
-        _appConfigRepository = appConfigRepository;
+        _configRepository = configRepository;
         _workTimeRepository = workTimeRepository;
     }
 
     public async Task<WorkTime?> FindByDateAsync(DateTime date)
     {
         var entity = await _workTimeRepository.FindByDateAsync(date);
-        ApplyAppConfig(entity);
+        entity?.ApplyAppConfig(_configRepository.Config);
         return entity;
     }
 
     public async Task<WorkTime?> FindByIdAsync(Guid itemId)
     {
         var entity = await _workTimeRepository.FindByIdAsync(itemId);
-        ApplyAppConfig(entity);
+        entity?.ApplyAppConfig(_configRepository.Config);
         return entity;
     }
 
@@ -34,15 +34,12 @@ public class WorkTimeFactory
         var entities = await _workTimeRepository.FindAllByMonthAsync(date);
         if (!entities.Any()) return new();
 
-        var appConfig = _appConfigRepository.Config;
+        var appConfig = _configRepository.Config;
         entities = entities.Select(x => x.ApplyAppConfig(appConfig)).ToList();
         return new(entities);
     }
 
-    private void ApplyAppConfig(WorkTime? entity)
-    {
-        if (entity is null) return;
-        var appConfig = _appConfigRepository.Config;
-        entity.ApplyAppConfig(appConfig);
-    }
+    public WorkTime Create() => WorkTime.CreateEmpty().ApplyAppConfig(_configRepository.Config);
+
+    public WorkTime Start() => WorkTime.Start().ApplyAppConfig(_configRepository.Config);
 }

@@ -100,7 +100,8 @@ public class WorkTime : IEntity<WorkTime>, IWorkTimeResponse
     /// 通常はインスタンスのコピーを返す。記録日と呼び出し時の日付が異なる場合は、現在の状態を破棄して空の記録を返す。
     /// </summary>
     /// <returns></returns>
-    public IWorkTimeResponse RecreateForClient() => IsTodayRecord ? Recreate() : CreateEmpty();
+    public IWorkTimeResponse RecreateForClient() =>
+        IsTodayRecord ? Recreate() : new() { _standardWorkMinutes = _standardWorkMinutes };
 
     public WorkTimeEditCommandDto ToCommand() =>
         new()

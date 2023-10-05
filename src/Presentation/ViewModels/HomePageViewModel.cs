@@ -41,8 +41,9 @@ public class HomePageViewModel : ViewModelBase
         Observable.CombineLatest(_model.IsWorking, _model.IsResting, (working, resting) => (working, resting))
             .Subscribe(x =>
             {
-                _mainWindowModel.HeaderTitle.Value =
-                    x.working ? "勤務中" : x.resting ? "休憩中" : "ホーム";
+                var stateNameSuffix =
+                    x.working ? " - 勤務中" : x.resting ? " - 休憩中" : null;
+                _mainWindowModel.WindowTitle.Value = $"{_mainWindowModel.AppName}{stateNameSuffix}";
             })
             .AddTo(Disposable);
 

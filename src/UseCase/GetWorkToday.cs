@@ -20,6 +20,6 @@ public class GetWorkToday
         }
 
         public async Task<WorkTime> Handle(Query request, CancellationToken cancellationToken)
-            => await _workTimeFactory.FindByDateAsync(DateTime.Today) ?? WorkTime.CreateEmpty();
+            => await _workTimeFactory.FindByDateAsync(DateTime.Today) ?? _workTimeFactory.Create();
     }
 }
