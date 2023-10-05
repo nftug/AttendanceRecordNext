@@ -1,5 +1,4 @@
 using System.Reactive.Linq;
-using Domain.Entities;
 using Domain.Responses;
 using MediatR;
 using Presentation.Shared;
@@ -32,26 +31,28 @@ public class WorkTimeModel : BindableBase
     {
         _sender = sender;
 
-        _entity = new ReactivePropertySlim<IWorkTimeResponse>(WorkTime.CreateEmpty()).AddTo(Disposable);
+        _entity = new ReactivePropertySlim<IWorkTimeResponse>().AddTo(Disposable);
         Entity = _entity.ToReadOnlyReactivePropertySlim(_entity.Value).AddTo(Disposable);
 
-        TotalWorkTime = _entity.Select(x => x.TotalWorkTime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
-        TotalRestTime = _entity.Select(x => x.TotalRestTime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
-        Overtime = _entity.Select(x => x.Overtime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        TotalWorkTime = _entity.ObserveProperty(x => x.Value.TotalWorkTime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        TotalRestTime = _entity.ObserveProperty(x => x.Value.TotalRestTime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        Overtime = _entity.ObserveProperty(x => x.Value.Overtime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
 
         MonthlyTally = new ReactivePropertySlim<WorkTimeMonthlyTally>(new()).AddTo(Disposable);
-        MonthlyOvertime = MonthlyTally.Select(x => x.OvertimeTotal).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        MonthlyOvertime = MonthlyTally.ObserveProperty(x => x.Value.OvertimeTotal).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
 
-        IsEmpty = _entity.Select(x => x.IsEmpty).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
-        IsOngoing = _entity.Select(x => x.IsTodayOngoing).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
-        IsResting = _entity.Select(x => x.IsResting).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
-        IsWorking = _entity.Select(x => x.IsWorking).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        IsEmpty = _entity.ObserveProperty(x => x.Value.IsEmpty).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        IsOngoing = _entity.ObserveProperty(x => x.Value.IsTodayOngoing).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        IsResting = _entity.ObserveProperty(x => x.Value.IsResting).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        IsWorking = _entity.ObserveProperty(x => x.Value.IsWorking).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
 
         Timer = new ReactiveTimer(TimeSpan.FromSeconds(1)).AddTo(Disposable);
         Timer
             .ObserveOnUIDispatcher()
             .Subscribe(_ =>
             {
+                if (_entity.Value is null) return;
+
                 _entity.Value = _nextEntity ?? _entity.Value.RecreateForClient();
                 _nextEntity = null;
 
