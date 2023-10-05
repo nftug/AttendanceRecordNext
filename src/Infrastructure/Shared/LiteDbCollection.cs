@@ -7,7 +7,7 @@ public class LiteDbCollection<TEntity, TDataModel> : IDisposable
     where TDataModel : IDataModel<TEntity, TDataModel>, new()
     where TEntity : class, IEntity<TEntity>
 {
-    private readonly IAppConfig _appConfig;
+    private readonly IAppInfo _appConfig;
     private readonly ILiteDatabaseAsync _db;
     private readonly ILiteCollectionAsync<TDataModel> _collection;
 
@@ -15,7 +15,7 @@ public class LiteDbCollection<TEntity, TDataModel> : IDisposable
 
     private bool disposedValue;
 
-    public LiteDbCollection(IAppConfig appConfig)
+    public LiteDbCollection(IAppInfo appConfig)
     {
         _appConfig = appConfig;
 

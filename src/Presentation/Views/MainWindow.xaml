@@ -50,10 +50,10 @@
         <ui:NavigationView.FooterMenuItems>
             <ui:NavigationViewItem Content="設定"
                                    Icon="Setting"
-                                   Tag="{x:Static views:NavigationItem.Setting}"/>
+                                   Tag="{x:Static views:NavigationItem.Settings}"/>
         </ui:NavigationView.FooterMenuItems>
 
-        <Grid Margin="0,0,0,12">
+        <Grid Margin="0,0,0,5">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition Height="Auto"/>

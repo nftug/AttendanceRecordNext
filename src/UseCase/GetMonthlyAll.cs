@@ -1,26 +1,28 @@
-using Domain.Entities;
-using Domain.Interfaces;
+using Domain.Responses;
+using Domain.Services;
 using MediatR;
 
 namespace UseCase;
 
 public class GetMonthlyAll
 {
-    public class Query : IRequest<List<WorkTime>>
+    public class Query : IRequest<WorkTimeMonthlyTally>
     {
-        public required DateTime Date { get; init; }
+        public DateTime Date { get; }
+
+        public Query(DateTime date) => Date = date;
     }
 
-    public class Handler : IRequestHandler<Query, List<WorkTime>>
+    public class Handler : IRequestHandler<Query, WorkTimeMonthlyTally>
     {
-        private readonly IWorkTimeRepository _repository;
+        private readonly WorkTimeFactory _workTimeFactory;
 
-        public Handler(IWorkTimeRepository repository)
+        public Handler(WorkTimeFactory workTimeFactory)
         {
-            _repository = repository;
+            _workTimeFactory = workTimeFactory;
         }
 
-        public async Task<List<WorkTime>> Handle(Query request, CancellationToken cancellationToken)
-            => await _repository.FindAllByMonthAsync(request.Date);
+        public async Task<WorkTimeMonthlyTally> Handle(Query request, CancellationToken cancellationToken)
+            => await _workTimeFactory.FindAllByMonthAsync(request.Date);
     }
 }

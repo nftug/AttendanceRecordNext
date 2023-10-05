@@ -6,7 +6,6 @@
       xmlns:views="clr-namespace:Presentation.Views"
       xmlns:viewmodels="clr-namespace:Presentation.ViewModels"
       xmlns:prism="http://prismlibrary.com/"
-      xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:ui="http://schemas.modernwpf.com/2019"
       mc:Ignorable="d"
@@ -21,22 +20,35 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <DockPanel>
-        <ui:CommandBar DockPanel.Dock="Top" DefaultLabelPosition="Right">
+    <DockPanel LastChildFill="True">
+        <ui:CommandBar DockPanel.Dock="Top" VerticalContentAlignment="Center">
             <ui:AppBarButton Icon="Previous" Label="前月" Command="{Binding PreviousMonthCommand}"/>
             <ui:AppBarButton Icon="Next" Label="翌月" Command="{Binding NextMonthCommand}"/>
             <ui:AppBarButton Icon="Home" Label="今月" Command="{Binding NowMonthCommand}"/>
+            <ui:AppBarButton Icon="CalendarDay" Label="日付から選択" Command="{Binding SelectByDateCommand}"/>
             <ui:AppBarSeparator/>
-            <ui:AppBarButton Icon="Add" Label="追加" Command="{Binding NewItemCommand}"/>
             <ui:AppBarButton Icon="Save" Label="保存" Command="{Binding SaveCurrentItemCommand}"/>
             <ui:AppBarButton Icon="Delete" Label="削除" Command="{Binding DeleteCurrentItemCommand}"/>
 
             <ui:CommandBar.Content>
-                <TextBlock Text="{Binding SelectedItem.Value.RecordedDate.Value, StringFormat={}{0:yyyy/MM/dd (ddd)}}"
-                           Style="{StaticResource BodyTextBlockStyle}"
-                           Margin="12,10"/>
+                <ui:SimpleStackPanel Margin="12,0,0,0" Orientation="Horizontal">
+                    <ui:FontIcon Glyph="&#xE787;" FontSize="16"
+                                 Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding CurrentMonth.Value, StringFormat={}{0:yyyy年 MM月}}"/>
+                </ui:SimpleStackPanel>
             </ui:CommandBar.Content>
         </ui:CommandBar>
+
+        <StatusBar DockPanel.Dock="Bottom" Margin="0,5,0,0">
+            <StatusBarItem Padding="5,8">
+                <ui:SimpleStackPanel Orientation="Horizontal">
+                    <ui:FontIcon Glyph="&#xE916;" FontSize="12"
+                                 Margin="5,0,5,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="月の残業時間合計" Margin="0,0,15,0"/>
+                    <TextBlock Text="{Binding MonthlyOvertime.Value}"/>
+                </ui:SimpleStackPanel>
+            </StatusBarItem>
+        </StatusBar>
 
         <Grid Margin="0,5,0,0">
             <Grid.ColumnDefinitions>
@@ -51,7 +63,7 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <iconPacks:PackIconMaterial Kind="Calendar" Style="{StaticResource ButtonIconStyle}"/>
+                            <ui:FontIcon Glyph="&#xE8BF;" Margin="0,0,7,0" FontSize="14"/>
                             <TextBlock Text="{Binding RecordedDate.Value, StringFormat={}{0:yyyy/MM/dd}}"/>
                         </StackPanel>
                     </DataTemplate>
@@ -60,8 +72,9 @@
 
             <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Stretch"/>
 
-            <views:HistoryItemView Grid.Column="2" Padding="10" DataContext="{Binding SelectedItem.Value}"/>
+            <views:HistoryItemView Grid.Column="2" Padding="10,0,0,0"
+                                   DataContext="{Binding SelectedItem.Value}"/>
         </Grid>
-    </DockPanel>
 
+    </DockPanel>
 </Page>

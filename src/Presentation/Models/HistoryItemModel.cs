@@ -1,7 +1,7 @@
 using System.Collections.Specialized;
 using System.Reactive.Linq;
 using Domain.Commands;
-using Domain.Entities;
+using Domain.Responses;
 using MediatR;
 using Presentation.Shared;
 using Reactive.Bindings;
@@ -16,40 +16,41 @@ public class HistoryItemModel : BindableBase
     private readonly WorkTimeModel _workTimeModel;
     private readonly HistoryListModel _parentListModel;
 
-    private readonly ReactivePropertySlim<WorkTime> _entity;
-    public ReadOnlyReactivePropertySlim<WorkTime> Entity { get; }
+    private readonly ReactivePropertySlim<IWorkTimeResponse> _entity;
+    public ReadOnlyReactivePropertySlim<IWorkTimeResponse> Entity { get; }
 
     public ReadOnlyReactivePropertySlim<DateTime> RecordedDate { get; }
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalWorkTime { get; }
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalRestTime { get; }
+    public ReadOnlyReactivePropertySlim<TimeSpan> Overtime { get; }
     public ReactivePropertySlim<DurationEditCommandDto> Duration { get; }
     public ReactiveCollection<RestTimeEditCommandDto> RestTimes { get; }
     public ReactivePropertySlim<RestTimeEditCommandDto?> SelectedRestItem { get; }
 
-    public HistoryItemModel(ISender sender, WorkTimeModel workTimeModel, HistoryListModel parentListModel, WorkTime item)
+    public HistoryItemModel(ISender sender, WorkTimeModel workTimeModel, HistoryListModel parentListModel, IWorkTimeResponse item)
     {
         _sender = sender;
         _workTimeModel = workTimeModel;
         _parentListModel = parentListModel;
 
-        _entity = new ReactivePropertySlim<WorkTime>(item).AddTo(Disposable);
+        _entity = new ReactivePropertySlim<IWorkTimeResponse>(item).AddTo(Disposable);
         Entity = _entity.ToReadOnlyReactivePropertySlim(_entity.Value).AddTo(Disposable);
 
         RecordedDate = _entity.Select(v => v.RecordedDate).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
-
         TotalWorkTime = _entity.Select(x => x.TotalWorkTime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         TotalRestTime = _entity.Select(x => x.TotalRestTime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        Overtime = _entity.Select(x => x.Overtime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
 
+        Duration = new ReactivePropertySlim<DurationEditCommandDto>().AddTo(Disposable);
         RestTimes = new ReactiveCollection<RestTimeEditCommandDto>().AddTo(Disposable);
         SelectedRestItem = new ReactivePropertySlim<RestTimeEditCommandDto?>().AddTo(Disposable);
-        Duration = new ReactivePropertySlim<DurationEditCommandDto>().AddTo(Disposable);
 
         // リストから自身が選択されたら、エンティティをもとにフォームの内容をセットする
         _parentListModel.SelectedItem
             .Where(x => x == this)
             .Subscribe(_ =>
             {
-                SetRestTimes(_entity.Value);
+                SetRestTimes();
                 Duration.Value = _entity.Value.Duration.ToCommand();
             })
             .AddTo(Disposable);
@@ -90,12 +91,13 @@ public class HistoryItemModel : BindableBase
         _entity.Value = await _sender.Send(new SaveWorkTime.Command(command));
 
         // ソートした状態で休憩時間リストを更新
-        SetRestTimes(_entity.Value);
+        SetRestTimes();
 
         // データの再読み込み
         await _workTimeModel.LoadDataAsync();
 
-        // await _parentListModel.LoadMonthlyAsync();   // 現在の編集画面も閉じてしまうので、リストは再読込しない
+        // 親モデルのデータ再読み込み。現在の編集画面も閉じてしまうので、リストは再読込しない。
+        await _parentListModel.LoadMonthlyAsync(shouldRefreshList: false);
     }
 
     public async Task DeleteItemAsync()
@@ -120,9 +122,9 @@ public class HistoryItemModel : BindableBase
         RestTimes.AddOnScheduler(new() { ItemId = Guid.NewGuid() });
     }
 
-    private void SetRestTimes(WorkTime entity)
+    private void SetRestTimes()
     {
         RestTimes.ClearOnScheduler();
-        RestTimes.AddRangeOnScheduler(entity.RestDurationsAll.Select(x => x.ToCommand()));
+        RestTimes.AddRangeOnScheduler(_entity.Value.RestDurationsAll.Select(x => x.ToCommand()));
     }
 }

@@ -5,15 +5,15 @@ using Reactive.Bindings.Extensions;
 
 namespace Presentation.Models;
 
-public class NavigationModel : BindableBase
+public class MainWindowModel : BindableBase
 {
-    private readonly IAppConfig _appConfig;
+    private readonly IAppInfo _appConfig;
 
     public ReactivePropertySlim<string?> HeaderTitle { get; }
     public ReactivePropertySlim<string?> WindowTitle { get; }
     public string AppName { get; }
 
-    public NavigationModel(IAppConfig appConfig)
+    public MainWindowModel(IAppInfo appConfig)
     {
         _appConfig = appConfig;
         AppName = _appConfig.AppName;

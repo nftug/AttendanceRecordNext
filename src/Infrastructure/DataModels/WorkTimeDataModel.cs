@@ -29,6 +29,7 @@ public class WorkTimeDataModel : IDataModel<WorkTime, WorkTimeDataModel>
         // RestTimes = entity.RestDurationsAll.Select(x => new RestTimeDataModel { Id = x.Id }).ToList();
 
         RestTimes = entity.RestDurationsAll
+            .OfType<RestTime>()
             .Select(x => new RestTimeDataModel().Transfer(x))
             .ToList();
 

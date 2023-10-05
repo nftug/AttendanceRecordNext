@@ -12,7 +12,7 @@ namespace Presentation.Views
         [StringValue("履歴")]
         History,
         [StringValue("設定")]
-        Setting,
+        Settings,
         None
     }
 
@@ -25,16 +25,17 @@ namespace Presentation.Views
         {
             { NavigationItem.Home, typeof(HomePage) },
             { NavigationItem.History, typeof(HistoryPage) },
+            { NavigationItem.Settings, typeof(SettingsPage) },
             { NavigationItem.None, typeof(BlankPage) }
         };
 
-        private readonly NavigationModel _navigationModel;
+        private readonly MainWindowModel _mainWindowModel;
 
-        public MainWindow(NavigationModel navigationModel)
+        public MainWindow(MainWindowModel mainWindowModel)
         {
             InitializeComponent();
 
-            _navigationModel = navigationModel;
+            _mainWindowModel = mainWindowModel;
         }
 
         private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -51,13 +52,13 @@ namespace Presentation.Views
                 if (Enum.TryParse(itemName, out NavigationItem item))
                 {
                     // ヘッダーの設定
-                    _navigationModel.HeaderTitle.Value = item.GetStringValue();
+                    _mainWindowModel.HeaderTitle.Value = item.GetStringValue();
                     // 遷移先のページを取得
                     _pages.TryGetValue(item, out pageType);
                 }
                 else
                 {
-                    _navigationModel.HeaderTitle.Value = string.Empty;
+                    _mainWindowModel.HeaderTitle.Value = string.Empty;
                 }
 
                 // ページ遷移

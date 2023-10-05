@@ -9,9 +9,9 @@ public abstract class RepositoryBase<TEntity, TDataModel> : IRepository<TEntity>
     where TDataModel : IDataModel<TEntity, TDataModel>, new()
     where TEntity : class, IEntity<TEntity>
 {
-    protected readonly IAppConfig _appConfig;
+    protected readonly IAppInfo _appConfig;
 
-    protected RepositoryBase(IAppConfig appConfig)
+    protected RepositoryBase(IAppInfo appConfig)
     {
         _appConfig = appConfig;
     }

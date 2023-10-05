@@ -1,10 +1,11 @@
 ﻿using Domain.Commands;
 using Domain.Exceptions;
+using Domain.Responses;
 using Domain.ValueObjects;
 
 namespace Domain.Entities;
 
-public class RestTime : IEntity<RestTime>
+public class RestTime : IEntity<RestTime>, IRestTimeResponse
 {
     public Guid Id { get; } = Guid.NewGuid();
     public Duration Duration { get; private set; } = null!;

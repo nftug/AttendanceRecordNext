@@ -1,5 +1,5 @@
 ﻿using Domain.Entities;
-using Domain.Interfaces;
+using Domain.Services;
 using MediatR;
 
 namespace UseCase;
@@ -12,14 +12,14 @@ public class GetWorkToday
 
     public class Handler : IRequestHandler<Query, WorkTime>
     {
-        private readonly IWorkTimeRepository _repository;
+        private readonly WorkTimeFactory _workTimeFactory;
 
-        public Handler(IWorkTimeRepository repository)
+        public Handler(WorkTimeFactory workTimeFactory)
         {
-            _repository = repository;
+            _workTimeFactory = workTimeFactory;
         }
 
         public async Task<WorkTime> Handle(Query request, CancellationToken cancellationToken)
-            => await _repository.FindByDateAsync(DateTime.Today) ?? WorkTime.CreateEmpty();
+            => await _workTimeFactory.FindByDateAsync(DateTime.Today) ?? WorkTime.CreateEmpty();
     }
 }

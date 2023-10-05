@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using Domain.Entities;
+using Domain.Responses;
 using MediatR;
 using Presentation.Shared;
 using Reactive.Bindings;
@@ -11,44 +12,40 @@ namespace Presentation.Models;
 public class WorkTimeModel : BindableBase
 {
     private readonly ISender _sender;
-    private readonly NavigationModel _navigationModel;
 
-    private readonly ReactivePropertySlim<WorkTime> _entity;
+    private readonly ReactivePropertySlim<IWorkTimeResponse> _entity;
     public ReactiveTimer Timer { get; }
-    private WorkTime? _nextEntity;
+    private IWorkTimeResponse? _nextEntity;
 
-    public ReadOnlyReactivePropertySlim<WorkTime> Entity;
+    public ReadOnlyReactivePropertySlim<IWorkTimeResponse> Entity;
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalWorkTime { get; }
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalRestTime { get; }
+    public ReadOnlyReactivePropertySlim<TimeSpan> Overtime { get; }
+    public ReactivePropertySlim<WorkTimeMonthlyTally> MonthlyTally { get; }
+    public ReadOnlyReactivePropertySlim<TimeSpan> MonthlyOvertime { get; }
     public ReadOnlyReactivePropertySlim<bool> IsEmpty { get; }
     public ReadOnlyReactivePropertySlim<bool> IsOngoing { get; }
     public ReadOnlyReactivePropertySlim<bool> IsResting { get; }
     public ReadOnlyReactivePropertySlim<bool> IsWorking { get; }
 
-    public WorkTimeModel(ISender sender, NavigationModel navigationModel)
+    public WorkTimeModel(ISender sender)
     {
         _sender = sender;
-        _navigationModel = navigationModel;
 
-        _entity = new ReactivePropertySlim<WorkTime>(WorkTime.CreateEmpty());
-
+        _entity = new ReactivePropertySlim<IWorkTimeResponse>(WorkTime.CreateEmpty());
         Entity = _entity.ToReadOnlyReactivePropertySlim(_entity.Value).AddTo(Disposable);
+
         TotalWorkTime = _entity.Select(x => x.TotalWorkTime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         TotalRestTime = _entity.Select(x => x.TotalRestTime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        Overtime = _entity.Select(x => x.Overtime).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+
+        MonthlyTally = new ReactivePropertySlim<WorkTimeMonthlyTally>(new()).AddTo(Disposable);
+        MonthlyOvertime = MonthlyTally.Select(x => x.OvertimeTotal).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+
         IsEmpty = _entity.Select(x => x.IsEmpty).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         IsOngoing = _entity.Select(x => x.IsTodayOngoing).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         IsResting = _entity.Select(x => x.IsResting).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         IsWorking = _entity.Select(x => x.IsWorking).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
-
-        Observable.CombineLatest(IsWorking, IsResting, (working, resting) => (working, resting))
-            .Subscribe(x =>
-            {
-                string? stateName =
-                    x.working ? "勤務中" : x.resting ? "休憩中" : null;
-                _navigationModel.WindowTitle.Value =
-                    stateName != null ? $"{_navigationModel.AppName} - [{stateName}]" : _navigationModel.AppName;
-            })
-            .AddTo(Disposable);
 
         Timer = new ReactiveTimer(TimeSpan.FromSeconds(1)).AddTo(Disposable);
         Timer
@@ -57,15 +54,20 @@ public class WorkTimeModel : BindableBase
             {
                 _entity.Value = _nextEntity ?? _entity.Value.RecreateForClient();
                 _nextEntity = null;
+
+                MonthlyTally.Value = MonthlyTally.Value.RecreateFromClient(_entity.Value);
             });
         Timer.Start();
     }
 
     public async Task LoadDataAsync()
-        => _entity.Value = await _sender.Send(new GetWorkToday.Query());
+    {
+        _entity.Value = await _sender.Send(new GetWorkToday.Query());
+        MonthlyTally.Value = await _sender.Send(new GetMonthlyAll.Query(_entity.Value.RecordedDate));
+    }
 
-    public async Task ToggleWorkAsync()
-        => _nextEntity = await _sender.Send(new ToggleWork.Command());
+    public async Task ToggleWorkAsync() =>
+        _nextEntity = await _sender.Send(new ToggleWork.Command());
 
     public async Task ToggleRestAsync()
     {

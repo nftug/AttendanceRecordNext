@@ -1,28 +1,32 @@
 ﻿using Domain.Commands;
+using Domain.Config;
 using Domain.Events;
 using Domain.Exceptions;
+using Domain.Responses;
 using Domain.ValueObjects;
 
 namespace Domain.Entities;
 
 // 日付を跨いだらModelからは破棄すること
 // (通常は日付が変わった次点でRecreateForClient()で再取得していればOK。日付が変わっていたら自動的に破棄されている。)
-public class WorkTime : IEntity<WorkTime>
+public class WorkTime : IEntity<WorkTime>, IWorkTimeResponse
 {
     public Guid Id { get; private init; }
     public Duration Duration { get; private set; } = new();
 
     private readonly List<RestTime> _restDurationsAll = new();
-    public IReadOnlyList<RestTime> RestDurationsAll => _restDurationsAll;
+    public IReadOnlyList<IRestTimeResponse> RestDurationsAll => _restDurationsAll.ToList();
 
     // 停止状態の場合、停止時に記録した一時停止のレコードを除外する
-    public IReadOnlyList<RestTime> RestDurations
+    public IReadOnlyList<IRestTimeResponse> RestDurations
         => (Duration.IsActive
             ? RestDurationsAll
             : RestDurationsAll.Where(x => x.Duration.FinishedOn != null)
             ).ToList();
 
     public DateTime RecordedDate => Duration.RecordedDate;
+
+    private int _standardWorkMinutes;
 
     /// <summary>
     /// 総休憩時間
@@ -65,6 +69,13 @@ public class WorkTime : IEntity<WorkTime>
     public bool CanRestart => IsTodayRecord && RestDurationsAll.LastOrDefault()?.IsActive == true;
 
     /// <summary>
+    /// 標準勤務時間を超えた超過時間
+    /// </summary>
+    /// <param name="standardMinutes"></param>
+    public TimeSpan Overtime =>
+        TotalWorkTime - new TimeSpan(_standardWorkMinutes / 60, _standardWorkMinutes % 60, 0);
+
+    /// <summary>
     /// インフラ層と再生成専用のコンストラクタ
     /// </summary>
     /// <param name="id"></param>
@@ -79,13 +90,17 @@ public class WorkTime : IEntity<WorkTime>
 
     private WorkTime() { }
 
-    public WorkTime Recreate() => new(Id, Duration, RestDurationsAll);
+    public WorkTime Recreate() =>
+        new(Id, Duration, _restDurationsAll)
+        {
+            _standardWorkMinutes = _standardWorkMinutes
+        };
 
     /// <summary>
     /// 通常はインスタンスのコピーを返す。記録日と呼び出し時の日付が異なる場合は、現在の状態を破棄して空の記録を返す。
     /// </summary>
     /// <returns></returns>
-    public WorkTime RecreateForClient() => IsTodayRecord ? Recreate() : CreateEmpty();
+    public IWorkTimeResponse RecreateForClient() => IsTodayRecord ? Recreate() : CreateEmpty();
 
     public WorkTimeEditCommandDto ToCommand() =>
         new()
@@ -93,6 +108,17 @@ public class WorkTime : IEntity<WorkTime>
             Duration = Duration.ToCommand(),
             RestTimes = RestDurations.Select(x => x.ToCommand()).ToList()
         };
+
+    /// <summary>
+    /// 標準勤務時間を含むAppConfigを反映する
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public WorkTime ApplyAppConfig(AppConfig appConfig)
+    {
+        _standardWorkMinutes = appConfig.StandardWorkMinutes;
+        return this;
+    }
 
     public WorkTime Edit(WorkTimeEditCommandDto command)
     {

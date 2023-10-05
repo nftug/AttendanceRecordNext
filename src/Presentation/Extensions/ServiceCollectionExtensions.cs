@@ -19,10 +19,12 @@ public static class ServiceCollectionExtensions
         // データ保存用のパスが存在しないとサービス注入時に例外が発生するので、事前に作っておく
         return services
             .AddMediatR(opt => opt.RegisterServicesFromAssembly(typeof(UseCase.GetWorkToday).Assembly))
-            .AddSingleton<IAppConfig, AppConfig>()
+            .AddSingleton<IAppInfo, AppInfo>()
+            .AddSingleton<IAppConfigRepository, AppConfigRepository>()
             .AddTransient<IWorkTimeRepository, WorkTimeRepository>()
             .AddTransient<IRepository<WorkTime>, WorkTimeRepository>()
             .AddSingleton<WorkTimeService>()
+            .AddSingleton<WorkTimeFactory>()
             .AddSingleton<EntityEventSubscriber<WorkTime>>();
     }
 }

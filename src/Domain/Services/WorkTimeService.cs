@@ -8,30 +8,27 @@ namespace Domain.Services;
 
 public class WorkTimeService
 {
-    private readonly IWorkTimeRepository _repository;
     private readonly EntityEventSubscriber<WorkTime> _workTimeSubscriber;
+    private readonly WorkTimeFactory _workTimeFactory;
     // private readonly EntityEventSubscriber<RestTime> _restTimeSubscriber;
 
     public WorkTimeService(
-        IWorkTimeRepository repository,
-        EntityEventSubscriber<WorkTime> workTimeSubscriber
+        EntityEventSubscriber<WorkTime> workTimeSubscriber,
+        WorkTimeFactory workTimeFactory
     // EntityEventSubscriber<RestTime> restTimeSubscriber
     )
     {
-        _repository = repository;
         _workTimeSubscriber = workTimeSubscriber;
+        _workTimeFactory = workTimeFactory;
         // _restTimeSubscriber = restTimeSubscriber;
     }
-
-    public async Task<bool> CheckEntityAllowedAsync(WorkTime entity)
-        => (await _repository.FindByDateAsync(entity.RecordedDate)) != null;
 
     public async Task<WorkTime> ToggleWorkAsync(EventPublisher eventPublisher)
     {
         // eventPublisher.Subscribe(_workTimeSubscriber, _restTimeSubscriber);
         eventPublisher.Subscribe(_workTimeSubscriber);
 
-        var workToday = await _repository.FindByDateAsync(DateTime.Today);
+        var workToday = await _workTimeFactory.FindByDateAsync(DateTime.Today);
         if (workToday != null)
         {
             if (workToday.IsTodayOngoing)
@@ -55,7 +52,7 @@ public class WorkTimeService
         eventPublisher.Subscribe(_workTimeSubscriber);
 
         var latest =
-            await _repository.FindByDateAsync(DateTime.Today)
+            await _workTimeFactory.FindByDateAsync(DateTime.Today)
             ?? throw new DomainException("There is no available work item.");
         return latest.ToggleRest(eventPublisher);
     }
@@ -64,11 +61,11 @@ public class WorkTimeService
     {
         eventPublisher.Subscribe(_workTimeSubscriber);
 
-        var item = await _repository.FindByIdAsync(command.ItemId);
+        var item = await _workTimeFactory.FindByIdAsync(command.ItemId);
         if (item is null)
         {
             // 新規作成の場合、日付が被っている記録がないかを確認する
-            if (await _repository.FindByDateAsync(command.Duration.StartedOn) != null)
+            if (await _workTimeFactory.FindByDateAsync(command.Duration.StartedOn) != null)
                 throw new DomainException("Already exist of a record of the same day.");
 
             item = WorkTime.CreateEmpty();
@@ -83,7 +80,7 @@ public class WorkTimeService
     public async Task DeleteAsync(Guid itemId, EventPublisher eventPublisher)
     {
         eventPublisher.Subscribe(_workTimeSubscriber);
-        var item = await _repository.FindByIdAsync(itemId)
+        var item = await _workTimeFactory.FindByIdAsync(itemId)
             ?? throw new DomainException("Not found work time item");
 
         eventPublisher.Publish(EntityEvent<WorkTime>.Deleted(item));

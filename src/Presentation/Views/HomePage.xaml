@@ -1,33 +1,32 @@
 ﻿<Page x:Class="Presentation.Views.HomePage"
-       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-       xmlns:views="clr-namespace:Presentation.Views"
-       xmlns:viewmodels="clr-namespace:Presentation.ViewModels"
-       xmlns:ui="http://schemas.modernwpf.com/2019"
-       xmlns:conv="clr-namespace:Presentation.Converters"
-       xmlns:prism="http://prismlibrary.com/"
-       xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-       mc:Ignorable="d"
-       d:DataContext="{d:DesignInstance Type=viewmodels:HomePageViewModel}"
-       prism:ViewModelLocator.AutoWireViewModel="True"
-       d:DesignHeight="450" d:DesignWidth="800"
-       Title="HomePage">
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:views="clr-namespace:Presentation.Views"
+      xmlns:viewmodels="clr-namespace:Presentation.ViewModels"
+      xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:conv="clr-namespace:Presentation.Converters"
+      xmlns:prism="http://prismlibrary.com/"
+      mc:Ignorable="d"
+      d:DataContext="{d:DesignInstance Type=viewmodels:HomePageViewModel}"
+      prism:ViewModelLocator.AutoWireViewModel="True"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="HomePage">
 
     <Page.Resources>
         <conv:ToggleWorkConverter x:Key="ToggleWorkConverter"/>
         <conv:ToggleRestConverter x:Key="ToggleRestConverter" />
 
-        <Style TargetType="iconPacks:PackIconMaterial"
+        <Style TargetType="{x:Type ui:FontIcon}"
                x:Key="WorkToggleIconStyle"
                BasedOn="{StaticResource ButtonIconStyle}">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsOngoing.Value}" Value="True">
-                    <Setter Property="Kind" Value="Logout"/>
+                    <Setter Property="Glyph" Value="&#xF3B1;"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsOngoing.Value}" Value="False">
-                    <Setter Property="Kind" Value="Login"/>
+                    <Setter Property="Glyph" Value="&#xE768;"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -63,7 +62,7 @@
                 Style="{StaticResource AccentButtonStyle}"
                 Command="{Binding ToggleWork}">
                 <StackPanel Orientation="Horizontal">
-                    <iconPacks:PackIconMaterial Style="{StaticResource WorkToggleIconStyle}"/>
+                    <ui:FontIcon Style="{StaticResource WorkToggleIconStyle}"/>
                     <TextBlock Text="{Binding IsOngoing.Value, Converter={StaticResource ToggleWorkConverter}}"
                                Style="{StaticResource ButtonLabelStyle}"/>
                 </StackPanel>
@@ -76,7 +75,7 @@
                 Margin="4,4,0,4"
                 Command="{Binding ToggleRest}">
                 <StackPanel Orientation="Horizontal">
-                    <iconPacks:PackIconMaterial Kind="Coffee" Style="{StaticResource ButtonIconStyle}"/>
+                    <ui:FontIcon Glyph="&#xEC32;" Style="{StaticResource ButtonIconStyle}"/>
                     <TextBlock Text="{Binding IsResting.Value, Converter={StaticResource ToggleRestConverter}}"
                                Style="{StaticResource ButtonLabelStyle}"/>
                 </StackPanel>
@@ -85,7 +84,7 @@
 
         <Border Grid.Row="2"
                 BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" BorderThickness="1"
-                Padding="8" Margin="0,10,0,0" TextBlock.FontSize="16">
+                Padding="8" Margin="0,10,0,10" TextBlock.FontSize="16">
             <Grid Margin="10">
                 <Grid.RowDefinitions>
                     <RowDefinition />
@@ -101,22 +100,22 @@
                 <TextBlock Grid.Row="0" Grid.Column="0" Margin="8,8,20,8"
                            Text="勤務時間" FontWeight="Bold"/>
                 <TextBlock Grid.Row="0" Grid.Column="1" Margin="8,8,0,8"
-                           Text="{Binding TotalWorkTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
+                           Text="{Binding TotalWorkTime.Value}"/>
 
                 <TextBlock Grid.Row="1" Grid.Column="0" Margin="8,8,20,8"
                            Text="休憩時間" FontWeight="Bold"/>
                 <TextBlock Grid.Row="1" Grid.Column="1" Margin="8,8,0,8"
-                           Text="{Binding TotalRestTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
+                           Text="{Binding TotalRestTime.Value}"/>
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Margin="8,8,20,8"
                            Text="本日の残業時間" FontWeight="Bold"/>
                 <TextBlock Grid.Row="2" Grid.Column="1" Margin="8,8,0,8"
-                           Text="-08:00:00"/>
+                           Text="{Binding Overtime.Value}"/>
 
                 <TextBlock Grid.Row="3" Grid.Column="0" Margin="8,8,20,8"
                            Text="今月の残業時間" FontWeight="Bold"/>
                 <TextBlock Grid.Row="3" Grid.Column="1" Margin="8,8,0,8"
-                           Text="-08:00:00"/>
+                           Text="{Binding MonthlyOvertime.Value}"/>
             </Grid>
         </Border>
     </Grid>

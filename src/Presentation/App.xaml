@@ -4,7 +4,6 @@
              xmlns:local="clr-namespace:Presentation"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:ui="http://schemas.modernwpf.com/2019"
-             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xml:lang="ja-JP">
 
     <Application.Resources>
@@ -14,7 +13,7 @@
                 <ui:XamlControlsResources />
             </ResourceDictionary.MergedDictionaries>
 
-            <Style TargetType="iconPacks:PackIconMaterial">
+            <Style TargetType="{x:Type ui:FontIcon}">
                 <Style.Triggers>
                     <Trigger Property="IsEnabled" Value="False">
                         <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundDisabled}"/>
@@ -31,12 +30,11 @@
                 <Setter Property="FontSize" Value="18"/>
             </Style>
 
-            <Style TargetType="iconPacks:PackIconMaterial"
+            <Style TargetType="{x:Type ui:FontIcon}"
                    x:Key="ButtonIconStyle"
-                   BasedOn="{StaticResource {x:Type iconPacks:PackIconMaterial}}">
+                   BasedOn="{StaticResource {x:Type ui:FontIcon}}">
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Margin" Value="0,0,8,0"/>
-                <Setter Property="FontSize" Value="18"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

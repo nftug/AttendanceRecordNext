@@ -15,6 +15,7 @@ public class HistoryPageViewModel : ViewModelBase
     public ReadOnlyReactiveCollection<HistoryItemViewModel> Items { get; }
     public ReactivePropertySlim<HistoryItemViewModel?> SelectedItem { get; }
     public ReactivePropertySlim<DateTime> CurrentMonth { get; }
+    public ReadOnlyReactivePropertySlim<TimeSpan> MonthlyOvertime { get; }
 
     public AsyncReactiveCommand<object?> PreviousMonthCommand { get; }
     public AsyncReactiveCommand<object?> NextMonthCommand { get; }
@@ -23,7 +24,7 @@ public class HistoryPageViewModel : ViewModelBase
 
     public AsyncReactiveCommand<object?> SaveCurrentItemCommand { get; }
     public AsyncReactiveCommand<object?> DeleteCurrentItemCommand { get; }
-    public AsyncReactiveCommand<object?> NewItemCommand { get; }
+    public AsyncReactiveCommand<object?> SelectByDateCommand { get; }
 
     public HistoryPageViewModel(
         IDialogHelper dialogHelper,
@@ -47,6 +48,7 @@ public class HistoryPageViewModel : ViewModelBase
             .AddTo(Disposable);
 
         CurrentMonth = _model.CurrentMonth.ToReactivePropertySlimAsSynchronized(x => x.Value).AddTo(Disposable);
+        MonthlyOvertime = _model.MonthlyOvertime.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
 
         LoadItemsCommand = new AsyncReactiveCommand<object?>()
             .WithSubscribe(async _ => await _model.LoadMonthlyAsync())
@@ -73,7 +75,7 @@ public class HistoryPageViewModel : ViewModelBase
             .WithSubscribe(async _ => await SelectedItem.Value!.DeleteItemCommand.ExecuteAsync(null))
             .AddTo(Disposable);
 
-        NewItemCommand = new AsyncReactiveCommand<object?>()
+        SelectByDateCommand = new AsyncReactiveCommand<object?>()
             .WithSubscribe(async _ =>
             {
                 DateTime defaultDate = CurrentMonth.Value;
@@ -81,7 +83,7 @@ public class HistoryPageViewModel : ViewModelBase
                 var result = await _datePickerDialog.ShowAsync(viewModel);
                 if (result != Helpers.DialogResult.OK) return;
 
-                await _model.AddNewItemAsync(viewModel.SelectedDate.Value);
+                await _model.SelectByDateAsync(viewModel.SelectedDate.Value);
             })
             .AddTo(Disposable);
     }

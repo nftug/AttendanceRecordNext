@@ -18,14 +18,14 @@
 
     <ScrollViewer Visibility="{Binding DataContext, ElementName=Root,
                                Converter={StaticResource VisibilityConverter}}">
-        <ui:SimpleStackPanel Spacing="25" Margin="10,10,0,0">
+        <ui:SimpleStackPanel Spacing="25" Margin="10,20,15,20">
 
             <ui:SimpleStackPanel Spacing="10">
                 <TextBlock Text="{Binding RecordedDate.Value, StringFormat={}{0:yyyy/MM/dd (ddd)}}"
-                           Margin="0,0,0,0" Style="{StaticResource TitleTextBlockStyle}"/>
+                           Style="{StaticResource TitleTextBlockStyle}"/>
 
                 <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" BorderThickness="1"
-                        Padding="10" Margin="0,10,0,0">
+                        Padding="10" Margin="0,10,0,0" Width="620" HorizontalAlignment="Left">
                     <Grid Margin="5">
                         <Grid.RowDefinitions>
                             <RowDefinition />
@@ -40,18 +40,15 @@
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,0,12"
                                    Text="勤務時間" FontWeight="Bold"/>
-                        <TextBlock Grid.Row="0" Grid.Column="1"
-                                   Text="{Binding TotalWorkTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding TotalWorkTime.Value}"/>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,0,12"
                                    Text="休憩時間" FontWeight="Bold"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1"
-                                   Text="{Binding TotalRestTime.Value, StringFormat={}{0:hh\\:mm\\:ss}}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding TotalRestTime.Value}"/>
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,0,0"
                                    Text="残業時間" FontWeight="Bold"/>
-                        <TextBlock Grid.Row="2" Grid.Column="1"
-                                   Text="-08:00:00"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Overtime.Value}"/>
                     </Grid>
                 </Border>
             </ui:SimpleStackPanel>
@@ -75,8 +72,7 @@
 
             <!-- 休憩時間 -->
             <ui:SimpleStackPanel Spacing="10">
-                <TextBlock Text="休憩"
-                       Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <TextBlock Text="休憩" Style="{StaticResource SubtitleTextBlockStyle}"/>
 
                 <ListView ItemsSource="{Binding RestTimes}"
                           SelectionMode="Single"
@@ -88,7 +84,7 @@
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <ctl:TimePickerWithMenu Margin="10" HorizontalAlignment="Center"
-                                                            SelectedDateTime="{Binding Duration.StartedOn}"/>
+                                                                SelectedDateTime="{Binding Duration.StartedOn}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -96,7 +92,7 @@
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <ctl:TimePickerWithMenu Margin="10" HorizontalAlignment="Center"
-                                                            SelectedDateTime="{Binding Duration.FinishedOn}"/>
+                                                                SelectedDateTime="{Binding Duration.FinishedOn}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

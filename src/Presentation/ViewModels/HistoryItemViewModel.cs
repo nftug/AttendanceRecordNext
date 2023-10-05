@@ -15,6 +15,7 @@ public class HistoryItemViewModel : ViewModelBase
     public ReadOnlyReactivePropertySlim<DateTime> RecordedDate { get; }
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalWorkTime { get; }
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalRestTime { get; }
+    public ReadOnlyReactivePropertySlim<TimeSpan> Overtime { get; }
     public ReactivePropertySlim<DateTime> StartedOn { get; }
     public ReactivePropertySlim<DateTime?> FinishedOn { get; }
     public ReadOnlyReactiveCollection<RestTimeEditCommandDto> RestTimes { get; }
@@ -32,6 +33,7 @@ public class HistoryItemViewModel : ViewModelBase
         RecordedDate = Model.RecordedDate.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         TotalWorkTime = Model.TotalWorkTime.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         TotalRestTime = Model.TotalRestTime.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        Overtime = Model.Overtime.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         StartedOn = Model.Duration.ToReactivePropertySlimAsSynchronized(x => x.Value.StartedOn).AddTo(Disposable);
         FinishedOn = Model.Duration.ToReactivePropertySlimAsSynchronized(x => x.Value.FinishedOn).AddTo(Disposable);
         RestTimes = Model.RestTimes.ToReadOnlyReactiveCollection().AddTo(Disposable);
