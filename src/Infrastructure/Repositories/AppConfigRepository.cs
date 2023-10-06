@@ -12,7 +12,7 @@ public class AppConfigRepository : IAppConfigRepository
 
     public AppConfig Config { get; private set; } = null!;
 
-    public JsonSerializerOptions JsonSerializerOptions =
+    private readonly static JsonSerializerOptions JsonSerializerOptions =
         new()
         {
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All),

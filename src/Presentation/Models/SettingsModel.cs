@@ -11,7 +11,7 @@ public class SettingsModel : BindableBase
     private readonly IAppConfigRepository _configRepository;
     private readonly WorkTimeModel _workTimeModel;
 
-    private ReactivePropertySlim<AppConfig> Config { get; }
+    public ReactivePropertySlim<AppConfig> Config { get; }
     public ReactivePropertySlim<int> StandardWorkMinutes { get; }
 
     public SettingsModel(IAppConfigRepository configRepository, WorkTimeModel workTimeModel)

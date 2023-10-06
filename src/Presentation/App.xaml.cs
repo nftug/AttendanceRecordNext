@@ -49,6 +49,8 @@ public partial class App : PrismApplication
         containerRegistry.Register<IContentDialogHelper<DatePickerDialogViewModel>, DatePickerDialogHelper>();
 
         containerRegistry.RegisterSingleton<MainWindowModel>();
+        containerRegistry.RegisterSingleton<SettingsModel>();
+        containerRegistry.RegisterSingleton<AlarmModel>();
         containerRegistry.RegisterSingleton<WorkTimeModel>();
     }
 

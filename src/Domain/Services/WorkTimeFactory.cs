@@ -18,15 +18,13 @@ public class WorkTimeFactory
     public async Task<WorkTime?> FindByDateAsync(DateTime date)
     {
         var entity = await _workTimeRepository.FindByDateAsync(date);
-        entity?.ApplyAppConfig(_configRepository.Config);
-        return entity;
+        return entity?.ApplyAppConfig(_configRepository.Config);
     }
 
     public async Task<WorkTime?> FindByIdAsync(Guid itemId)
     {
         var entity = await _workTimeRepository.FindByIdAsync(itemId);
-        entity?.ApplyAppConfig(_configRepository.Config);
-        return entity;
+        return entity?.ApplyAppConfig(_configRepository.Config);
     }
 
     public async Task<WorkTimeMonthlyTally> FindAllByMonthAsync(DateTime date)
