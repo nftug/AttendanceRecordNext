@@ -16,6 +16,7 @@ public class SettingsModel : BindableBase
 
     public ReactivePropertySlim<int> StandardWorkMinutes { get; }
     public ReactivePropertySlim<AppConfig.WorkTimeAlarmConfig> WorkAlarmConfig { get; }
+    public ReactivePropertySlim<AppConfig.RestTimeAlarmConfig> RestAlarmConfig { get; }
     public ReadOnlyReactivePropertySlim<TimeSpan> WorkTimeLimit { get; }
 
     public SettingsModel(IAppConfigRepository configRepository, WorkTimeModel workTimeModel)
@@ -31,11 +32,15 @@ public class SettingsModel : BindableBase
         WorkAlarmConfig = Config
             .ToReactivePropertySlimAsSynchronized(x => x.Value.WorkTimeAlarm)
             .AddTo(Disposable);
+        RestAlarmConfig = Config
+            .ToReactivePropertySlimAsSynchronized(x => x.Value.RestTimeAlarm)
+            .AddTo(Disposable);
+
         WorkTimeLimit = Observable
             .CombineLatest(
                 StandardWorkMinutes,
-                WorkAlarmConfig.ObserveProperty(x => x.Value.BeforeMinutes),
-                (standard, before) => TimeSpan.FromMinutes(standard - before))
+                WorkAlarmConfig.ObserveProperty(x => x.Value.RemainingMinutes),
+                (standard, remain) => TimeSpan.FromMinutes(standard - remain))
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposable);
     }

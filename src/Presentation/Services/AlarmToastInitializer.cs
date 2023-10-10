@@ -5,16 +5,14 @@ namespace Presentation.Services;
 
 public class AlarmToastInitializer
 {
-    private readonly WorkTimeAlarmModel _workTimeAlarmModel;
-
     private readonly IReadOnlyDictionary<string, IAlarmModel> _alarms;
 
-    public AlarmToastInitializer(WorkTimeAlarmModel workTimeAlarmModel)
+    public AlarmToastInitializer(WorkTimeAlarmModel workTimeAlarmModel, RestTimeAlarmModel restTimeAlarmModel)
     {
-        _workTimeAlarmModel = workTimeAlarmModel;
         _alarms = new Dictionary<string, IAlarmModel>()
         {
-            { typeof(WorkTimeAlarmModel).Name, _workTimeAlarmModel }
+            { typeof(WorkTimeAlarmModel).Name, workTimeAlarmModel },
+            { typeof(RestTimeAlarmModel).Name,  restTimeAlarmModel}
         };
     }
 

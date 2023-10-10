@@ -21,8 +21,8 @@ public abstract class AlarmModelBase<TSelf> : BindableBase, IAlarmModel
 
     protected ReactiveTimer AlarmTimer { get; }
     protected ReactiveTimer SnoozeTimer { get; }
-    protected ReadOnlyReactivePropertySlim<bool> IsAlarmEnabled { get; set; } = null!;
-    protected ReadOnlyReactivePropertySlim<bool> IsSnoozeEnabled { get; set; } = null!;
+    public ReadOnlyReactivePropertySlim<bool> IsAlarmEnabled { get; protected set; } = null!;
+    public ReadOnlyReactivePropertySlim<bool> IsSnoozeEnabled { get; protected set; } = null!;
     protected ReadOnlyReactivePropertySlim<string?> OvertimeMessage { get; set; } = null!;
 
     protected abstract string MessageTitle { get; }
@@ -46,6 +46,7 @@ public abstract class AlarmModelBase<TSelf> : BindableBase, IAlarmModel
             .Subscribe(_ => InvokeWorkTimeAlarm())
             .AddTo(Disposable);
         _workTimeModel.IsOngoing.Where(v => v).Subscribe(_ => AlarmTimer.Start()).AddTo(Disposable);
+        _settingsModel.Config.Skip(1).Subscribe(_ => AlarmTimer.Start()).AddTo(Disposable);
 
         SnoozeTimer = new ReactiveTimer(TimeSpan.FromSeconds(1)).AddTo(Disposable);
         SnoozeTimer

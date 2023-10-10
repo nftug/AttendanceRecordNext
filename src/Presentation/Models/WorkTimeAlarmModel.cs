@@ -40,5 +40,5 @@ public class WorkTimeAlarmModel : AlarmModelBase<WorkTimeAlarmModel>
             .AddTo(Disposable);
     }
 
-    protected override string MessageTitle => "退勤前アラーム";
+    protected override string MessageTitle => "退勤のアラーム";
 }
