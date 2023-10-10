@@ -15,13 +15,7 @@ public class SettingsModel : BindableBase
     public ReactivePropertySlim<AppConfig> Config { get; }
 
     public ReactivePropertySlim<int> StandardWorkMinutes { get; }
-
     public ReactivePropertySlim<AppConfig.WorkTimeAlarmConfig> WorkAlarmConfig { get; }
-    public ReactivePropertySlim<bool> IsWorkAlarmEnabled { get; }
-    public ReactivePropertySlim<double> BeforeWorkMinutes { get; }
-    public ReactivePropertySlim<bool> IsWorkSnoozeEnabled { get; }
-    public ReactivePropertySlim<double> SnoozeWorkMinutes { get; }
-
     public ReadOnlyReactivePropertySlim<TimeSpan> WorkTimeLimit { get; }
 
     public SettingsModel(IAppConfigRepository configRepository, WorkTimeModel workTimeModel)
@@ -34,29 +28,14 @@ public class SettingsModel : BindableBase
         StandardWorkMinutes = Config
             .ToReactivePropertySlimAsSynchronized(x => x.Value.StandardWorkMinutes)
             .AddTo(Disposable);
-
         WorkAlarmConfig = Config
             .ToReactivePropertySlimAsSynchronized(x => x.Value.WorkTimeAlarm)
             .AddTo(Disposable);
-
-        IsWorkAlarmEnabled = WorkAlarmConfig
-            .ToReactivePropertySlimAsSynchronized(x => x.Value.IsEnabled)
-            .AddTo(Disposable);
-        BeforeWorkMinutes = WorkAlarmConfig
-            .ToReactivePropertySlimAsSynchronized(x => x.Value.BeforeMinutes)
-            .AddTo(Disposable);
-        IsWorkSnoozeEnabled = WorkAlarmConfig
-            .ToReactivePropertySlimAsSynchronized(x => x.Value.IsSnoozeEnabled)
-            .AddTo(Disposable);
-        SnoozeWorkMinutes = WorkAlarmConfig
-            .ToReactivePropertySlimAsSynchronized(x => x.Value.SnoozeMinutes)
-            .AddTo(Disposable);
-
         WorkTimeLimit = Observable
             .CombineLatest(
                 StandardWorkMinutes,
-                BeforeWorkMinutes,
-                (standard, cfg) => TimeSpan.FromMinutes(standard - cfg))
+                WorkAlarmConfig.ObserveProperty(x => x.Value.BeforeMinutes),
+                (standard, before) => TimeSpan.FromMinutes(standard - before))
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposable);
     }

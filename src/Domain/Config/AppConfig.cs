@@ -9,16 +9,14 @@ public record AppConfig
     public record WorkTimeAlarmConfig
     {
         public bool IsEnabled { get; set; } = true;
-        public double BeforeMinutes { get; set; } = 15;
-        public bool IsSnoozeEnabled { get; set; }
-        public double SnoozeMinutes { get; set; } = 5;
+        public int BeforeMinutes { get; set; } = 15;
+        public int SnoozeMinutes { get; set; } = 5;
     }
 
     public record RestTimeAlarmConfig
     {
         public bool IsEnabled { get; set; } = true;
-        public int Minutes { get; set; } = 240;
-        public bool IsSnoozeEnabled { get; set; }
+        public int AfterMinutes { get; set; } = 240;
         public int SnoozeMinutes { get; set; } = 5;
     }
 }

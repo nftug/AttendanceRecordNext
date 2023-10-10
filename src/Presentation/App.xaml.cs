@@ -50,8 +50,9 @@ public partial class App : PrismApplication
 
         containerRegistry.RegisterSingleton<MainWindowModel>();
         containerRegistry.RegisterSingleton<SettingsModel>();
-        containerRegistry.RegisterSingleton<AlarmModel>();
+        containerRegistry.RegisterSingleton<WorkTimeAlarmModel>();
         containerRegistry.RegisterSingleton<WorkTimeModel>();
+        containerRegistry.RegisterSingleton<IToastHelper, ToastHelper>();
     }
 
     // Reference: https://zenn.dev/nin_neko/articles/44045180e35861

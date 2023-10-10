@@ -10,6 +10,9 @@ public class SettingsPageViewModel : ViewModelBase
 {
     private readonly SettingsModel _model;
     public ReactivePropertySlim<double> StandardWorkHours { get; }
+    public ReactivePropertySlim<bool> IsWorkAlarmEnabled { get; }
+    public ReactivePropertySlim<int> LimitMinutes { get; }
+    public ReactivePropertySlim<int> SnoozeMinutes { get; }
     public AsyncReactiveCommand<object?> SaveCommand { get; }
 
     public SettingsPageViewModel(IDialogHelper dialogHelper, SettingsModel model) : base(dialogHelper)
@@ -22,6 +25,16 @@ public class SettingsPageViewModel : ViewModelBase
                 convert: x => (double)x / 60,
                 convertBack: x => (int)x * 60
             )
+            .AddTo(Disposable);
+
+        IsWorkAlarmEnabled = _model.WorkAlarmConfig
+            .ToReactivePropertySlimAsSynchronized(x => x.Value.IsEnabled)
+            .AddTo(Disposable);
+        LimitMinutes = _model.WorkAlarmConfig
+            .ToReactivePropertySlimAsSynchronized(x => x.Value.BeforeMinutes)
+            .AddTo(Disposable);
+        SnoozeMinutes = _model.WorkAlarmConfig
+            .ToReactivePropertySlimAsSynchronized(x => x.Value.SnoozeMinutes)
             .AddTo(Disposable);
 
         SaveCommand = new AsyncReactiveCommand()

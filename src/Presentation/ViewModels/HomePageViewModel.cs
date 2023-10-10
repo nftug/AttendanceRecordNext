@@ -11,7 +11,7 @@ public class HomePageViewModel : ViewModelBase
 {
     private readonly WorkTimeModel _model;
     private readonly MainWindowModel _mainWindowModel;
-    private readonly AlarmModel _alarmModel;
+    private readonly WorkTimeAlarmModel _alarmModel;
 
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalWorkTime { get; }
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalRestTime { get; }
@@ -24,7 +24,7 @@ public class HomePageViewModel : ViewModelBase
     public AsyncReactiveCommand<object?> ToggleWork { get; }
     public AsyncReactiveCommand<object?> ToggleRest { get; }
 
-    public HomePageViewModel(WorkTimeModel model, MainWindowModel mainWindowModel, IDialogHelper dialogHelper, AlarmModel alarmModel)
+    public HomePageViewModel(WorkTimeModel model, MainWindowModel mainWindowModel, IDialogHelper dialogHelper, WorkTimeAlarmModel alarmModel)
         : base(dialogHelper)
     {
         _model = model;
