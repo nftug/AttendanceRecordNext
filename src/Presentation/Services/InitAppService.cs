@@ -1,22 +1,21 @@
-using Domain.Interfaces;
 using Presentation.Models;
 
 namespace Presentation.Services;
 
 public class InitAppService
 {
-    private readonly IAppConfigRepository _configRepository;
+    private readonly SettingsModel _settings;
     private readonly WorkTimeModel _workTimeModel;
 
-    public InitAppService(IAppConfigRepository configRepository, WorkTimeModel workTimeModel)
+    public InitAppService(SettingsModel settings, WorkTimeModel workTimeModel)
     {
-        _configRepository = configRepository;
+        _settings = settings;
         _workTimeModel = workTimeModel;
     }
 
     public async Task InitAppAsync()
     {
-        await _configRepository.LoadAsync();
+        await _settings.LoadAsync();
         await _workTimeModel.LoadDataAsync();
     }
 }

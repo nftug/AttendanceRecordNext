@@ -1,6 +1,4 @@
 using System.Reactive.Linq;
-using Domain.Config;
-using Domain.Interfaces;
 using Presentation.Shared;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -14,10 +12,9 @@ public class AlarmModel : BindableBase
     private readonly IDialogHelper _dialogHelper;
     private readonly SettingsModel _settingsModel;
 
-    private ReadOnlyReactivePropertySlim<AppConfig.WorkTimeAlarmConfig> WorkAlarmConfig { get; }
-
     public ReactiveTimer WorkAlarmTimer { get; }
     public ReactiveTimer WorkSnoozeTimer { get; }
+    public ReadOnlyReactivePropertySlim<string?> FormattedWorkOverTime { get; }
 
     public AlarmModel(WorkTimeModel workTimeModel, SettingsModel settingsModel, IDialogHelper dialogHelper)
     {
@@ -25,43 +22,75 @@ public class AlarmModel : BindableBase
         _settingsModel = settingsModel;
         _dialogHelper = dialogHelper;
 
-        WorkAlarmConfig = _settingsModel.Config.ObserveProperty(x => x.Value.WorkTimeAlarm)
-            .ToReadOnlyReactivePropertySlim(new()).AddTo(Disposable);
-
-        WorkAlarmTimer = new ReactiveTimer(TimeSpan.FromMinutes(1)).AddTo(Disposable);
+        // Work time alarm
+        WorkAlarmTimer = new ReactiveTimer(TimeSpan.FromSeconds(1)).AddTo(Disposable);
         WorkAlarmTimer
             .ObserveOnUIDispatcher()
-            .Where(_ => WorkAlarmConfig.Value.IsEnabled == true)
-            .Subscribe(async _ => await InvokeWorkTimeAlarm());
-        WorkAlarmTimer.Start();
+            .Where(_ =>
+                _settingsModel.WorkAlarmConfig.Value?.IsEnabled == true &&
+                _workTimeModel.IsOngoing.Value &&
+                _workTimeModel.TotalWorkTime.Value >= _settingsModel.WorkTimeLimit.Value
+            )
+            .Subscribe(async _ => await InvokeWorkTimeAlarm())
+            .AddTo(Disposable);
+        _workTimeModel.IsOngoing.Where(v => v).Subscribe(_ => WorkAlarmTimer.Start()).AddTo(Disposable);
 
-        // NOTE: スヌーズ時間の変更時はWorkAlarmTimer.Intervalを変更する
-        // TODO: Configの変更を受信する設計にする。WorkTimeModelも同様。
-        WorkSnoozeTimer = new ReactiveTimer(TimeSpan.FromMinutes(WorkAlarmConfig.Value.SnoozeMinutes)).AddTo(Disposable);
+        WorkSnoozeTimer = new ReactiveTimer(TimeSpan.FromSeconds(1)).AddTo(Disposable);
+        WorkSnoozeTimer
+            .ObserveOnUIDispatcher()
+            .Where(_ =>
+                _settingsModel.WorkAlarmConfig.Value?.IsEnabled == true &&
+                _settingsModel.WorkAlarmConfig.Value.IsSnoozeEnabled &&
+                _workTimeModel.IsOngoing.Value &&
+                _workTimeModel.TotalWorkTime.Value >= _settingsModel.WorkTimeLimit.Value
+            )
+            .Subscribe(async _ => await InvokeWorkTimeSnooze())
+            .AddTo(Disposable);
+        _settingsModel.WorkAlarmConfig
+            .ObserveProperty(v => v.Value.SnoozeMinutes)
+            .Subscribe(v => WorkSnoozeTimer.Interval = TimeSpan.FromMinutes(v))
+            .AddTo(Disposable);
 
+        FormattedWorkOverTime = _workTimeModel.Overtime
+            .Select(v => $"{v.Minutes}{(v <= TimeSpan.Zero ? "分前です。" : "分後")}")
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposable);
     }
 
     private async Task InvokeWorkTimeAlarm()
     {
-        TimeSpan totalWorkTime = _workTimeModel.TotalWorkTime.Value;
-        TimeSpan limitWorkTime =
-            TimeSpan.FromMinutes(_config.StandardWorkMinutes - _config.WorkTimeAlarm.BeforeMinutes);
-
-        if (totalWorkTime.Ticks < limitWorkTime.Ticks) return;
-
         WorkAlarmTimer.Stop();
 
         // 最初の通知
-        if (_config.WorkTimeAlarm.IsSnoozeEnabled)
+        if (_settingsModel.Config.Value.WorkTimeAlarm.IsSnoozeEnabled)
         {
             WorkSnoozeTimer.Start();
         }
         else
         {
             await _dialogHelper.ShowDialogAsync(
-                $"退勤予定の{_config.WorkTimeAlarm.BeforeMinutes}分前です。",
+                $"退勤予定時刻の{FormattedWorkOverTime.Value}分前です。",
                 "退勤予定時刻の通知"
             );
+        }
+    }
+
+    private async Task InvokeWorkTimeSnooze()
+    {
+        WorkSnoozeTimer.Stop();
+
+        var result = await _dialogHelper.ShowDialogAsync(
+            $"退勤予定時刻の{FormattedWorkOverTime.Value}です。\n" +
+                $"{_settingsModel.WorkAlarmConfig.Value.SnoozeMinutes}分後に再度アラームを鳴らしますか？",
+            "退勤予定時刻の通知",
+            button: DialogButton.YesNo
+        );
+
+        if (result == Helpers.DialogResult.Yes)
+        {
+            TimeSpan delayTs = TimeSpan.FromMinutes(_settingsModel.WorkAlarmConfig.Value.SnoozeMinutes);
+            WorkSnoozeTimer.Interval = delayTs;
+            WorkSnoozeTimer.Start(delayTs);
         }
     }
 }
