@@ -8,7 +8,7 @@ namespace Infrastructure.Repositories;
 
 public class WorkTimeRepository : RepositoryBase<WorkTime, WorkTimeDataModel>, IWorkTimeRepository
 {
-    public WorkTimeRepository(IAppInfo appConfig) : base(appConfig)
+    public WorkTimeRepository(IAppInfo appInfo) : base(appInfo)
     {
     }
 

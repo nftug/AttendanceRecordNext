@@ -9,6 +9,7 @@ namespace Presentation.Models;
 public interface IAlarmModel
 {
     void InvokeSnooze();
+    Task DoActionAsync();
 }
 
 public abstract class AlarmModelBase<TSelf> : BindableBase, IAlarmModel
@@ -26,6 +27,7 @@ public abstract class AlarmModelBase<TSelf> : BindableBase, IAlarmModel
     protected ReadOnlyReactivePropertySlim<string?> OvertimeMessage { get; set; } = null!;
 
     protected abstract string MessageTitle { get; }
+    protected abstract string ActionName { get; }
 
     protected AlarmModelBase(
         WorkTimeModel workTimeModel,
@@ -46,7 +48,6 @@ public abstract class AlarmModelBase<TSelf> : BindableBase, IAlarmModel
             .Subscribe(_ => InvokeWorkTimeAlarm())
             .AddTo(Disposable);
         _workTimeModel.IsOngoing.Where(v => v).Subscribe(_ => AlarmTimer.Start()).AddTo(Disposable);
-        _settingsModel.Config.Skip(1).Subscribe(_ => AlarmTimer.Start()).AddTo(Disposable);
 
         SnoozeTimer = new ReactiveTimer(TimeSpan.FromSeconds(1)).AddTo(Disposable);
         SnoozeTimer
@@ -73,7 +74,7 @@ public abstract class AlarmModelBase<TSelf> : BindableBase, IAlarmModel
     protected void InvokeWorkTimeSnooze()
     {
         SnoozeTimer.Stop();
-        _toastHelper.ShowAlarmToastWithSnooze<TSelf>(MessageTitle, OvertimeMessage.Value!);
+        _toastHelper.ShowAlarmToastWithSnooze<TSelf>(MessageTitle, OvertimeMessage.Value!, ActionName);
     }
 
     public void InvokeSnooze()
@@ -82,4 +83,6 @@ public abstract class AlarmModelBase<TSelf> : BindableBase, IAlarmModel
         TimeSpan delayTs = TimeSpan.FromMinutes(snoozeMinutes);
         SnoozeTimer.Start(delayTs);
     }
+
+    public abstract Task DoActionAsync();
 }

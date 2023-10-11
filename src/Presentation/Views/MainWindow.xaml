@@ -27,6 +27,9 @@
         <i:EventTrigger EventName="Closing">
             <i:InvokeCommandAction Command="{Binding ClosingCommand}" PassEventArgsToCommand="True"/>
         </i:EventTrigger>
+        <i:EventTrigger EventName="StateChanged">
+            <i:InvokeCommandAction Command="{Binding StateChangedCommand}"/>
+        </i:EventTrigger>
     </i:Interaction.Triggers>
 
     <ui:NavigationView x:Name="NavigationView"

@@ -1,6 +1,5 @@
 using Domain.Entities;
 using Domain.Interfaces;
-using Infrastructure.DataModels;
 using LiteDB.Async;
 
 namespace Infrastructure.Shared;
@@ -9,14 +8,14 @@ public abstract class RepositoryBase<TEntity, TDataModel> : IRepository<TEntity>
     where TDataModel : IDataModel<TEntity, TDataModel>, new()
     where TEntity : class, IEntity<TEntity>
 {
-    protected readonly IAppInfo _appConfig;
+    protected readonly IAppInfo _appInfo;
 
-    protected RepositoryBase(IAppInfo appConfig)
+    protected RepositoryBase(IAppInfo appInfo)
     {
-        _appConfig = appConfig;
+        _appInfo = appInfo;
     }
 
-    protected LiteDbCollection<TEntity, TDataModel> Context => new(_appConfig);
+    protected LiteDbCollection<TEntity, TDataModel> Context => new(_appInfo);
 
     protected async Task<T> UseCollectionQuery<T>(Func<ILiteQueryableAsync<TDataModel>, Task<T>> callback)
     {

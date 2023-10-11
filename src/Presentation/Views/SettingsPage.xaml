@@ -14,6 +14,12 @@
       d:DesignHeight="650" d:DesignWidth="800"
       Title="SettingsPage">
 
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Unloaded">
+            <i:InvokeCommandAction Command="{Binding UnloadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <DockPanel LastChildFill="True" Margin="10,10,15,5">
         <ui:SimpleStackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
             <Button VerticalAlignment="Center"
@@ -46,13 +52,11 @@
                     </ui:SimpleStackPanel>
                 </ui:SimpleStackPanel>
 
-                <ui:SimpleStackPanel Spacing="10" Margin="0,-20">
+                <ui:SimpleStackPanel Spacing="10" Margin="0,-5">
                     <TextBlock Text="退勤のアラーム"
-                               Margin="0,0,0,5"
                                Style="{StaticResource SubtitleTextBlockStyle}"/>
 
                     <ui:ToggleSwitch IsOn="{Binding IsWorkAlarmEnabled.Value}"
-                                     Header="退勤のアラームを有効にする"
                                      OnContent="有効" OffContent="無効"/>
 
                     <ui:SimpleStackPanel Orientation="Horizontal"
@@ -76,13 +80,11 @@
                     </ui:SimpleStackPanel>
                 </ui:SimpleStackPanel>
 
-                <ui:SimpleStackPanel Spacing="10" Margin="0">
+                <ui:SimpleStackPanel Spacing="10"  Margin="0,-5">
                     <TextBlock Text="休憩のアラーム"
-                               Margin="0,0,0,5"
                                Style="{StaticResource SubtitleTextBlockStyle}"/>
 
                     <ui:ToggleSwitch IsOn="{Binding IsRestAlarmEnabled.Value}"
-                                     Header="休憩のアラームを有効にする"
                                      OnContent="有効" OffContent="無効"/>
 
                     <ui:SimpleStackPanel Orientation="Horizontal"
@@ -111,9 +113,28 @@
                         </ui:SimpleStackPanel>
                     </ui:SimpleStackPanel>
                 </ui:SimpleStackPanel>
+
+                <ui:SimpleStackPanel Spacing="10" Margin="0,-5,0,25">
+                    <TextBlock Text="データの保存先"
+                               Margin="0,0,0,5"
+                               Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                    <TextBlock Text="{Binding AppDataPath.Value}"
+                               HorizontalAlignment="Stretch" Margin="0,0,0,2"
+                               TextTrimming="CharacterEllipsis"/>
+
+                    <Button HorizontalAlignment="Stretch"
+                            Margin="0,0,0,5"
+                            Command="{Binding OpenAppDataDirectoryCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon Glyph="&#xE838;" Margin="0,0,3,0" FontSize="15"/>
+                            <TextBlock Text="フォルダを開く" />
+                        </StackPanel>
+                    </Button>
+
+                </ui:SimpleStackPanel>
             </ui:SimpleStackPanel>
         </ScrollViewer>
     </DockPanel>
-
 
 </Page>

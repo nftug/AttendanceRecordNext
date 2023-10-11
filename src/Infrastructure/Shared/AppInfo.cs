@@ -21,13 +21,14 @@ public class AppInfo : IAppInfo
         AppName = assembly.GetCustomAttribute<AssemblyTitleAttribute>()!.Title;
         AppVersion = assembly.GetName().Version!.ToString();
 
+#if DEBUG
         AppDataPath = Path.GetDirectoryName(Environment.ProcessPath)!;
-        /*
+#else
         AppDataPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             assembly.GetName().Name!
         );
-        */
+#endif
 
         // データ保存用のパスが存在しないとサービス注入時に例外が発生するので、事前に作っておく
         if (!Directory.Exists(AppDataPath))

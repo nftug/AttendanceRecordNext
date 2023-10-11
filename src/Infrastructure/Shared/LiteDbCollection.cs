@@ -7,7 +7,7 @@ public class LiteDbCollection<TEntity, TDataModel> : IDisposable
     where TDataModel : IDataModel<TEntity, TDataModel>, new()
     where TEntity : class, IEntity<TEntity>
 {
-    private readonly IAppInfo _appConfig;
+    private readonly IAppInfo _appInfo;
     private readonly ILiteDatabaseAsync _db;
     private readonly ILiteCollectionAsync<TDataModel> _collection;
 
@@ -15,11 +15,11 @@ public class LiteDbCollection<TEntity, TDataModel> : IDisposable
 
     private bool disposedValue;
 
-    public LiteDbCollection(IAppInfo appConfig)
+    public LiteDbCollection(IAppInfo appInfo)
     {
-        _appConfig = appConfig;
+        _appInfo = appInfo;
 
-        string dbPath = Path.Combine(_appConfig.AppDataPath, "attendance.db");
+        string dbPath = Path.Combine(_appInfo.AppDataPath, "attendance.db");
         _db = new LiteDatabaseAsync(dbPath);
 
         string tableName = typeof(TEntity).Name;

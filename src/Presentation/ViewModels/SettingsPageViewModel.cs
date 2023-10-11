@@ -22,7 +22,11 @@ public class SettingsPageViewModel : ViewModelBase
     public ReactivePropertySlim<int> RestElapsedMinutes { get; }
     public ReactivePropertySlim<int> RestSnoozeMinutes { get; }
 
+    public ReadOnlyReactivePropertySlim<string> AppDataPath { get; }
+
     public AsyncReactiveCommand<object?> SaveCommand { get; }
+    public AsyncReactiveCommand<object?> UnloadedCommand { get; }
+    public ReactiveCommandSlim<object?> OpenAppDataDirectoryCommand { get; }
 
     public SettingsPageViewModel(IDialogHelper dialogHelper, SettingsModel model) : base(dialogHelper)
     {
@@ -67,8 +71,16 @@ public class SettingsPageViewModel : ViewModelBase
             .ToReactivePropertySlimAsSynchronized(x => x.Value.SnoozeMinutes)
             .AddTo(Disposable);
 
+        AppDataPath = _model.AppDataPath.ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposable);
+
         SaveCommand = new AsyncReactiveCommand<object?>()
             .WithSubscribe(async _ => await _model.SaveAsync())
+            .AddTo(Disposable);
+        UnloadedCommand = new AsyncReactiveCommand<object?>()
+            .WithSubscribe(async _ => await _model.LoadAsync())
+            .AddTo(Disposable);
+        OpenAppDataDirectoryCommand = new ReactiveCommandSlim<object?>()
+            .WithSubscribe(_ => _model.OpenAppDataDirectory())
             .AddTo(Disposable);
     }
 }

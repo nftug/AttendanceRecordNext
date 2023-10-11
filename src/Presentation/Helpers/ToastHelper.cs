@@ -1,4 +1,5 @@
 using Microsoft.Toolkit.Uwp.Notifications;
+using Presentation.Enums;
 using Presentation.Models;
 
 namespace Presentation.Helpers;
@@ -13,7 +14,7 @@ public class ToastHelper : IToastHelper
             .AddButton(new ToastButtonDismiss())
             .Show();
 
-    public void ShowAlarmToastWithSnooze<T>(string title, string content)
+    public void ShowAlarmToastWithSnooze<T>(string title, string content, string actionLabel)
         where T : IAlarmModel
         => new ToastContentBuilder()
             .SetToastScenario(ToastScenario.Alarm)
@@ -21,9 +22,13 @@ public class ToastHelper : IToastHelper
             .AddText(content)
             .AddButton(new ToastButtonDismiss())
             .AddButton(new ToastButton()
+                .SetContent(actionLabel)
+                .AddArgument(ToastArgumentParameter.Action.ToString(), ToastArgumentAction.Act.ToString()))
+                .AddArgument(ToastArgumentParameter.Sender.ToString(), typeof(T).Name)
+            .AddButton(new ToastButton()
                 .SetContent("スヌーズ")
-                .AddArgument("action", "snooze")
-                .AddArgument("alarmType", typeof(T).Name)
+                .AddArgument(ToastArgumentParameter.Action.ToString(), ToastArgumentAction.Snooze.ToString())
+                .AddArgument(ToastArgumentParameter.Sender.ToString(), typeof(T).Name)
             )
             .Show();
 }

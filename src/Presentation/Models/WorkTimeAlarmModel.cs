@@ -41,4 +41,18 @@ public class WorkTimeAlarmModel : AlarmModelBase<WorkTimeAlarmModel>
     }
 
     protected override string MessageTitle => "退勤のアラーム";
+
+    protected override string ActionName => "退勤";
+
+    public override async Task DoActionAsync()
+    {
+        var ans = await _dialogHelper.ShowDialogAsync(
+            "本日の勤務を終了しますか？",
+            "退勤",
+            DialogButton.YesNo, DialogImage.Question
+        );
+        if (ans != Helpers.DialogResult.Yes) return;
+
+        await _workTimeModel.ToggleWorkAsync();
+    }
 }

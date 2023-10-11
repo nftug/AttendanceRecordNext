@@ -49,4 +49,8 @@ public class RestTimeAlarmModel : AlarmModelBase<RestTimeAlarmModel>
     }
 
     protected override string MessageTitle => "休憩のアラーム";
+
+    protected override string ActionName => "休憩";
+
+    public override async Task DoActionAsync() => await _workTimeModel.ToggleRestAsync();
 }
