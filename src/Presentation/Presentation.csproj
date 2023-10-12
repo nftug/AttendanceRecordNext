@@ -10,6 +10,7 @@
 		<AssemblyName>AttendanceRecord</AssemblyName>
 		<AssemblyTitle>Attendance Record</AssemblyTitle>
 		<AssemblyVersion>0.1.0</AssemblyVersion>
+		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
