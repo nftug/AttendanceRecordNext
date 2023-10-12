@@ -15,10 +15,10 @@ public record Duration
     public Duration Edit(DurationEditCommandDto command)
     {
         if (command.StartedOn > DateTime.Now || command.FinishedOn > DateTime.Now)
-            throw new DomainException("Cannot set the future date.");
+            throw new DomainException("未来の日付を指定することはできません。");
 
         if (command.StartedOn > command.FinishedOn)
-            throw new DomainException("StartedOn is larger than FinishedOn.");
+            throw new DomainException("開始日が終了日よりも後に指定されています。");
 
         // if (command.FinishedOn is null && StartedOn.Date != DateTime.Today)
         //    throw new DomainException("Cannot set blank time on FinishedOn.");

@@ -52,7 +52,7 @@ public class WorkTimeService
 
         var latest =
             await _workTimeFactory.FindByDateAsync(DateTime.Today)
-            ?? throw new DomainException("There is no available work item.");
+            ?? throw new DomainException("状態を切り替えるための記録が見つかりません。");
         return latest.ToggleRest(eventPublisher);
     }
 
@@ -65,7 +65,7 @@ public class WorkTimeService
         {
             // 新規作成の場合、日付が被っている記録がないかを確認する
             if (await _workTimeFactory.FindByDateAsync(command.Duration.StartedOn) != null)
-                throw new DomainException("Already exist of a record of the same day.");
+                throw new DomainException("既に同じ日付の記録が存在します。");
 
             item = _workTimeFactory.Create();
         }
@@ -80,7 +80,7 @@ public class WorkTimeService
     {
         eventPublisher.Subscribe(_workTimeSubscriber);
         var item = await _workTimeFactory.FindByIdAsync(itemId)
-            ?? throw new DomainException("Not found work time item");
+            ?? throw new DomainException("指定された記録が見つかりません。");
 
         eventPublisher.Publish(EntityEvent<WorkTime>.Deleted(item));
     }

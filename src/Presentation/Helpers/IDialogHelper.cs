@@ -25,16 +25,26 @@ public enum DialogResult
     OK = MessageBoxResult.OK,
     Cancel = MessageBoxResult.Cancel,
     Yes = MessageBoxResult.Yes,
-    No = MessageBoxResult.No
+    No = MessageBoxResult.No,
+    Primary,
+    Secondary
 }
 
 public interface IDialogHelper
 {
-    Task<DialogResult> ShowDialogAsync
-    (
+    Task<DialogResult> ShowDialogAsync(
         string message,
-        string caption = "Information",
+        string caption,
         DialogButton button = DialogButton.OK,
         DialogImage image = DialogImage.None
+    );
+
+    Task<DialogResult> ShowCustomDialogAsync(
+        string message,
+        string caption,
+        string primaryButtonText,
+        string? secondaryButtonText = null,
+        string? closeButtonText = null,
+        DialogResult defaultResult = DialogResult.None
     );
 }

@@ -27,32 +27,49 @@ public class StatusFormatModel : BindableBase
 
     public void CopyFormattedTextToClipboard()
     {
+        _formattedText.Value =
+            GetFormattedText(StatusFormatConfig.StatusFormat, StatusFormatConfig.TimeSpanFormat)
+            ?? throw new FormatException();
+
+        Clipboard.SetText(_formattedText.Value);
+    }
+
+    internal string? GetFormattedText(string format, string timeSpanFormat)
+    {
         try
         {
-            var builder = new StringBuilder(StatusFormatConfig.StatusFormat);
+            if (timeSpanFormat is not { Length: > 0 }) return null;
 
+            var builder = new StringBuilder(format);
             builder
-                .Replace("{daily_work}", FormatTimeSpan(_workTimeModel.TotalWorkTime.Value))
-                .Replace("{daily_rest}", FormatTimeSpan(_workTimeModel.TotalRestTime.Value))
-                .Replace("{daily_over}", FormatTimeSpan(_workTimeModel.Overtime.Value))
-                .Replace("{monthly_over}", FormatTimeSpan(_workTimeModel.MonthlyOvertime.Value));
+                .Replace("{daily_work}", GetFormattedTimeSpan(_workTimeModel.TotalWorkTime.Value, timeSpanFormat))
+                .Replace("{daily_rest}", GetFormattedTimeSpan(_workTimeModel.TotalRestTime.Value, timeSpanFormat))
+                .Replace("{daily_over}", GetFormattedTimeSpan(_workTimeModel.Overtime.Value, timeSpanFormat))
+                .Replace("{monthly_over}", GetFormattedTimeSpan(_workTimeModel.MonthlyOvertime.Value, timeSpanFormat));
 
-            _formattedText.Value = builder.ToString();
-
-            Clipboard.SetText(_formattedText.Value);
+            return builder.ToString();
         }
         catch (FormatException e)
         {
             System.Diagnostics.Debug.WriteLine(e.Message);
-            throw;
+            return null;
         }
     }
 
-    private string FormatTimeSpan(TimeSpan timeSpan)
+    internal static string? GetFormattedTimeSpan(TimeSpan timeSpan, string timeSpanFormat)
     {
-        string result = string.Empty;
-        if (timeSpan < TimeSpan.Zero) result = "-";
-        result += string.Format($"{"{0:"}{StatusFormatConfig.TimeSpanFormat}{"}"}", timeSpan);
-        return result;
+        if (timeSpanFormat is not { Length: > 0 }) return null;
+
+        try
+        {
+            string result = string.Empty;
+            if (timeSpan < TimeSpan.Zero) result = "-";
+            result += string.Format($"{"{0:"}{timeSpanFormat}{"}"}", timeSpan);
+            return result;
+        }
+        catch (FormatException)
+        {
+            return null;
+        }
     }
 }

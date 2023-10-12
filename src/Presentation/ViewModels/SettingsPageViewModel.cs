@@ -10,6 +10,7 @@ namespace Presentation.ViewModels;
 public class SettingsPageViewModel : ViewModelBase
 {
     private readonly SettingsModel _model;
+    private readonly StatusFormatModel _statusFormatModel;
 
     public ReactivePropertySlim<double> StandardWorkHours { get; }
 
@@ -23,8 +24,9 @@ public class SettingsPageViewModel : ViewModelBase
     public ReactivePropertySlim<int> RestSnoozeMinutes { get; }
 
     public ReactivePropertySlim<bool> ResidentNotificationEnabled { get; }
-    public ReactivePropertySlim<string> StatusFormat { get; }
-    public ReactivePropertySlim<string> TimeSpanFormat { get; }
+    public ReactiveProperty<string> StatusFormat { get; }
+    public ReactiveProperty<string> TimeSpanFormat { get; }
+    public ReactivePropertySlim<uint> StatusFormatTextBoxCaret { get; }
 
     public ReadOnlyReactivePropertySlim<string> AppDataPath { get; }
 
@@ -33,9 +35,11 @@ public class SettingsPageViewModel : ViewModelBase
     public AsyncReactiveCommand<object?> UnloadedCommand { get; }
     public ReactiveCommandSlim<object?> OpenAppDataDirectoryCommand { get; }
 
-    public SettingsPageViewModel(IDialogHelper dialogHelper, SettingsModel model) : base(dialogHelper)
+    public SettingsPageViewModel(IDialogHelper dialogHelper, SettingsModel model, StatusFormatModel statusFormatModel)
+        : base(dialogHelper)
     {
         _model = model;
+        _statusFormatModel = statusFormatModel;
 
         StandardWorkHours = _model.ConfigForm
             .ToReactivePropertySlimAsSynchronized(
@@ -76,12 +80,19 @@ public class SettingsPageViewModel : ViewModelBase
             .ToReactivePropertySlimAsSynchronized(x => x.Value.RestTimeAlarm.SnoozeMinutes)
             .AddTo(Disposable);
 
-        StatusFormat = _model.ConfigForm
-            .ToReactivePropertySlimAsSynchronized(x => x.Value.StatusFormat.StatusFormat)
-            .AddTo(Disposable);
         TimeSpanFormat = _model.ConfigForm
-            .ToReactivePropertySlimAsSynchronized(x => x.Value.StatusFormat.TimeSpanFormat)
+            .ToReactivePropertyAsSynchronized(x => x.Value.StatusFormat.TimeSpanFormat, ignoreValidationErrorValue: true)
+            .SetValidateNotifyError(v =>
+                StatusFormatModel.GetFormattedTimeSpan(new(), v) is not { Length: > 0 } ? "不正なフォーマットです" : null
+            )
             .AddTo(Disposable);
+        StatusFormat = _model.ConfigForm
+            .ToReactivePropertyAsSynchronized(x => x.Value.StatusFormat.StatusFormat, ignoreValidationErrorValue: true)
+            .SetValidateNotifyError(v =>
+                _statusFormatModel.GetFormattedText(v, TimeSpanFormat.Value) is not { Length: > 0 } ? "不正なフォーマットです" : null
+            )
+            .AddTo(Disposable);
+        StatusFormatTextBoxCaret = new ReactivePropertySlim<uint>().AddTo(Disposable);
 
         ResidentNotificationEnabled = _model.ConfigForm
             .ToReactivePropertySlimAsSynchronized(x => x.Value.ResidentNotificationEnabled)

@@ -148,7 +148,7 @@ public class WorkTime : IEntity<WorkTime>, IWorkTimeResponse
     public WorkTime ToggleRest(EventPublisher eventPublisher)
     {
         if (!IsTodayOngoing)
-            throw new DomainException("Cannot pause a record which is not ongoing.");
+            throw new DomainException("進行中ではない勤務記録は一時停止できません。");
 
         if (!IsResting)
         {
@@ -167,7 +167,7 @@ public class WorkTime : IEntity<WorkTime>, IWorkTimeResponse
     internal WorkTime Finish(EventPublisher eventPublisher)
     {
         if (!IsTodayOngoing)
-            throw new DomainException("Cannot finish a record which is not ongoing.");
+            throw new DomainException("進行中ではない勤務記録は完了できません。");
 
         // 休憩中の場合、休憩状態を終了する
         if (IsResting)
@@ -183,9 +183,9 @@ public class WorkTime : IEntity<WorkTime>, IWorkTimeResponse
     internal WorkTime Restart(EventPublisher eventPublisher)
     {
         if (!IsTodayRecord)
-            throw new DomainException("Cannot restart a record which is not today's.");
-        if (!CanRestart)
-            throw new DomainException("Not a stopped record.");
+            throw new DomainException("本日付以外の勤務記録は再開することができません。");
+        // if (!CanRestart)
+        //    throw new DomainException("停止処理がされていない記録は再開することができません。");
 
         FinishRest(eventPublisher);
 

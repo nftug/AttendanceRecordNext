@@ -52,7 +52,7 @@ public class RestTime : IEntity<RestTime>, IRestTimeResponse
     public RestTime Finish()
     {
         if (!IsActive)
-            throw new DomainException("Cannot finish the inactive rest time record.");
+            throw new DomainException("進行中ではない休憩記録は完了できません。");
 
         Duration = Duration.GetFinished();
         return this;

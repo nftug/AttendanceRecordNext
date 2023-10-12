@@ -74,7 +74,7 @@ public class SettingsModel : BindableBase, IToastMessageSubscriber
         await _configRepository.LoadAsync();
 
         // NOTE: 設定を正しく反映させるため、二度更新する
-        Config.Value = new();
+        Config.Value = null!;
         Config.Value = _configRepository.Config;
 
         ConfigForm.Value = new();

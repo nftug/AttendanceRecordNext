@@ -49,8 +49,35 @@ public class MainWindowViewModel : ViewModelBase
             .WithSubscribe(async _ => await CatchErrorAsync(_init.InitAppAsync))
             .AddTo(Disposable);
 
+        ExitCommand = new ReactiveCommandSlim<object?>()
+            .WithSubscribe(async _ =>
+            {
+                if (_model.Visibility.Value == System.Windows.Visibility.Hidden)
+                    _model.Reopen();
+
+                var ans = await _dialogHelper.ShowCustomDialogAsync(
+                    $"アプリを終了しますか？{(_workTimeModel.IsOngoing.Value ? "\n（終了後も時間のカウントは継続されます。）" : "")}",
+                    "アプリの終了",
+                    primaryButtonText: "終了",
+                    secondaryButtonText: "最小化",
+                    closeButtonText: "キャンセル"
+                );
+
+                if (ans == Helpers.DialogResult.Primary)
+                    _model.Shutdown();
+                else if (ans == Helpers.DialogResult.Secondary)
+                    _model.Closing(null);
+                else
+                    _model.Shutdown();
+            })
+            .AddTo(Disposable);
+
         ClosingCommand = new ReactiveCommandSlim<CancelEventArgs?>()
-            .WithSubscribe(_model.Closing)
+            .WithSubscribe(e =>
+            {
+                if (e != null) e.Cancel = true;
+                ExitCommand.Execute(null);
+            })
             .AddTo(Disposable);
 
         StateChangedCommand = new ReactiveCommandSlim<object?>()
@@ -59,23 +86,6 @@ public class MainWindowViewModel : ViewModelBase
 
         OpenCommand = new ReactiveCommandSlim<object?>()
             .WithSubscribe(_ => _model.Reopen())
-            .AddTo(Disposable);
-
-        ExitCommand = new ReactiveCommandSlim<object?>()
-            .WithSubscribe(async _ =>
-            {
-                if (_model.Visibility.Value == System.Windows.Visibility.Hidden)
-                    _model.Reopen();
-
-                var ans = await _dialogHelper.ShowDialogAsync(
-                    $"アプリを終了しますか？{(_workTimeModel.IsOngoing.Value ? "\n（終了後も時間のカウントは継続されます。）" : "")}",
-                    "アプリの終了",
-                    DialogButton.YesNo, DialogImage.Question
-                );
-                if (ans != Helpers.DialogResult.Yes) return;
-
-                _model.Shutdown();
-            })
             .AddTo(Disposable);
 
         ActivateCommand = new ReactiveCommandSlim<object?>().AddTo(Disposable);

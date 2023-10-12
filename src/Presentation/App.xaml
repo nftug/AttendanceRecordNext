@@ -27,14 +27,26 @@
                         <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundDisabled}"/>
                     </Trigger>
                 </Style.Triggers>
-                <Setter Property="FontSize" Value="18"/>
             </Style>
 
             <Style TargetType="{x:Type ui:FontIcon}"
                    x:Key="ButtonIconStyle"
                    BasedOn="{StaticResource {x:Type ui:FontIcon}}">
                 <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="0,0,8,0"/>
+                <Setter Property="Margin" Value="0,0,6,0"/>
+            </Style>
+
+            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DefaultTextBoxStyle}">
+                <Setter Property="ContextMenu">
+                    <Setter.Value>
+                        <ContextMenu>
+                            <MenuItem Command="ApplicationCommands.Cut" />
+                            <MenuItem Command="ApplicationCommands.Copy" />
+                            <MenuItem Command="ApplicationCommands.Paste" />
+                            <MenuItem Command="ApplicationCommands.SelectAll" />
+                        </ContextMenu>
+                    </Setter.Value>
+                </Setter>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

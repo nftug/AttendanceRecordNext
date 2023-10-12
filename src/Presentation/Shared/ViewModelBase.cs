@@ -11,7 +11,7 @@ public abstract class ViewModelBase : BindableBase
         _dialogHelper = dialogHelper;
     }
 
-    protected async Task<bool> CatchErrorAsync(Func<Task> func, string? message = null)
+    protected async Task<bool> CatchErrorAsync(Func<Task> func)
     {
         try
         {
@@ -20,12 +20,7 @@ public abstract class ViewModelBase : BindableBase
         }
         catch (Exception e)
         {
-            message ??= "An error has occurred during process.";
-            await _dialogHelper.ShowDialogAsync(
-               $"{message}\nError message: {e.Message}",
-               "Error",
-               image: DialogImage.Error
-           );
+            await _dialogHelper.ShowDialogAsync(e.Message, "エラー");
             return false;
         }
     }
