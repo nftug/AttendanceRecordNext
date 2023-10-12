@@ -11,9 +11,11 @@
 		<AssemblyTitle>Attendance Record</AssemblyTitle>
 		<AssemblyVersion>0.1.0</AssemblyVersion>
 	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DebugType>none</DebugType>
 	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="5.1.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
