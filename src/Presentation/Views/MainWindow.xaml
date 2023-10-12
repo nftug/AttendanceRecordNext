@@ -65,10 +65,10 @@
             <helper:NotifyIconWrapper NotifyRequest="{Binding NotifyRequest.Value}" Text="{Binding WindowTitle.Value}">
                 <bh:Interaction.Triggers>
                     <bh:EventTrigger EventName="OpenSelected">
-                        <bh:InvokeCommandAction Command="{Binding NotifyIconOpenCommand}"/>
+                        <bh:InvokeCommandAction Command="{Binding OpenCommand}"/>
                     </bh:EventTrigger>
                     <bh:EventTrigger EventName="ExitSelected">
-                        <bh:InvokeCommandAction Command="{Binding NotifyIconExitCommand}"/>
+                        <bh:InvokeCommandAction Command="{Binding ExitCommand}"/>
                     </bh:EventTrigger>
                 </bh:Interaction.Triggers>
             </helper:NotifyIconWrapper>

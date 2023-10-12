@@ -14,9 +14,10 @@ public class MainWindowViewModel : ViewModelBase
 {
     private readonly MainWindowModel _model;
     private readonly InitAppService _init;
+    private readonly WorkTimeModel _workTimeModel;
 
-    public ReadOnlyReactivePropertySlim<string?> HeaderTitle { get; }
-    public ReadOnlyReactivePropertySlim<string?> WindowTitle { get; }
+    public ReactivePropertySlim<string?> HeaderTitle { get; }
+    public ReactivePropertySlim<string?> WindowTitle { get; }
 
     public ReactivePropertySlim<NotifyIconWrapper.NotifyRequestRecord?> NotifyRequest { get; }
     public ReactivePropertySlim<WindowState> WindowState { get; }
@@ -25,17 +26,20 @@ public class MainWindowViewModel : ViewModelBase
     public ReactiveCommandSlim<CancelEventArgs?> ClosingCommand { get; }
     public ReactiveCommandSlim<object?> LoadedCommand { get; }
     public ReactiveCommandSlim<object?> StateChangedCommand { get; }
-    public ReactiveCommandSlim<object?> NotifyIconOpenCommand { get; }
-    public ReactiveCommandSlim<object?> NotifyIconExitCommand { get; }
+    public ReactiveCommandSlim<object?> OpenCommand { get; }
+    public ReactiveCommandSlim<object?> ExitCommand { get; }
 
-    public MainWindowViewModel(IDialogHelper dialogHelper, MainWindowModel model, InitAppService init)
+    public ReactiveCommandSlim<object?> ActivateCommand { get; }
+
+    public MainWindowViewModel(IDialogHelper dialogHelper, MainWindowModel model, InitAppService init, WorkTimeModel workTimeModel)
         : base(dialogHelper)
     {
         _model = model;
         _init = init;
+        _workTimeModel = workTimeModel;
 
-        HeaderTitle = _model.HeaderTitle.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
-        WindowTitle = _model.WindowTitle.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+        HeaderTitle = _model.HeaderTitle.ToReactivePropertySlimAsSynchronized(x => x.Value).AddTo(Disposable);
+        WindowTitle = _model.WindowTitle.ToReactivePropertySlimAsSynchronized(x => x.Value).AddTo(Disposable);
 
         NotifyRequest = new ReactivePropertySlim<NotifyIconWrapper.NotifyRequestRecord?>().AddTo(Disposable);
         WindowState = _model.WindowState.ToReactivePropertySlimAsSynchronized(x => x.Value).AddTo(Disposable);
@@ -44,17 +48,37 @@ public class MainWindowViewModel : ViewModelBase
         LoadedCommand = new ReactiveCommandSlim<object?>()
             .WithSubscribe(async _ => await CatchErrorAsync(_init.InitAppAsync))
             .AddTo(Disposable);
+
         ClosingCommand = new ReactiveCommandSlim<CancelEventArgs?>()
-            .WithSubscribe(e => _model.Closing(e))
+            .WithSubscribe(_model.Closing)
             .AddTo(Disposable);
+
         StateChangedCommand = new ReactiveCommandSlim<object?>()
             .WithSubscribe(_ => _model.StateChanged())
             .AddTo(Disposable);
-        NotifyIconOpenCommand = new ReactiveCommandSlim<object?>()
+
+        OpenCommand = new ReactiveCommandSlim<object?>()
             .WithSubscribe(_ => _model.Reopen())
             .AddTo(Disposable);
-        NotifyIconExitCommand = new ReactiveCommandSlim<object?>()
-            .WithSubscribe(_ => System.Windows.Application.Current.Shutdown())
+
+        ExitCommand = new ReactiveCommandSlim<object?>()
+            .WithSubscribe(async _ =>
+            {
+                if (_model.Visibility.Value == System.Windows.Visibility.Hidden)
+                    _model.Reopen();
+
+                var ans = await _dialogHelper.ShowDialogAsync(
+                    $"アプリを終了しますか？{(_workTimeModel.IsOngoing.Value ? "\n（終了後も時間のカウントは継続されます。）" : "")}",
+                    "アプリの終了",
+                    DialogButton.YesNo, DialogImage.Question
+                );
+                if (ans != Helpers.DialogResult.Yes) return;
+
+                _model.Shutdown();
+            })
             .AddTo(Disposable);
+
+        ActivateCommand = new ReactiveCommandSlim<object?>().AddTo(Disposable);
+        _model.ActivateCommand.Subscribe(_ => ActivateCommand.Execute(null)).AddTo(Disposable);
     }
 }

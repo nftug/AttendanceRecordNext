@@ -22,6 +22,8 @@ public class SettingsPageViewModel : ViewModelBase
     public ReactivePropertySlim<int> RestElapsedMinutes { get; }
     public ReactivePropertySlim<int> RestSnoozeMinutes { get; }
 
+    public ReactivePropertySlim<bool> ResidentNotificationEnabled { get; }
+
     public ReadOnlyReactivePropertySlim<string> AppDataPath { get; }
 
     public AsyncReactiveCommand<object?> SaveCommand { get; }
@@ -32,31 +34,31 @@ public class SettingsPageViewModel : ViewModelBase
     {
         _model = model;
 
-        StandardWorkHours = _model.StandardWorkMinutes
+        StandardWorkHours = _model.ConfigForm
             .ToReactivePropertySlimAsSynchronized(
-                x => x.Value,
+                x => x.Value.StandardWorkMinutes,
                 convert: v => (double)v / 60,
                 convertBack: v => (int)v * 60
             )
             .AddTo(Disposable);
 
-        IsWorkAlarmEnabled = _model.WorkAlarmConfig
-            .ToReactivePropertySlimAsSynchronized(x => x.Value.IsEnabled)
+        IsWorkAlarmEnabled = _model.ConfigForm
+            .ToReactivePropertySlimAsSynchronized(x => x.Value.WorkTimeAlarm.IsEnabled)
             .AddTo(Disposable);
-        WorkRemainingMinutes = _model.WorkAlarmConfig
-            .ToReactivePropertySlimAsSynchronized(x => x.Value.RemainingMinutes)
+        WorkRemainingMinutes = _model.ConfigForm
+            .ToReactivePropertySlimAsSynchronized(x => x.Value.WorkTimeAlarm.RemainingMinutes)
             .AddTo(Disposable);
-        WorkSnoozeMinutes = _model.WorkAlarmConfig
-            .ToReactivePropertySlimAsSynchronized(x => x.Value.SnoozeMinutes)
+        WorkSnoozeMinutes = _model.ConfigForm
+            .ToReactivePropertySlimAsSynchronized(x => x.Value.WorkTimeAlarm.SnoozeMinutes)
             .AddTo(Disposable);
 
-        IsRestAlarmEnabled = _model.RestAlarmConfig
-            .ToReactivePropertySlimAsSynchronized(x => x.Value.IsEnabled)
+        IsRestAlarmEnabled = _model.ConfigForm
+            .ToReactivePropertySlimAsSynchronized(x => x.Value.RestTimeAlarm.IsEnabled)
             .AddTo(Disposable);
         RestElapsedHours = new ReactivePropertySlim<int>().AddTo(Disposable);
         RestElapsedMinutes = new ReactivePropertySlim<int>().AddTo(Disposable);
-        _model.RestAlarmConfig
-            .ObserveProperty(x => x.Value.ElapsedMinutes)
+        _model.ConfigForm
+            .ObserveProperty(x => x.Value.RestTimeAlarm.ElapsedMinutes)
             .Subscribe(x =>
             {
                 RestElapsedHours.Value = x / 60;
@@ -66,9 +68,13 @@ public class SettingsPageViewModel : ViewModelBase
         RestElapsedHours
             .CombineLatest(RestElapsedMinutes, (h, m) => (h, m))
             .Skip(1)
-            .Subscribe(x => _model.RestAlarmConfig.Value.ElapsedMinutes = x.h * 60 + x.m);
-        RestSnoozeMinutes = _model.RestAlarmConfig
-            .ToReactivePropertySlimAsSynchronized(x => x.Value.SnoozeMinutes)
+            .Subscribe(x => _model.ConfigForm.Value.RestTimeAlarm.ElapsedMinutes = x.h * 60 + x.m);
+        RestSnoozeMinutes = _model.ConfigForm
+            .ToReactivePropertySlimAsSynchronized(x => x.Value.RestTimeAlarm.SnoozeMinutes)
+            .AddTo(Disposable);
+
+        ResidentNotificationEnabled = _model.ConfigForm
+            .ToReactivePropertySlimAsSynchronized(x => x.Value.ResidentNotificationEnabled)
             .AddTo(Disposable);
 
         AppDataPath = _model.AppDataPath.ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposable);

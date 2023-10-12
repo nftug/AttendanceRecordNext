@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Presentation.Helpers;
+using Presentation.Services;
 
 namespace Presentation.Models;
 
@@ -11,9 +12,11 @@ public class WorkTimeAlarmModel : AlarmModelBase<WorkTimeAlarmModel>
         WorkTimeModel workTimeModel,
         SettingsModel settingsModel,
         IDialogHelper dialogHelper,
-        IToastHelper toastHelper
+        IToastHelper toastHelper,
+        ToastMessagePublisher toastMessagePublisher,
+        MainWindowModel mainWindowModel
     )
-        : base(workTimeModel, settingsModel, dialogHelper, toastHelper)
+        : base(workTimeModel, settingsModel, dialogHelper, toastHelper, toastMessagePublisher, mainWindowModel)
     {
         IsAlarmEnabled = Observable
             .CombineLatest(
@@ -44,7 +47,7 @@ public class WorkTimeAlarmModel : AlarmModelBase<WorkTimeAlarmModel>
 
     protected override string ActionName => "退勤";
 
-    public override async Task DoActionAsync()
+    protected override async Task DoActionAsync()
     {
         var ans = await _dialogHelper.ShowDialogAsync(
             "本日の勤務を終了しますか？",

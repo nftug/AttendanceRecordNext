@@ -1,9 +1,27 @@
-using Presentation.Models;
-
 namespace Presentation.Helpers;
 
 public interface IToastHelper
 {
-    void ShowAlarmToast(string title, string content);
-    void ShowAlarmToastWithSnooze<T>(string title, string content, string actionLabel) where T : IAlarmModel;
+    void ShowToast(
+        string title,
+        string content,
+        ToastType type = ToastType.Default,
+        bool enableDismiss = false,
+        params ToastAction[] toastActions
+   );
+}
+
+public record ToastMessage(string Target, string Message)
+{
+    public static ToastMessage Create(Type targetType, string message) =>
+        new(targetType.Name, message);
+}
+
+public record ToastAction(ToastMessage Message, string Caption);
+
+public enum ToastType
+{
+    Default,
+    Reminder,
+    Alarm
 }

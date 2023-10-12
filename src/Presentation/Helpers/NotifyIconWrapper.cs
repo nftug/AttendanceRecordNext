@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Reflection;
 using System.Windows;
 using Application = System.Windows.Application;
 namespace Presentation.Helpers;

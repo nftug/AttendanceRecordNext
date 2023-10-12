@@ -5,6 +5,7 @@ public record AppConfig
     public int StandardWorkMinutes { get; set; } = 480;
     public WorkTimeAlarmConfig WorkTimeAlarm { get; set; } = new();
     public RestTimeAlarmConfig RestTimeAlarm { get; set; } = new();
+    public bool ResidentNotificationEnabled { get; set; } = true;
 
     public record WorkTimeAlarmConfig
     {

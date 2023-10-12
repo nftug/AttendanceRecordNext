@@ -1,34 +1,44 @@
 using Microsoft.Toolkit.Uwp.Notifications;
-using Presentation.Enums;
-using Presentation.Models;
+using System.Text.Json;
 
 namespace Presentation.Helpers;
 
 public class ToastHelper : IToastHelper
 {
-    public void ShowAlarmToast(string title, string content) =>
-        new ToastContentBuilder()
-            .SetToastScenario(ToastScenario.Alarm)
-            .AddText(title)
-            .AddText(content)
-            .AddButton(new ToastButtonDismiss())
-            .Show();
+    public void ShowToast(
+        string title,
+        string content,
+        ToastType type = ToastType.Default,
+        bool enableDismiss = false,
+        params ToastAction[] toastActions
+    )
+    {
+        ToastScenario scenario = type switch
+        {
+            ToastType.Default => ToastScenario.Default,
+            ToastType.Reminder => ToastScenario.Reminder,
+            ToastType.Alarm => ToastScenario.Alarm,
+            _ => ToastScenario.Default
+        };
 
-    public void ShowAlarmToastWithSnooze<T>(string title, string content, string actionLabel)
-        where T : IAlarmModel
-        => new ToastContentBuilder()
-            .SetToastScenario(ToastScenario.Alarm)
+        var toast = new ToastContentBuilder()
+            .SetToastScenario(scenario)
             .AddText(title)
-            .AddText(content)
-            .AddButton(new ToastButtonDismiss())
-            .AddButton(new ToastButton()
-                .SetContent(actionLabel)
-                .AddArgument(ToastArgumentParameter.Action.ToString(), ToastArgumentAction.Act.ToString()))
-                .AddArgument(ToastArgumentParameter.Sender.ToString(), typeof(T).Name)
-            .AddButton(new ToastButton()
-                .SetContent("スヌーズ")
-                .AddArgument(ToastArgumentParameter.Action.ToString(), ToastArgumentAction.Snooze.ToString())
-                .AddArgument(ToastArgumentParameter.Sender.ToString(), typeof(T).Name)
-            )
-            .Show();
+            .AddText(content);
+
+        if (enableDismiss)
+            toast.AddButton(new ToastButtonDismiss("閉じる"));
+
+        foreach (var toastAction in toastActions)
+        {
+            var messageJson = JsonSerializer.Serialize(toastAction.Message);
+
+            toast.AddButton(new ToastButton()
+                .SetContent(toastAction.Caption)
+                .AddArgument("Message", messageJson)
+            );
+        }
+
+        toast.Show();
+    }
 }

@@ -3,6 +3,7 @@ using DryIoc.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Presentation.Helpers;
 using Presentation.Models;
+using Presentation.Services;
 using Presentation.ViewModels;
 using Presentation.Views;
 using Prism.DryIoc;
@@ -16,16 +17,13 @@ public partial class App : PrismApplication
 {
     private Mutex _mutex = new(false, Assembly.GetEntryAssembly()!.GetName().Name);
 
-    protected override void Initialize()
+    protected override async void Initialize()
     {
         if (!_mutex.WaitOne(0, false))
         {
-            System.Windows.MessageBox.Show(
-                "アプリケーションが既に起動しています。",
-                Assembly.GetEntryAssembly()!.GetCustomAttribute<AssemblyTitleAttribute>()!.Title,
-                MessageBoxButton.OK,
-                MessageBoxImage.Stop
-            );
+            // Named pipeで既に開いているアプリにウィンドウの再表示を指示
+            await NamedPipeClient.SendMessageAsync(new(Environment.ProcessId.ToString(), "Reopen"));
+
             _mutex.Close();
             _mutex = null!;
 
@@ -49,6 +47,7 @@ public partial class App : PrismApplication
         containerRegistry.Register<IContentDialogHelper<DatePickerDialogViewModel>, DatePickerDialogHelper>();
 
         containerRegistry.RegisterSingleton<MainWindowModel>();
+        containerRegistry.RegisterSingleton<ToastMessagePublisher>();
         containerRegistry.RegisterSingleton<SettingsModel>();
         containerRegistry.RegisterSingleton<WorkTimeAlarmModel>();
         containerRegistry.RegisterSingleton<RestTimeAlarmModel>();

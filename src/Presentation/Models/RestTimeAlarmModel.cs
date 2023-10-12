@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using Presentation.Helpers;
+using Presentation.Services;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 
@@ -11,9 +12,11 @@ public class RestTimeAlarmModel : AlarmModelBase<RestTimeAlarmModel>
         WorkTimeModel workTimeModel,
         SettingsModel settingsModel,
         IDialogHelper dialogHelper,
-        IToastHelper toastHelper
+        IToastHelper toastHelper,
+        ToastMessagePublisher toastMessagePublisher,
+        MainWindowModel mainWindowModel
     )
-        : base(workTimeModel, settingsModel, dialogHelper, toastHelper)
+        : base(workTimeModel, settingsModel, dialogHelper, toastHelper, toastMessagePublisher, mainWindowModel)
     {
         IsAlarmEnabled = Observable
             .CombineLatest(
@@ -52,5 +55,5 @@ public class RestTimeAlarmModel : AlarmModelBase<RestTimeAlarmModel>
 
     protected override string ActionName => "休憩";
 
-    public override async Task DoActionAsync() => await _workTimeModel.ToggleRestAsync();
+    protected override async Task DoActionAsync() => await _workTimeModel.ToggleRestAsync();
 }

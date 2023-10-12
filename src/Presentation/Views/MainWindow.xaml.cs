@@ -1,5 +1,4 @@
 ﻿using ModernWpf.Controls;
-using Presentation.Models;
 using Presentation.ViewModels;
 using System.Windows;
 
@@ -21,21 +20,25 @@ namespace Presentation.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static IReadOnlyDictionary<NavigationItem, Type> _pages = new Dictionary<NavigationItem, Type>()
-        {
-            { NavigationItem.Home, typeof(HomePage) },
-            { NavigationItem.History, typeof(HistoryPage) },
-            { NavigationItem.Settings, typeof(SettingsPage) },
-            { NavigationItem.None, typeof(BlankPage) }
-        };
+        private static readonly IReadOnlyDictionary<NavigationItem, Type> _pages =
+            new Dictionary<NavigationItem, Type>()
+            {
+                { NavigationItem.Home, typeof(HomePage) },
+                { NavigationItem.History, typeof(HistoryPage) },
+                { NavigationItem.Settings, typeof(SettingsPage) },
+                { NavigationItem.None, typeof(BlankPage) }
+            };
 
-        private readonly MainWindowModel _mainWindowModel;
+        private readonly MainWindowViewModel _viewModel;
 
-        public MainWindow(MainWindowModel mainWindowModel)
+        public MainWindow(MainWindowViewModel viewModel)
         {
             InitializeComponent();
 
-            _mainWindowModel = mainWindowModel;
+            _viewModel = viewModel;
+            _viewModel.ActivateCommand.Subscribe(_ => Activate());
+
+            DataContext = _viewModel;
         }
 
         private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -52,13 +55,13 @@ namespace Presentation.Views
                 if (Enum.TryParse(itemName, out NavigationItem item))
                 {
                     // ヘッダーの設定
-                    _mainWindowModel.HeaderTitle.Value = item.GetStringValue();
+                    _viewModel.HeaderTitle.Value = item.GetStringValue();
                     // 遷移先のページを取得
                     _pages.TryGetValue(item, out pageType);
                 }
                 else
                 {
-                    _mainWindowModel.HeaderTitle.Value = string.Empty;
+                    _viewModel.HeaderTitle.Value = string.Empty;
                 }
 
                 // ページ遷移
