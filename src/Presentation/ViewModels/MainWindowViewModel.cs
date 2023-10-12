@@ -63,12 +63,12 @@ public class MainWindowViewModel : ViewModelBase
                     closeButtonText: "キャンセル"
                 );
 
-                if (ans == Helpers.DialogResult.Primary)
+                if (ans == Helpers.DialogResult.Cancel)
+                    return;
+                else if (ans == Helpers.DialogResult.Primary)
                     _model.Shutdown();
                 else if (ans == Helpers.DialogResult.Secondary)
                     _model.Closing(null);
-                else
-                    _model.Shutdown();
             })
             .AddTo(Disposable);
 
