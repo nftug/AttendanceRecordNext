@@ -23,10 +23,13 @@ public class SettingsPageViewModel : ViewModelBase
     public ReactivePropertySlim<int> RestSnoozeMinutes { get; }
 
     public ReactivePropertySlim<bool> ResidentNotificationEnabled { get; }
+    public ReactivePropertySlim<string> StatusFormat { get; }
+    public ReactivePropertySlim<string> TimeSpanFormat { get; }
 
     public ReadOnlyReactivePropertySlim<string> AppDataPath { get; }
 
     public AsyncReactiveCommand<object?> SaveCommand { get; }
+    public ReactiveCommandSlim<object?> ResetFormCommand { get; }
     public AsyncReactiveCommand<object?> UnloadedCommand { get; }
     public ReactiveCommandSlim<object?> OpenAppDataDirectoryCommand { get; }
 
@@ -73,6 +76,13 @@ public class SettingsPageViewModel : ViewModelBase
             .ToReactivePropertySlimAsSynchronized(x => x.Value.RestTimeAlarm.SnoozeMinutes)
             .AddTo(Disposable);
 
+        StatusFormat = _model.ConfigForm
+            .ToReactivePropertySlimAsSynchronized(x => x.Value.StatusFormat.StatusFormat)
+            .AddTo(Disposable);
+        TimeSpanFormat = _model.ConfigForm
+            .ToReactivePropertySlimAsSynchronized(x => x.Value.StatusFormat.TimeSpanFormat)
+            .AddTo(Disposable);
+
         ResidentNotificationEnabled = _model.ConfigForm
             .ToReactivePropertySlimAsSynchronized(x => x.Value.ResidentNotificationEnabled)
             .AddTo(Disposable);
@@ -81,6 +91,9 @@ public class SettingsPageViewModel : ViewModelBase
 
         SaveCommand = new AsyncReactiveCommand<object?>()
             .WithSubscribe(async _ => await _model.SaveAsync())
+            .AddTo(Disposable);
+        ResetFormCommand = new ReactiveCommandSlim<object?>()
+            .WithSubscribe(_ => _model.ResetForm())
             .AddTo(Disposable);
         UnloadedCommand = new AsyncReactiveCommand<object?>()
             .WithSubscribe(async _ => await _model.LoadAsync())

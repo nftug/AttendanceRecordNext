@@ -11,8 +11,7 @@ public class HomePageViewModel : ViewModelBase
 {
     private readonly WorkTimeModel _model;
     private readonly MainWindowModel _mainWindowModel;
-    private readonly WorkTimeAlarmModel _workTimeAlarmModel;
-    private readonly RestTimeAlarmModel _restTimeAlarmModel;
+    private readonly StatusFormatModel _statusFormatModel;
 
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalWorkTime { get; }
     public ReadOnlyReactivePropertySlim<TimeSpan> TotalRestTime { get; }
@@ -22,22 +21,23 @@ public class HomePageViewModel : ViewModelBase
     public ReadOnlyReactivePropertySlim<bool> IsOngoing { get; }
     public ReactivePropertySlim<DateTime> NowDateTime { get; }
 
-    public AsyncReactiveCommand<object?> ToggleWork { get; }
-    public AsyncReactiveCommand<object?> ToggleRest { get; }
+    public AsyncReactiveCommand<object?> ToggleWorkCommand { get; }
+    public AsyncReactiveCommand<object?> ToggleRestCommand { get; }
+    public AsyncReactiveCommand<object?> CopyFormattedTextCommand { get; }
 
     public HomePageViewModel(
         WorkTimeModel model,
         MainWindowModel mainWindowModel,
         IDialogHelper dialogHelper,
         WorkTimeAlarmModel workTimeAlarmModel,
-        RestTimeAlarmModel restTimeAlarmModel
+        RestTimeAlarmModel restTimeAlarmModel,
+        StatusFormatModel statusFormatModel
     )
         : base(dialogHelper)
     {
         _model = model;
         _mainWindowModel = mainWindowModel;
-        _workTimeAlarmModel = workTimeAlarmModel;
-        _restTimeAlarmModel = restTimeAlarmModel;
+        _statusFormatModel = statusFormatModel;
 
         TotalWorkTime = _model.TotalWorkTime.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
         TotalRestTime = _model.TotalRestTime.ToReadOnlyReactivePropertySlim().AddTo(Disposable);
@@ -57,7 +57,7 @@ public class HomePageViewModel : ViewModelBase
             })
             .AddTo(Disposable);
 
-        ToggleWork = new AsyncReactiveCommand<object?>()
+        ToggleWorkCommand = new AsyncReactiveCommand<object?>()
             .WithSubscribe(async _ =>
             {
                 if (_model.IsOngoing.Value)
@@ -74,13 +74,30 @@ public class HomePageViewModel : ViewModelBase
             })
             .AddTo(Disposable);
 
-        ToggleRest = _model.IsOngoing
+        ToggleRestCommand = _model.IsOngoing
             .ToAsyncReactiveCommand()
+            .WithSubscribe(async _ => await CatchErrorAsync(_model.ToggleRestAsync))
+            .AddTo(Disposable);
+
+        CopyFormattedTextCommand = new AsyncReactiveCommand<object?>()
             .WithSubscribe(async _ =>
             {
-                await CatchErrorAsync(_model.ToggleRestAsync);
-            })
-            .AddTo(Disposable);
+                try
+                {
+                    _statusFormatModel.CopyFormattedTextToClipboard();
+                    await _dialogHelper.ShowDialogAsync(
+                        "クリップボードに現時点の記録のテキストをコピーしました。",
+                        "記録をクリップボードにコピー"
+                    );
+                }
+                catch (FormatException)
+                {
+                    await _dialogHelper.ShowDialogAsync(
+                        "記録のフォーマット設定が不正です。",
+                        "エラー"
+                    );
+                }
+            });
 
         _model.Timer
             .ObserveOnUIDispatcher()

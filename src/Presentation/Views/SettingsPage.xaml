@@ -20,23 +20,37 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <DockPanel LastChildFill="True" Margin="10,10,15,5">
-        <ui:SimpleStackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-            <Button VerticalAlignment="Center"
-                    HorizontalAlignment="Right"
-                    Margin="0,4,4,4"
-                    Padding="15,8"
-                    Style="{StaticResource AccentButtonStyle}"
-                    Command="{Binding SaveCommand}">
-                <StackPanel Orientation="Horizontal">
-                    <ui:FontIcon Glyph="&#xE74E;" Margin="0,0,3,0" FontSize="16"/>
-                    <TextBlock Text="保存"/>
-                </StackPanel>
-            </Button>
-        </ui:SimpleStackPanel>
+    <DockPanel LastChildFill="True">
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem Padding="10">
+                <ui:SimpleStackPanel Orientation="Horizontal">
+                    <Button VerticalAlignment="Center"
+                            HorizontalAlignment="Right"
+                            Padding="20,5"
+                            Style="{StaticResource AccentButtonStyle}"
+                            Command="{Binding SaveCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon Glyph="&#xE74E;" Margin="0,0,5,0" FontSize="15"/>
+                            <TextBlock Text="保存"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button VerticalAlignment="Center"
+                            HorizontalAlignment="Right"
+                            Margin="15,0,0,0"
+                            Padding="20,5"
+                            Command="{Binding ResetFormCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon Glyph="&#xE894;" Margin="0,0,5,0" FontSize="15"/>
+                            <TextBlock Text="リセット"/>
+                        </StackPanel>
+                    </Button>
+                </ui:SimpleStackPanel>
+            </StatusBarItem>
+        </StatusBar>
 
         <ScrollViewer>
-            <ui:SimpleStackPanel Spacing="25">
+            <ui:SimpleStackPanel Spacing="25"  Margin="10,10,15,0">
                 <ui:SimpleStackPanel Spacing="10">
                     <TextBlock Text="標準の勤務時間"
                                Margin="0,0,0,5"
@@ -112,6 +126,29 @@
                             <TextBlock Text="分毎に通知" Margin="10,30" VerticalAlignment="Center"/>
                         </ui:SimpleStackPanel>
                     </ui:SimpleStackPanel>
+                </ui:SimpleStackPanel>
+
+                <ui:SimpleStackPanel Spacing="10" Margin="0,-5,0,10">
+                    <TextBlock Text="クリップボードへのコピー"
+                               Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                    <TextBlock Text="クリップボードに記録するフォーマット" Margin="0,0,0,-5" />
+                    <TextBox TextWrapping="WrapWithOverflow"
+                             AcceptsReturn="True"
+                             VerticalScrollBarVisibility="Auto"
+                             MinLines="3"
+                             Width="400" HorizontalAlignment="Left"
+                             Text="{Binding StatusFormat.Value}"/>
+
+                    <TextBlock Text="時間のフォーマット" Margin="0,0,0,-5">
+                        <TextBlock.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="A"/>
+                            </ContextMenu>
+                        </TextBlock.ContextMenu>
+                    </TextBlock>
+                    <TextBox Width="400" HorizontalAlignment="Left"
+                             Text="{Binding TimeSpanFormat.Value}"/>
                 </ui:SimpleStackPanel>
 
                 <ui:SimpleStackPanel Spacing="10" Margin="0,-5,0,10">

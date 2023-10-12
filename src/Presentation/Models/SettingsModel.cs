@@ -20,9 +20,9 @@ public class SettingsModel : BindableBase, IToastMessageSubscriber
     public ReactivePropertySlim<AppConfig> ConfigForm { get; }
     public ReactivePropertySlim<AppConfig> Config { get; }
 
-    public ReactivePropertySlim<AppConfig.WorkTimeAlarmConfig> WorkAlarmConfig { get; }
-    public ReactivePropertySlim<AppConfig.RestTimeAlarmConfig> RestAlarmConfig { get; }
-    public ReactivePropertySlim<bool> ResidentNotificationEnabled { get; }
+    public ReadOnlyReactivePropertySlim<AppConfig.WorkTimeAlarmConfig> WorkAlarmConfig { get; }
+    public ReadOnlyReactivePropertySlim<AppConfig.RestTimeAlarmConfig> RestAlarmConfig { get; }
+    public ReadOnlyReactivePropertySlim<bool> ResidentNotificationEnabled { get; }
     public ReadOnlyReactivePropertySlim<TimeSpan> WorkTimeLimit { get; }
     public ReactivePropertySlim<string> AppDataPath { get; }
 
@@ -44,15 +44,17 @@ public class SettingsModel : BindableBase, IToastMessageSubscriber
         Config = new ReactivePropertySlim<AppConfig>().AddTo(Disposable);
 
         WorkAlarmConfig = Config
-            .ToReactivePropertySlimAsSynchronized(x => x.Value.WorkTimeAlarm)
+            .ObserveProperty(x => x.Value.WorkTimeAlarm)
+            .ToReadOnlyReactivePropertySlim(new())
             .AddTo(Disposable);
         RestAlarmConfig = Config
-            .ToReactivePropertySlimAsSynchronized(x => x.Value.RestTimeAlarm)
+            .ObserveProperty(x => x.Value.RestTimeAlarm)
+            .ToReadOnlyReactivePropertySlim(new())
             .AddTo(Disposable);
         ResidentNotificationEnabled = Config
-            .ToReactivePropertySlimAsSynchronized(x => x.Value.ResidentNotificationEnabled)
+            .ObserveProperty(x => x.Value.ResidentNotificationEnabled)
+            .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposable);
-
         WorkTimeLimit = Observable
             .CombineLatest(
                 Config.ObserveProperty(x => x.Value.StandardWorkMinutes),
@@ -71,6 +73,7 @@ public class SettingsModel : BindableBase, IToastMessageSubscriber
     {
         await _configRepository.LoadAsync();
 
+        // NOTE: 設定を正しく反映させるため、二度更新する
         Config.Value = new();
         Config.Value = _configRepository.Config;
 
@@ -87,13 +90,15 @@ public class SettingsModel : BindableBase, IToastMessageSubscriber
         await _workTimeModel.LoadDataAsync();
     }
 
+    public void ResetForm() => ConfigForm.Value = new();
+
     public void OpenAppDataDirectory() => Process.Start("explorer.exe", AppDataPath.Value);
 
     public async void HandleToastMessage(string message)
     {
         if (message == DisableResidentNotificationMessage)
         {
-            ResidentNotificationEnabled.Value = false;
+            ConfigForm.Value.ResidentNotificationEnabled = false;
             await SaveAsync();
         }
     }
