@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using Infrastructure.Shared;
 using Presentation.Helpers;

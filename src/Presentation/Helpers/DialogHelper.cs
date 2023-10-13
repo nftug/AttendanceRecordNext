@@ -94,7 +94,7 @@ public class DialogHelper : IDialogHelper
     }
 
     public static ContentDialog? ActiveDialog;
-    private static TaskCompletionSource<bool> DialogAwaiter = new ();
+    private static TaskCompletionSource<bool> DialogAwaiter = new();
     private static void ActiveDialog_Closed(ContentDialog sender, ContentDialogClosedEventArgs args) =>
         DialogAwaiter.SetResult(true);
 }

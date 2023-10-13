@@ -22,10 +22,9 @@
 
     <DockPanel LastChildFill="True">
         <StatusBar DockPanel.Dock="Bottom" Margin="0,10,0,0">
-            <StatusBarItem Padding="10">
+            <StatusBarItem Padding="10" HorizontalContentAlignment="Right">
                 <ui:SimpleStackPanel Orientation="Horizontal">
                     <Button VerticalAlignment="Center"
-                            HorizontalAlignment="Right"
                             Padding="20,5"
                             Style="{StaticResource AccentButtonStyle}"
                             Command="{Binding SaveCommand}">
@@ -36,7 +35,6 @@
                     </Button>
 
                     <Button VerticalAlignment="Center"
-                            HorizontalAlignment="Right"
                             Margin="15,0,0,0"
                             Padding="20,5"
                             Command="{Binding ResetFormCommand}">

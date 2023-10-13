@@ -55,12 +55,16 @@ public class MainWindowViewModel : ViewModelBase
                 if (_model.Visibility.Value == System.Windows.Visibility.Hidden)
                     _model.Reopen();
 
+                // アクティベートしないとContentDialogが表示できない
+                _model.Activate();
+
                 var ans = await _dialogHelper.ShowCustomDialogAsync(
                     $"アプリを終了しますか？{(_workTimeModel.IsOngoing.Value ? "\n（終了後も時間のカウントは継続されます。）" : "")}",
                     "アプリの終了",
                     primaryButtonText: "終了",
                     secondaryButtonText: "最小化",
-                    closeButtonText: "キャンセル"
+                    closeButtonText: "キャンセル",
+                    defaultResult: Helpers.DialogResult.Primary
                 );
 
                 if (ans == Helpers.DialogResult.Cancel)

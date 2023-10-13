@@ -9,12 +9,16 @@
 		<SatelliteResourceLanguages>ja</SatelliteResourceLanguages>
 		<AssemblyName>AttendanceRecord</AssemblyName>
 		<AssemblyTitle>Attendance Record</AssemblyTitle>
-		<AssemblyVersion>0.1.0</AssemblyVersion>
-		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+		<AssemblyVersion>1.0.0</AssemblyVersion>
+		<PublishSingleFile>true</PublishSingleFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DebugType>none</DebugType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(SelfContained)'=='True'">
+		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
 	</PropertyGroup>
 
 	<ItemGroup>

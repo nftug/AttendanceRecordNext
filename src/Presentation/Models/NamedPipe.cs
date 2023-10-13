@@ -22,7 +22,8 @@ internal class NamedPipeServer : NamedPipeBase
             await stream.WaitForConnectionAsync();
             using var reader = new StreamReader(stream);
             var json = await reader.ReadToEndAsync();
-            action(NamedPipeMessage.Deserialize(json));
+
+            System.Windows.Application.Current.Dispatcher.Invoke(() => action(NamedPipeMessage.Deserialize(json)));
         }
     }
 }
@@ -32,7 +33,7 @@ internal class NamedPipeClient : NamedPipeBase
     public static async Task<bool> SendMessageAsync(NamedPipeMessage message)
     {
         using var stream = new NamedPipeClientStream(PipeName);
-        await stream.ConnectAsync();
+        await stream.ConnectAsync(3000);
 
         using var writer = new StreamWriter(stream);
 
